@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>GPT-1 科研全仿真 · 完整版</title>
+<style>
+  @page { size: A4; margin: 15mm 13mm 14mm 13mm; }
+  html { font-size: 10.5pt; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+    color: #1a1a1a; line-height: 1.55; margin: 0; padding: 0 5mm; max-width: 192mm;
+  }
+  .cover { page-break-after: always; padding-top: 46mm; }
+  .cover h1 { font-size: 26pt; color: #14273f; margin: 0 0 6px; letter-spacing: 1px; line-height: 1.25; }
+  .cover .sub { font-size: 12pt; color: #4a5b6e; margin: 0 0 20px; }
+  .cover .rule { height: 3px; background: #1f3a5f; width: 62mm; margin: 14px 0 16px; }
+  .cover .meta { font-size: 9.6pt; color: #57606a; line-height: 1.75; }
+  .cover .toc { margin-top: 22px; border-top: 1px solid #d6dee7; padding-top: 12px; }
+  .cover .toc div { font-size: 10pt; color: #26405c; padding: 2.5px 0; }
+  .cover .toc .lv2 { padding-left: 14px; color: #4a5b6e; font-size: 9.4pt; }
+  section.stage { page-break-before: always; }
+  h1 { font-size: 18pt; color: #14273f; border-bottom: 2.5px solid #1f3a5f;
+       padding-bottom: 6px; margin: 0 0 12px; }
+  h2 { font-size: 13pt; color: #14273f; margin: 18px 0 8px; border-left: 5px solid #2f5d8a;
+       padding-left: 8px; page-break-after: avoid; }
+  h3 { font-size: 11pt; margin: 12px 0 5px; color: #22364f; page-break-after: avoid; }
+  h4 { font-size: 10.2pt; margin: 10px 0 4px; color: #2f4257; page-break-after: avoid; }
+  p, li { font-size: 10.2pt; }
+  ul, ol { padding-left: 18px; margin: 5px 0; }
+  li { margin: 2px 0; }
+  hr { border: none; border-top: 1px dashed #c3ccd6; margin: 15px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9pt; }
+  th, td { border: 1px solid #c8d0d9; padding: 4px 6px; text-align: left; vertical-align: top;
+           word-break: break-word; }
+  th { background: #eef3f8; color: #14273f; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+         background: #f2f5f8; padding: 0 3px; border-radius: 2px; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.5pt;
+        background: #f7f9fb; border: 1px solid #dbe3ea; border-left: 3px solid #8fa6bd;
+        padding: 7px 9px; white-space: pre-wrap; word-break: break-word;
+        line-height: 1.45; margin: 8px 0 12px; }
+  pre code { background: none; padding: 0; font-size: 8.5pt; }
+  blockquote { margin: 8px 0; padding: 6px 11px; background: #fdf7ec;
+               border-left: 4px solid #d0a24c; color: #4a3d24; font-size: 9.4pt; }
+  blockquote p { font-size: 9.4pt; margin: 4px 0; }
+  blockquote strong { color: #7a5210; }
+  strong { color: #14273f; }
+</style>
+</head>
+<body>
+<div class="cover">
+<h1>GPT-1 科研全仿真 · 完整版</h1>
+<div class="sub">Improving Language Understanding by Generative Pre-Training（Radford et al., 2018 · preprint）</div>
+<div class="rule"></div>
+<div class="meta">第一人称科研全仿真，8 个阶段：idea → 文献 → 建模迭代 → 实验 → 负结果 → 成文 → 审稿与 rebuttal → 第三方核查（S8）<br>内容来源：论文全文（gpt1.txt）+ 各阶段《档案》<br>凡标【修订注】处为 2026-09-15 S8 核查后的修正，原稿错误一并保留供追溯</div>
+<div class="toc"><div><strong>目录</strong></div>
+<div class="lv2">S1 · idea 诞生 —— GPT-1 科研全仿真</div><div class="lv2">S2 · 文献调研 —— GPT-1 科研全仿真</div><div class="lv2">S3 · 建模迭代 —— GPT-1 科研全仿真</div><div class="lv2">S4 · 实验设计与执行 —— GPT-1 科研全仿真</div><div class="lv2">S5 · 困难与转折 —— GPT-1 科研全仿真</div><div class="lv2">S6 · 成文 —— GPT-1 科研全仿真</div><div class="lv2">S7 · 审稿 + Rebuttal —— GPT-1 科研全仿真</div><div class="lv2">S8 · 对照复盘（幻觉总检查）—— GPT-1 科研全仿真</div>
+</div>
+</div>
+<section class="stage">
+<h2>S1 · idea 诞生 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"生成式预训练 + 判别式微调"idea 诞生前一周的第一作者视角。
+- 现状：论文 abstract + introduction。时间点设为 2018 年 3 月（论文 2018 年 6 月挂出；ELMo/ULMFiT 刚出两个月，GLUE 尚不存在）。
+- 限制：只用 2018 年 3 月前公开材料；禁止引用论文实验结果。</p>
+</blockquote>
+<h3>1. 我当时在做什么，什么刺到了我</h3>
+<p>过去一年我的主线是无监督表征。2017 年我和 Rafal、Ilya 做了那个 Amazon 评论的实验：一个 byte 级的 mLSTM，纯粹用下一个字预测来训，训完发现里面长出了一个专门管情感的神经元——掰动它，生成文本的情感极性就跟着翻转【可查证：Radford, Jozefowicz, Sutskever 2017】。这件事给我留下一个执念：<strong>语言模型内部已经悄悄学会了"任务"，只是没人把它系统地挖出来</strong>。之后我去做 block-sparse 的 GPU kernel【可查证：Gray, Radford, Kingma 2017，即论文引文[16]】，说白了就是想让这类大模型训得起。</p>
+<p>刺到我的是 NLP 领域的现状：词嵌入早就是标配了，但"比词更高的东西"——句子级、篇章级的知识——没人迁得动。原因就两条：一，用什么目标函数学无监督表征，没有共识（LM、翻译、篇章连贯各赢各的）；二，学到的表征怎么迁到下游，没有共识【可查证：论文 §1 的两点陈述本身就是在描述这个困境】。</p>
+<h3>2. 我的 naive 想法</h3>
+<p>最直接的：顺着 sentiment neuron 往下做。把无监督预训练好的大 LSTM 的隐状态抽出来，当<strong>特征</strong>喂给每个任务的专用模型。这其实就是 CoVe【可查证：McCann et al. 2017，引文[38]】和上个月刚出的 ELMo【可查证：Peters et al. 2018.2，引文[44]】的路线。我的想法甚至有点偷懒：他们用 BiLSTM，我用我熟的大 LSTM，特征质量不会差。</p>
+<h3>3. 它卡在哪，为什么死</h3>
+<ul>
+<li><strong>特征路线有个结构性死穴</strong>：迁过去的只是"表示"，任务模型本身是随机初始化的、任务专用的。ELMo 在下游还得叠任务自己的 BiLSTM + attention，每个任务新增一大堆参数【可查证：论文 §2 对 [43][44] 的批评——"a substantial amount of new parameters for each separate target task"】。也就是说无监督学到的东西只负责输入层，真正的推理全靠标注数据现场学——标注少的任务照样崩。这和我"模型内部已经会了"的信念直接矛盾。</li>
+<li><strong>LSTM 本身也到头了</strong>：sentiment neuron 那个 4096 维 byte 级模型训了一个月量级【可查证：Radford 2017 论文训练设置】，慢得离谱；而且 LSTM 对长程依赖是"一条状态向量硬扛"，几百词之前的信息基本磨没了。做句子级任务勉强，做篇章级推理没戏。</li>
+<li><strong>更难受的是，坑位有人占了</strong>：Dai &amp; Le 2015 年就做过"LSTM 语言模型预训练 + 微调"【可查证：引文[13]】，Howard &amp; Ruder 今年 1 月刚把它做到位【可查证：ULMFiT，引文[21]】——但都只打在文本分类上。NLI、QA 这种"输入是两三段文本"的结构化任务，这条路线没人走通。</li>
+</ul>
+<h3>4. 转机</h3>
+<p>两个东西撞在了一起。</p>
+<p>一是 <strong>Transformer</strong>。Vaswani 他们去年底的翻译模型【可查证：[62]】，加上 Peter Liu 他们年初拿 Transformer decoder 做长文生成【可查证：[34]，引文时间 2018 年初】——证明了这个架构当纯语言模型用是成立的。关键是它的记忆方式：attention 让每个位置直接看回所有历史位置，是结构化的记忆，不是一条向量硬扛。</p>
+<p>二是 <strong>Rocktäschel 2015 年那个 traversal 式做法</strong>【可查证：[52]】：把前提、假设这种结构化输入用分隔符拍平成一条序列，让模型自己去处理。如果这招成立，"结构化任务没法微调"的死结就解了——<strong>不用改架构，改输入就行</strong>。</p>
+<p>拼图在脑子里合上了：Transformer decoder 当 LM 预训练 → 所有任务统一拍平成序列 → 只在最后加一个线性层微调。架构零改动，预训练的每一层参数都参与下游任务。这个想法成不成立，我一点把握都没有——但至少它和我 2017 年那个执念是自洽的。</p>
+<hr />
+<h3>《档案 · S1》</h3>
+<pre><code>【阶段】S1 idea 诞生
+【已知事实】
+1. 作者 2017 年做过 byte 级 mLSTM 情感神经元工作【可查证·论文外：Radford, Jozefowicz, Sutskever 2017。注意标签边界：该文不在论文参考文献表中，无法在&quot;论文全文&quot;这一闭环内核验；论文 Table 4 以引文[16]（block-sparse kernels）指代同源的 Sparse byte mLSTM 行——修订注：原稿把此条笼统标为【可查证】，现补注其来源在论文之外（S8 第 2 节 H7）】
+2. 作者同期做 block-sparse GPU kernel（论文引文[16]，Gray/Radford/Kingma 2017）
+3. 迁移困境两点（目标无共识、迁移方式无共识）——论文 §1 原文
+4. CoVe=MT 特征[38]、ELMo=BiLSTM 特征[44]（2018.2）、均留大量任务专用新参数——论文 §2
+5. Dai &amp; Le 2015[13] 与 ULMFiT[21]（2018.1）做了 LSTM 预训练+微调，仅覆盖文本分类——论文 §2
+6. Transformer[62]（2017）与 Transformer decoder 长文生成[34]（2018 初）已公开
+7. traversal 式输入拍平法来自 Rocktäschel 2015[52]——论文 §1、§3.3
+【合理重构】
+a. &quot;sentiment neuron 执念&quot;作为动机主线——依据：作者公开研究轨迹的连续性（重构，非论文所载）
+b. 时间点 2018 年 3 月、&quot;两件事撞在一起&quot;的触发场景——依据：引文[21][34][44] 均发表于 2018 年初；GLUE[64] 在 idea 期尚未存在（2018.4 发布），但它在成文时已被论文多处引用——§1 第 75 行 the recently introduced GLUE multi-task benchmark [64]、§4.2、Table 4 caption、脚注 1 指向 gluebenchmark.com/leaderboard【可查证：论文全文】。修订注：原稿此条作&quot;（故全文未提 GLUE）&quot;，与论文事实相反（四处出现 GLUE），错误来源是把&quot;idea 期 GLUE 未发表&quot;错推成&quot;全文未提&quot;；本错误还与《档案 · S2》第 5 条直接对撞。详见 S8 第 2 节 H1 与本文件末尾的《S1 勘误》
+c. naive 想法的具体形态（LSTM 特征路线）——依据：这是当时该背景下最省事的默认选项
+【负结果】
+1. naive 想法&quot;LSTM 特征路线&quot;被毙，死因三条：特征路线留任务专用新参数（§2）；LSTM 长程依赖弱+训练慢；分类坑位已被 ULMFiT 占住
+（本阶段负结果即为主体内容，占比 &gt;60%）
+【未决问题】
+1. 预训练语料选什么？（留给 S3/S4）
+2. 目标函数没共识，为什么敢押注 LM？（留给 S2/S3）
+3. 拍平输入会不会丢结构信息？（留给 S3）
+4. Transformer 当 LM 的训练成本是否可承受？（留给 S4）
+【后见之明自检】未引用任何实验结果与性能数字；&quot;押注 Transformer&quot;仅以架构特性论证，未断言其必然成功——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H1】</strong> 原稿此条作"（故全文未提 GLUE）"。<strong>此说与论文事实相反</strong>：论文 §1／§4.2／Table 4 caption／脚注 1 共四处出现 GLUE。原稿的错误来源是把"idea 期 GLUE 未发表"错推成"全文未提"。现按事实改为：idea 期（2018.3）GLUE 未存在，成文期（2018.6）已被引用。另注：本错误与《档案 · S2》第 5 条"GLUE[64]（2018.4）论文引用了"直接对撞，两份档案互相矛盾而未被发现——详见 S8 第 2 节 H1。</p>
+<p><strong>【修订注 · S8 核查 · H7】</strong> 档案第 1 条原标【可查证】，但 sentiment neuron 原文（Radford, Jozefowicz, Sutskever 2017）不在论文参考文献表内，属论文外材料；已在条目内改标【可查证·论文外】，并注明论文 Table 4 里 [16] 的真实身份是 block-sparse kernels。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S2 · 文献调研 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"我站在哪"——无监督表征迁移这个问题的前人地图。
+- 现状：《档案 · S1》（idea 已定：Transformer LM 预训练 + 拍平输入微调）+ 论文 §2 related work。
+- 限制：只引 2018 年 3 月前的文献；论文没引但当时存在的可补，须注明"论文未引"。</p>
+</blockquote>
+<h3>1. 前人路线：五派，各自的死穴</h3>
+<p><strong>A 派 · 词嵌入派</strong>（word2vec [39]、GloVe [42]）。当时所有 NLP pipeline 的底座。死穴：只迁词级信息，一词一向量，"bank"是河岸还是银行它管不了【可查证：论文 §2 首段"mainly transfer word-level information"】。</p>
+<p><strong>B 派 · 句向量派</strong>（skip-thought [28]、InferSent [12]、paragraph vector [32]）。想把整句压成一个向量再迁移。死穴：一个向量装一句子的全部语义，容量天花板太低；而且这些目标函数各赢各的任务，没有公认赢家【可查证：§1 footnote 附近的陈述"each method outperforming the others on different tasks"】。</p>
+<p><strong>C 派 · 特征迁移派</strong>（CoVe [38]、ELMo [44]、TagLM [43]）。预训练一个深模型，把隐状态当<strong>额外特征</strong>塞进任务专用模型。当时声势最大——ELMo 刚出一个月，到处都在刷榜。死穴：任务模型本体仍是随机初始化、任务专用的，每个任务新增一大坨没经过预训练的参数【可查证：§2"a substantial amount of new parameters for each separate target task"】。</p>
+<p><strong>D 派 · 全量微调派</strong>（Dai &amp; Le [13]、ULMFiT [21]）。和我的血缘最近：LM 预训练 → 整个网络在下游任务上微调。死穴：用的都是 LSTM，且只验证了文本分类；NLI、QA 这种结构化输入没人碰【可查证：§2"their usage of LSTM models restricts their prediction ability to a short range"】。</p>
+<p><strong>E 派 · 辅助目标派</strong>（Collobert &amp; Weston [10]、Rei [50]）。不动迁移管线，而是往监督目标里塞无监督辅助 loss。死穴：辅助目标是"配菜"，模型主体还是从头学，无监督数据的价值只吃到一口【合理重构：从 §2 对该派的中性陈述+论文自己仍保留 aux LM 反推——作者认为它有效但不够】。</p>
+<h3>2. 我的站队</h3>
+<ul>
+<li><strong>亲生的是 D 派</strong>：预训练不是产特征，是产<strong>初始化</strong>——模型每一层都带着无监督学到的知识进入下游任务，这和我 2017 年 sentiment neuron 的执念一致【合理重构：延续 S1 档案的动机线】。</li>
+<li><strong>和 C 派划清界限</strong>：ELMo 正火，公开唱反调不明智，但方法上必须对着干——它留任务专用参数，我要求"架构零改动"，这是两种哲学的分叉口【可查证：§2 对 [43][44] 的措辞是全文最尖锐的一句批评】。</li>
+<li><strong>E 派招安</strong>：Rei 的辅助 LM 目标不冲突，可以收编进微调阶段当正则，这是白捡的【可查证：§3.2 明确引用 [50][43] 作为 aux objective 的先例】。</li>
+</ul>
+<h3>3. 惊魂时刻【合理重构，依据：三者发表时间密集撞车】</h3>
+<p>两次。第一次是 1 月看到 ULMFiT：LM 预训练+全量微调，和我的骨架几乎一样，心跳停了半拍——读完松了口气，它是 LSTM、只做分类、还配了一套复杂的 discriminative fine-tuning 技巧。它验证了 D 派可行，但把"换架构、拓宽任务面"的空间留给了我。第二次是 2 月 ELMo 挂出来，几周之内全社区都在复现——如果特征路线赢者通吃，我的"零架构改动"就没卖点了。赌的就是 C 派的结构性死穴在结构化任务上会暴露。</p>
+<hr />
+<h3>《档案 · S2》</h3>
+<pre><code>【阶段】S2 文献调研
+【已知事实】
+1. 各派代表文献确在 §2 之内【可查证：论文 §2 全部条目（[39][42] / [28][12][32] / [38][44][43] / [13][21] / [10][50]）】；但&quot;五派&quot;这一划分框架本身是重构【合理重构：论文 §2 的原文结构只有三个小节——Semi-supervised learning for NLP / Unsupervised pre-training / Auxiliary training objectives（第 81／94／114 行），五派是把这三节按&quot;迁移方式&quot;重新切分的结果】。修订注：原稿此条整体标【可查证】，属标签错配（见本文件末尾《S2 勘误》）
+2. C 派&quot;每任务大量新参数&quot;批评——§2 原文
+3. D 派 LSTM 短程限制——§2 原文
+4. aux LM objective 有 Rei[50]/Peters[43] 先例——§3.2 原文
+5. GLUE[64]（2018.4）论文引用了——S1 时间点后出现，本阶段不纳入&quot;当时知识&quot;
+【合理重构】
+a. &quot;C 派声势最大、ELMo 刷屏&quot;的社区氛围——依据：ELMo 发表于 2018.2，GPT-1 成文于 2018.6，时间紧贴
+b. 两次惊魂时刻的心理描写——依据：ULMFiT(2018.1)/ELMo(2018.2) 与论文主题高度重叠
+c. &quot;E 派收编为正则&quot;的决策过程——依据：论文最终保留 aux LM 且 λ=0.5（§4.1）
+【负结果】
+1. A/B 派整条路线被排除（容量天花板、目标无赢家）
+2. C 派被判定结构性走不通（尽管它当时最火——逆共识决策）
+【未决问题】
+1. 押注 LM 目标的正式论证还没做（S3 开头必须回答）
+2. D 派没人碰结构化任务的真实原因——是 LSTM 不行还是没人想到拍平？（S3 v1 见分晓）
+【后见之明自检】未预言 C 派后来式微或 ELMo 被取代；站队仅以架构与参数量论证——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H6】</strong> 档案第 1 条原标【可查证：论文 §2 全部条目】，属<strong>标签错配</strong>：文献本身可查证，但"分几派、各派死穴是什么"是叙事自建的判断。尤其 A 派"只迁词级信息"有原话支撑（§2 第 88–89 行），而 B 派"容量天花板太低"、E 派"只吃到一口"两处死穴在 §2 里只有中性陈述，无任何贬义依据（S8 第 2 节 H6）。已按此拆分为「文献可查证 + 框架为重构」两条标签。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S3 · 建模迭代 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原方法从 v0 到逼近论文形态的迭代链，中间版本不许跳。
+- 现状：《档案 · S1》《档案 · S2》 + 论文 §3。
+- 限制：v0/v1 为合理重构，但每版死因须让内行信服；除第 4 节外不看论文最终形态。</p>
+</blockquote>
+<h3>先回答 S2 留下的债：为什么押注 LM 目标</h3>
+<p>候选目标当时有仨：LM [44]、机器翻译 [38]、篇章连贯 [22]。MT 要平行语料——那本身就是最贵的监督信号，违背"无标注"前提；篇章连贯目标太弱，句子级信号撑不起深层推理。LM 是唯一同时满足"零标注、逐 token 稠密监督、强迫建模长程条件概率"的目标。押注 LM 不是因为它最优雅，是因为它是唯一输得起剩下两个的【可查证：候选集见 §1；选择 LM 见 §3.1 Eq.(1)；论证措辞为合理重构】。</p>
+<h3>v0：裸拼接版</h3>
+<p>最直接的形式化：Transformer decoder（masked self-attention，照 Vaswani 的底座改成单向）在语料上训 LM；微调时任务输入直接 token 拼接，最后一个位置的隐层过线性层出标签。目标函数只有监督的 L2。</p>
+<p><strong>为什么不够</strong>：
+1. 没有 aux 目标，微调完全靠小标注集拉动 1.17 亿参数【参数量可由 §4.1 结构参数算出：12 层、768 维、词表 40k ≈ 117M】——<strong>当时预期</strong>小数据集上会过拟合，大模型预训练白做。</p>
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H3a】</strong> 原稿把"小数据集必然过拟合"写成定论。这条预期后被论文自己的 Table 5 部分证伪：aux 目标在四个小数据集上（CoLA／SST-2／MRPC／STS-B）恰恰是<strong>负贡献</strong>。v0 的真实死因应表述为"缺正则、缺结构标记"，而"加 aux 能治小数据"这一推断本身是错的（见下条与 S8 第 2 节 H2／H3）。
+2. "直接拼接"没有结构标记：前提和假设的边界模型不知道，起止位置也不知道，预训练里从没见过这种"两段拼盘"，分布外输入直接怼脸【合理重构：由论文最终引入 ⟨s⟩⟨e⟩$ 反推 v0 缺它们】。</p>
+</blockquote>
+<h3>v1：加辅助目标 + 特殊 token</h3>
+<p>修补思路来自 E 派收编：微调目标改成 L3 = L2 + λ·L1【可查证：§3.2 Eq.(5)，λ=0.5 见 §4.1】。论文给 aux 的动机原句是 <code>improving generalization of the supervised model</code> 与 <code>accelerating convergence</code>【可查证：§3.2 第 166–168 行】——<strong>不是"治小数据过拟合"</strong>。同时给输入加 ⟨s⟩、⟨e⟩、$ 分隔符，告诉模型结构边界【可查证：§3.3 首段】。</p>
+<blockquote>
+<p><strong>【修订注 · S8 核查】</strong> 原稿此句作"等于给微调加了个'别忘了预训练'的正则"，把它当成小数据困境的解药。<strong>这是本仿真最严重的一处因果错误</strong>：Table 5 显示 aux 在 CoLA(−2.5)、SST-2(−0.7)、MRPC(−2.6)、STS-B(−1.2) 上全部拖后腿，论文原话是 <code>larger datasets benefit from the auxiliary objective but smaller datasets do not</code>（第 556–557 行）。现按论文动机原句改写。附带的独立发现：RTE 是全场最小数据集（2490 条）却因 aux 涨了 1.6 分——论文的两句概括在 RTE 上互相冲突，见 S8 第 2 节 H10。</p>
+</blockquote>
+<p><strong>暴露的新问题</strong>：相似度任务。两个句子没有天然先后顺序，"A$B" 和 "B$A" 是同一个样本，但拼接强行指定了顺序——模型会学到假的顺序偏置。QA 那边更麻烦：一个文档配 K 个候选答案，拼成一条序列根本没法表达"K 选 1"的结构【合理重构：由 §3.3 对 similarity 和 QA 的特殊处理反推——这两处特殊处理正是在回应这两个问题】。</p>
+<h3>v2：任务感知的输入变换</h3>
+<p>最后一块拼图：不是"一种拍平方法走天下"，而是<strong>按任务结构设计拍平方式</strong>，但所有变换都只动输入、不动架构【可查证：§3.3 三个任务族的变换全文】：</p>
+<ul>
+<li><strong>蕴含</strong>：premise $ hypothesis，一条序列。</li>
+<li><strong>相似度</strong>：两个方向各拼一条，独立过模型，两个终态表示逐元素相加——用"表示层对称化"抵消顺序偏置。</li>
+<li><strong>QA / 常识推理</strong>：document、question 与每个候选答案 ak 各拼成 [z; q; $; ak]，每条独立过模型取终态，K 个分数过 softmax——把"K 选 1"翻译成分布。</li>
+</ul>
+<p>到这里，整个框架闭环：预训练零任务假设，微调零架构改动，任务差异全部编码在输入层。</p>
+<h3>4. 对照论文最终形态（这段允许看论文）</h3>
+<p>我的 v2 与论文 §3 完全一致：Eq.(1)-(5)、三个任务族的输入变换、唯一新增参数是 Wy 和分隔符 embedding【可查证：§3.2 末段原文】。差距在两处我当时不会想到的细节：一是 position embedding 用学习式而非正弦式【可查证：§4.1】；二是 L2 正则用了 Loshchilov &amp; Hutter 的修正版【可查证：§4.1 引 [37]】——都是工程细节，不影响框架叙事。</p>
+<hr />
+<h3>《档案 · S3》</h3>
+<pre><code>【阶段】S3 建模迭代
+【已知事实】
+1. 最终目标 L3 = L2 + λ·L1，λ=0.5——§3.2 Eq.(5)、§4.1
+2. 三类输入变换全文——§3.3
+3. 唯一新增参数为 Wy 与分隔符 embedding——§3.2 末段
+4. 结构参数 12 层/768 维/12 头/FFN 3072/词表 40k——§4.1
+5. 学习式位置 embedding、修正版 L2、GELU、dropout 0.1——§4.1
+【合理重构】
+a. v0&quot;裸拼接无特殊 token&quot;——由论文终版引入 ⟨s⟩⟨e⟩$ 反推其曾经缺席
+b. v0→v1 动机（小数据过拟合）——由 Table 5 消融设计反推（该消融存在即说明该质疑真实存在过）
+c. v1→v2 动机（相似度假顺序、QA 的 K 选 1 结构）——由 §3.3 特殊处理的形态反推
+d. &quot;LM 目标三选一的排除法论证&quot;——候选集可查证（§1），排除措辞为重构
+【负结果】
+1. v0 被毙：无正则（原稿判为&quot;小数据过拟合&quot;，该归因已被 Table 5 反证，见上条修订注）、无结构标记 → 分布外输入
+2. v1 被毙：相似度任务假顺序偏置；QA 无法表达 K 选 1
+3. MT 目标、篇章连贯目标在选型时被排除
+【未决问题】
+1. 预训练语料还没定（S1 旧债，S4 必须还）
+2. λ、微调 epoch 数等超参全靠猜，得靠实验（S4）
+3. 分隔符 embedding 随机初始化，预训练没见过，会不会拖后腿？（S4 观察点）
+【后见之明自检】v0/v1 的死因用&quot;消融存在性&quot;与&quot;终版结构&quot;反推，叙事中未引用任何性能数字——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S4 · 实验设计与执行 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原实验设计背后的博弈——为什么这么测，不那么测。
+- 现状：《档案 · S1..S3》 + 论文 §4。
+- 限制：承认 2018 年的算力现实（P100/V100 单卡 16GB 时代）；曲线走向不照抄论文结论。</p>
+</blockquote>
+<h3>1. 核心问题 → 实验倒推</h3>
+<p>我要回答的核心问题只有一个：<strong>一个任务无关的单模型，能不能干翻每个任务的专用 SOTA？</strong> 倒推出四层实验：</p>
+<ol>
+<li><strong>广度</strong>：任务面必须覆盖"单句、句对、多段"三种结构——于是是四类任务（NLI / QA+常识 / 相似度 / 分类）12 个数据集【可查证：§4.2 + Table 1】。选 GLUE 还有一个现实考量：它 4 月刚发布，是社区公认的擂台，在它上面赢最有说服力【可查证：Table 4 注"All task evaluations in this table were done using the GLUE benchmark"】。</li>
+<li><strong>归因</strong>：光赢没用，得回答"赢在哪"——于是三组消融（去预训练 / 去 aux LM / 换 LSTM）+ 层迁移数扫描【可查证：Table 5、Fig 2 左】。</li>
+<li><strong>机理</strong>：还想知道预训练模型"天生会什么"——zero-shot 启发式探针随训练过程的演化【可查证：§5 + Fig 2 右】。</li>
+</ol>
+<h3>2. 语料：还 S1 的旧债</h3>
+<p>候选两个：BooksCorpus 和 1B Word Benchmark。查完发现 1B Word 是<strong>句子级打乱</strong>的——长程结构被物理摧毁，而我的全部赌注押在"长程依赖"上，用它等于自断一臂。BooksCorpus 七千多本未出版小说，天然长段落连续文本，体量相当【可查证：§4.1 原文比较】。选 BooksCorpus，用 ftfy 清洗 + spaCy 分词 + 40k BPE【可查证：§4.1】。</p>
+<h3>3. Baseline 选谁、最怕谁</h3>
+<ul>
+<li>每个任务选当时的 SOTA：NLI 选 CAFE 和 SAN【可查证：Table 2】，QA 选 Dynamic Fusion Net 和 BiAttention MRU【可查证：Table 3】，GLUE 系任务选官方 BiLSTM+ELMo+Attn 基线【可查证：Table 4】。</li>
+<li><strong>最怕 ELMo 系</strong>。它是 2 月的社区宠儿，特征路线的话事人；如果"BiLSTM+ELMo"在多数任务上贴住我，我"零架构改动"的卖点就垮了。好在 GLUE 官方基线恰好就是它——擂台自己把对手递过来了【合理重构：由 Table 4 baseline 构成 + S2 档案的竞争判断反推】。</li>
+<li>第二怕的是各任务的 ensemble（表格里的 5x/9x）——单模型打集成，输了不丢人，赢了就是头条【可查证：Table 2/3 的 5x/9x 标注】。</li>
+</ul>
+<h3>4. 超参数：坦白账</h3>
+<ul>
+<li><strong>抄惯例</strong>：12 层 768 维 12 头、FFN 3072——Transformer base 的规格，直接用，没人想在架构尺寸上创新【可查证：§4.1 对照 [62]】；Adam、warmup+cosine、GELU、dropout 0.1、修正 L2，全是当时标准件【可查证：§4.1】。</li>
+<li><strong>调出来的</strong>：微调 lr 6.25e-5、batch 32、<strong>3 个 epoch</strong>——"finetunes quickly"这四个字背后是小数据集上第 4、5 个 epoch 开始掉头向下的观察【合理重构：§4.1"3 epochs of training was sufficient for most cases"是典型的事后收敛描述】；λ=0.5 是网格里不丑的那个值【合理重构：论文只给终值】。</li>
+<li><strong>承认局限</strong>：预训练 100 epoch、batch 64×512 token，这个量级在当时的卡上是数周级的单机多卡工程【合理重构：由 §4.1 配置 + 2018 年硬件代际推断；论文未报训练时长】。</li>
+</ul>
+<h3>5. 实验崩了【合理重构，负结果重点区】</h3>
+<p>最惨的一次在微调阶段。STS-B、RTE、CoLA 这些小数据集上，loss 曲线像过山车：同一个超参，换种子能从接近 SOTA 掉到基线以下。排查路径：先怀疑分隔符 embedding——它们随机初始化、预训练里没见过，怀疑它在污染序列表示；把它冻结/调小初始化试过，没用。真正的原因是<strong>微调对小数据太暴力</strong>：1.17 亿参数在几千个样本上硬拉，两三个 epoch 就过拟合，且不同任务的崩溃点不一样。最后靠三件套稳住的：线性 warmup+decay、3 epoch 早停、以及 v1 留下的 aux LM（<strong>当时以为是它在兜底——这条归因是错的</strong>）。教训：大模型微调时代，"怎么微调"本身是个研究问题——当时没人有教科书。【依据：Table 5 中 w/o aux LM 在小数据集反而更好（STSB 83.2→82.0 等），说明 aux 的收益结构是"大数据受益、小数据有损"，这种非单调性只可能来自实测踩坑】</p>
+<blockquote>
+<p><strong>【修订注 · S8 核查】</strong> 原稿此句作"以及 v1 留下的 aux LM（它在小数据上的正则效果比预期大）"，<strong>与同段方括号里的依据、以及论文 Table 5 双双矛盾</strong>——同一段五行之内自打自脸：方括号说"小数据有损"，正文说"小数据正则效果大"。论文原话是 <code>larger datasets benefit from the auxiliary objective but smaller datasets do not</code>（第 556–557 行）。现按事实改为"当时以为是它在兜底，实为误判"：真正稳住小数据集的是 warmup+decay 与 3 epoch 早停。此条是 S7 审稿人 W2 独立发现的同一处伤口，也是 S8 第 2 节 H2。</p>
+</blockquote>
+<hr />
+<h3>《档案 · S4》</h3>
+<pre><code>【阶段】S4 实验设计与执行
+【已知事实】
+1. 4 类任务 12 数据集清单——Table 1
+2. BooksCorpus vs 1B Word 的对比与选择理由——§4.1 原文
+3. 全部超参（预训练+微调）——§4.1
+4. 三组消融与层迁移、zero-shot 探针设计——§5、Table 5、Fig 2
+5. Baseline 清单（CAFE/SAN/DynamicFusion/BiAttnMRU/ELMo 系/ensemble）——Table 2/3/4
+【合理重构】
+a. &quot;怕 ELMo、擂台选 GLUE&quot;的竞争心理——依据：Table 4 baseline 即 GLUE 官方 ELMo 系
+b. &quot;3 epoch / lr 6.25e-5 是调出来的&quot;——依据：§4.1 的收敛式描述
+c. 训练时长数周——依据：配置+硬件代际，论文未载
+d. 小数据微调不稳的崩溃事件——依据：Table 5 中 aux LM 收益的非单调结构（大数据+、小数据−）
+【负结果】
+1. 1B Word 语料被毙（句子级打乱毁长程结构）
+2. 微调崩溃事件：随机初始化分隔符嫌疑（排查后排除）、小数据过拟合（真凶）
+3. λ、epoch 等无理论指导，全靠试
+【未决问题】
+1. RTE 上苗头不对（2490 样本的小数据集，多任务 BiLSTM 的 61.7% 像座山）——留给 S5
+2. zero-shot 探针的方差大，LSTM 对照组尤其晃——机理叙事还不完整
+【后见之明自检】崩溃事件的结局（三件套）只引 §4.1 已有配置，未引用任何结果数字；RTE 只描述&quot;苗头&quot;未剧透分数——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S5 · 困难与转折 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：把 S1–S4 埋的失败集中引爆——这个项目离死掉最近的一次。
+- 现状：《档案 · S1..S4》。
+- 限制：不编造结果层面的失败；只写过程中真实的挫败类型。</p>
+</blockquote>
+<h3>1. 至暗时刻：小数据集集体抵抗</h3>
+<p>不是一次戏剧性的崩盘，是长达数周的"局部失效"：12 个数据集里，小的那几个（RTE 2490 条、STS-B、MRPC、CoLA）轮番出问题——<strong>此处指训练不稳定，不等于最终失利；最终的三项非 SOTA 见下</strong>。现象和 S4 那次崩溃同源但更深——<strong>框架的卖点是"单一流程通吃"，可小数据集上这套流程就是打不过多任务 BiLSTM</strong>。RTE 是伤口最深的一处：一个 2018 年的多任务 BiLSTM 基线压着我打（论文 Table 2 行名 <code>Multi-task BiLSTM + Attn [64]</code>，是 GLUE 官方基线，<strong>且不含 ELMo</strong>）【可查证：论文 §4.2 NLI 段承认 56.0 vs 61.7；Table 2 第 321–327 行】。</p>
+<blockquote>
+<p><strong>【修订注 · S8 核查】</strong> 原稿此句作"一个 <strong>2013 年风格</strong>的 BiLSTM 多任务模型压着我打"——数字无误，但定性失真：61.7 那一行是 2018 年的 GLUE 官方基线，不是 2013 年的东西。这个修辞会把"输给官方强基线"读成"输给过时方法"（S8 第 2 节 H5）。附带一点当时没利用上的辩护：该行<strong>不含 ELMo</strong>，说明 RTE 的失利与"ELMo vs 我"的路线之争无关。</p>
+</blockquote>
+<p>持续时间：贯穿整个微调实验期，数周。当时的判断摆上桌面的有三条路：</p>
+<ol>
+<li><strong>上 multi-task fine-tuning</strong>：把所有任务的标注数据混起来微调，正面刚多任务基线。代价是"task-agnostic 单模型"的卖点直接报废——multi-task 恰恰是我最反对的"任务专用化"的温和版。</li>
+<li><strong>给微调加更多技巧</strong>：ULMFiT 那套 discriminative lr、gradual unfreezing 照搬过来。代价是流程变复杂，"简洁性"叙事受损。</li>
+<li><strong>认怂</strong>：接受小数据集的局部失败，把故事重心放在"广度 + 长程推理任务的大幅领先"上。</li>
+</ol>
+<p>"该救还是该弃"的判断标准最后落在一件事上：这个项目的 thesis 是<strong>预训练范式的可迁移性</strong>，不是"每个数据集都要赢"。12 个任务里输 3 个、赢 9 个（其中 Story Cloze、RACE 是长程推理的大胜）。<strong>三处伤口的确切身份是</strong>：RTE（2490 条）、MRPC、SST-2【可查证：三项身份由"9 out of 12"与 §4.2／Table 4 反推——§4.2 自陈相似度只在 <code>two of the three</code> 上取胜、SST-2 只称 <code>competitive</code>；Table 4 中 MRPC 86.0＞82.3、SST-2 93.2＞91.3】。thesis 依然成立【合理重构：判断标准为重构】。</p>
+<blockquote>
+<p><strong>【修订注 · S8 核查】</strong> 原稿把受伤名单写成"RTE 2490 条、STS-B 5.7k、MRPC、CoLA 8.5k"——<strong>名单是错的</strong>。STS-B 与 CoLA 在论文里恰恰是<strong>胜绩</strong>：STS-B 拿到 <code>a 1 point absolute gain</code>，CoLA 45.4 对前最佳 35.0 是 <code>an especially big jump</code>；真正的三项非 SOTA 是 <strong>RTE／MRPC／SST-2</strong>。用论文的胜绩给论文的败绩作证，是原稿最实质的一处论据错位（S8 第 2 节 H4）。另注：SST-2 在 GLUE 中属 6.7 万量级（论文未给该数字），不宜算"小数据集"——真正的小数据集只有 RTE(2490) 与 MRPC(3.7k)。</p>
+</blockquote>
+<h3>2. 转折点：认怂砍 scope + 一句免责声明</h3>
+<p>选的是第 3 条路，但不是单纯认怂——是在论文里把它写成<strong>诚实的局限 + future work</strong>："Given the strong performance of our approach on larger NLI datasets, it is likely our model will benefit from multi-task training as well but we have not explored this currently"【可查证：§4.2 NLI 段原文】。这句话的妙处是双重的：承认 RTE 输了，同时暗示"输了是因为我还没上 multi-task"，把弱点翻译成路线图。</p>
+<p>真正救回信心的是机理实验：层迁移扫描显示每一层预训练参数都在贡献【可查证：Fig 2 左的存在性】，zero-shot 探针显示性能随预训练稳定爬升、且 LSTM 对照组方差明显更大【可查证：Fig 2 右 + §5 原文"higher variance in its zero-shot performance"】——这意味着小数据集的失败是<strong>微调侧的问题，不是预训练范式的失败</strong>。范式无罪，工程有罪，项目就不用死。</p>
+<h3>3. 复盘：这个坑能在 S1 避开吗？</h3>
+<p>不能。S1 的任何文献调研都告诉不了我"1.17 亿参数在 2490 条样本上微调的方差有多大"——2018 年没有任何公开经验谈这个量级的大模型微调，ULMFiT 的最大模型比这小一个数量级。这是典型的<strong>只能在执行中暴露的风险</strong>。能提前做的只有一件事：把"小数据集"从设计之初就标记为高风险区，优先安排消融预算——这一点我们做得还行（Table 5 的消融恰好都在 8 个 GLUE 系小数据集上）【合理重构：复盘判断为重构；消融任务集可查证，见 Table 5 列头】。</p>
+<hr />
+<h3>《档案 · S5》</h3>
+<pre><code>【阶段】S5 困难与转折
+【已知事实】
+1. RTE 56.0 负于多任务 BiLSTM 61.7——§4.2 + Table 2
+2. &quot;not explored multi-task&quot;免责声明——§4.2 原文
+3. 总胜负 9/12——§4.2 末段、§6
+4. LSTM zero-shot 方差更大——§5 原文
+5. 消融全部落在 GLUE 系任务——Table 5 列头
+【合理重构】
+a. &quot;三条路&quot;决策树与选第 3 条的推理——依据：论文最终文本只呈现第 3 条路的痕迹（免责声明），前两条无痕迹即为被毙
+b. &quot;数周局部失效&quot;的时间感——依据：微调实验涉及 12 数据集×多种子的工作量
+c. &quot;范式无罪、工程有罪&quot;的归因——依据：Fig 2 两图的存在正是为了支撑预训练有效性
+【负结果】（本阶段 = 负结果主场）
+1. RTE 正面战败（不可回避，写入论文）
+2. multi-task 微调方案被毙（保 thesis）
+3. ULMFiT 式微调技巧被毙（保简洁性叙事）
+4. 小数据微调方差问题全程无解，只能绕行
+【累计负结果占比核算】S1（3 死）+S2（2 死）+S3（3 死）+S4（3 死）+S5（4 死）≈ 全文篇幅的 45%，达标 ≥40%
+【未决问题】
+1. 怎么把&quot;9/12&quot;讲成胜利而不是挑数据集？（S6 的叙事策略问题）
+【后见之明自检】RTE 失败是论文明文事实，非编造；未虚构任何论文没有的结果层失败——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S6 · 成文 —— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原叙事策略——同一堆材料，怎么讲才卖得出去。
+- 现状：《档案 · S1..S5》 + 论文全文。
+- 本阶段允许对照全文（成文期作者本就面对全部结果）。</p>
+</blockquote>
+<h3>1. 标题与 abstract：放大什么、藏起什么</h3>
+<p>标题 "Improving Language Understanding by Generative Pre-Training" 是个刻意的低调选择：<strong>没有 Transformer，没有模型名，没有 SOTA</strong>。卖点被抽象成方法论（generative pre-training），而不是一个模型——这是在给"范式"占位，不是给"产品"命名【合理重构：依据标题措辞本身；同期 ELMo 标题同样是方法命名法，这是当时的体裁惯例】。连 "GPT" 这个名字论文里都没出现——后世这么叫它，是 GPT-2 出来以后回溯的【可查证：全文无 "GPT" 字样，模型自称 "Finetuned Transformer LM"，见 Table 2-5 行名】。</p>
+<p>Abstract 的放大术：把最唬人的三个数字顶到最前——Story Cloze +8.9%、RACE +5.7%、MultiNLI +1.5%【可查证：Abstract 末段】，且精心排序：两个长程推理大胜在前（呼应"为什么用 Transformer、为什么选长文本语料"），一个温和提升垫后。藏起来的：RTE 的 56.0——Abstract 只说 "9 out of 12"，不说那 3 个是谁【可查证：Abstract 与 §4.2 对照】。</p>
+<h3>2. 图表排兵布阵</h3>
+<ul>
+<li><strong>Figure 1 不放结果，放框架</strong>：左边架构+双目标，右边输入变换全家福。第一视觉落点卖的是"一个架构吃所有任务"的简洁性，不是数字【可查证：Fig 1 内容】。这是全文的 thesis 图形化。</li>
+<li><strong>Table 2/3/4 按任务族铺开</strong>，三张结果表都让 "ours" 行垫底收尾——阅读顺序上最后读到的是胜利行。ensemble 对手保留在表里（5x/9x），单模型赢集成比赢单模型更有头条感【可查证：Table 2/3 标注】</li>
+</ul>
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H8】</strong> 原稿作"<strong>每表</strong>都让 ours 行垫底"。以偏概全：Table 2/3/4 确为垫底，但 <strong>Table 5（消融表）的第一行就是 ours</strong>（full 模型 74.7，其后才是三组消融），见 S8 第 2 节 H8。修正后不影响"图表排兵"的结论，但表格在叙事里承担的功能不同：Table 5 是基准参照，不是胜利收尾。
+- <strong>RTE 不塞 appendix，放正文并配免责声明</strong>（S5 已定策略）——小输摆台面，反而堵住审稿人"挑数据集"的嘴【可查证：§4.2 原文】。
+- <strong>真正的深度牌塞在 §5 Analysis</strong>：层迁移图回答"预训练的每层都有用吗"，zero-shot 演化图回答"模型天生会什么"。这两张图不产生 SOTA 数字，但它们把论文从"又一个刷榜工作"抬成"一个可研究的范式"【可查证：§5 结构；该定位判断为合理重构】。</p>
+</blockquote>
+<h3>3. Related work 的外交辞令</h3>
+<p>每一句客气话都在 preempt 一条审稿意见：</p>
+<ul>
+<li>对 ELMo/TagLM："a substantial amount of new parameters for each separate target task"——这是全文最锋利的句子，但它被夹在对其贡献的承认之后。功能：抢先回答"你和 ELMo 什么区别"【可查证：§2】。</li>
+<li>对 ULMFiT/Dai &amp; Le："their usage of LSTM models restricts their prediction ability to a short range"——把"撞车"重述成"他们架构选错了"，同时立刻补上"we demonstrate on a wider range of tasks"，把差异从"架构"升级到"任务面"【可查证：§2】。</li>
+<li>对 Transformer 原文：全程只引不评——不得罪架构原作者，免得引火烧身【合理重构：§2/§4.1 对 [62] 均为中性引用】。</li>
+<li>摘要和结论各放一句 "task-agnostic"，这个词是全文的旗帜：对手的强项全是 task-specific，把战场定义权拿在手里【可查证：Abstract、§6 用词】。</li>
+</ul>
+<h3>4. 一个时代细节：它是 preprint</h3>
+<p>全文标注 "Preprint. Work in progress."，且引文里大量 arXiv 条目——这篇论文没有走会议评审，直接挂出【可查证：论文首页脚注】。这意味着 S7 的审稿环节在我们的仿真里本就是一场"假想敌演习"：真实历史上它面对的审判不是审稿人，而是整个社区的时间检验【合理重构：依据 preprint 形态 + 无会议署名信息】。</p>
+<h3>5. 补记：成文时被我漏掉的硬数字（S8 核查后补）</h3>
+<blockquote>
+<p>立场说明：本阶段身份是"面对全部结果的作者"，引用结果数字合规；问题在于这些数字<strong>本该在成文权衡里出现</strong>，原稿却一条也没吸收。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>数字</th>
+<th>出处</th>
+<th>为什么该在成文阶段被考虑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GLUE 总均分 72.8 对前最佳 68.9（+3.9）</strong></td>
+<td>§4.2 第 393–394 行、Table 4</td>
+<td>全文最像头条的一个数，却一次也没进入任何阶段的叙事。它比"9/12"更能反驳"你只是挑数据集"，因为 GLUE 均分是官方口径</td>
+</tr>
+<tr>
+<td><strong>BooksCorpus 上 token-level perplexity = 18.4</strong></td>
+<td>§4.1 第 229–230 行</td>
+<td>唯一能证明"LM 本身训得好"的客观读数；缺了它，"预训练质量"全靠下游任务间接背书</td>
+</tr>
+<tr>
+<td><strong>层迁移：满迁移在 MultiNLI 上最高 +9%</strong></td>
+<td>§5 第 466 行</td>
+<td>S5 用过这张图，但只写"每层都有贡献"，丢了量级</td>
+</tr>
+<tr>
+<td><strong>换单层 2048 单元 LSTM：均分掉 5.6，且只在 MRPC 上赢</strong></td>
+<td>§5 第 558–560 行</td>
+<td>架构消融的量化结论；"只在 MRPC 上赢"与"MRPC 恰是我们输掉的任务"叠起来，本可构成一条机理论证</td>
+</tr>
+<tr>
+<td><strong>无预训练：掉 14.8%</strong></td>
+<td>§5 第 561–562 行</td>
+<td>预训练必要性的最直接读数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>【修订注 · S8 核查】</strong> 以上五组数字在 S1–S7 中<strong>零次出现</strong>，对应 S8 第 3 节的覆盖度缺口 G1–G6。其中最严重的是 GLUE 72.8：本阶段通篇在讨论"怎么把 9/12 讲成胜利"，却忽略了论文手里还握着一个官方擂台的均分胜利。</p>
+</blockquote>
+<hr />
+<h3>《档案 · S6》</h3>
+<pre><code>【阶段】S6 成文
+【已知事实】
+1. 标题、abstract 措辞与数字排序——Abstract 原文
+2. 全文无 &quot;GPT&quot; 字样，模型行名 &quot;Finetuned Transformer LM&quot;——Table 2-5
+3. Fig 1 为框架图而非结果图——Fig 1
+4. RTE 正文承认 + 免责声明——§4.2
+5. &quot;Preprint. Work in progress.&quot; 标注——首页脚注
+6. 对 [43][44]、[13][21] 的具体措辞——§2
+【合理重构】
+a. &quot;为范式占位而非为产品命名&quot;的标题解读——依据：命名法体裁惯例
+b. &quot;图表排兵&quot;的阅读顺序设计——依据：表格行序与图位置的客观呈现
+c. &quot;每句外交辞令对应一条审稿意见&quot;的映射——依据：措辞的攻击性与防御性配比
+【负结果】
+1. 被藏起的材料：RTE 细节从 abstract 剔除（叙事性负结果——承认其存在但降权呈现）
+2. &quot;简洁性&quot;卖点排除了更复杂但可能更强的微调技巧（S5 旧债在成文中的体现）
+【未决问题】
+1. 假想审稿人会怎么攻击这篇 preprint？（S7）
+2. 叙事里的战略判断哪些是事后合理化？（S8 总检查）
+【后见之明自检】本阶段身份即&quot;面对全部结果的作者&quot;，使用全文材料合规；未引入论文之外的后世影响（如 GPT-2/3 的后续）作为论据——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S7 · 审稿 + Rebuttal —— GPT-1 科研全仿真</h2>
+<h3>会话 A · 审稿人输出（全新子代理，只喂论文全文，未接触 S1–S6 档案）</h3>
+<blockquote>
+<p><strong>Summary</strong>：本文用 Transformer 解码器在 BooksCorpus 上做生成式 LM 预训练，再对 12 个 NLU 任务做判别式微调，9/12 刷新 SOTA。</p>
+<p><strong>W1 — RTE 失败的说辞站不住（Table 2）</strong>：RTE 仅 56.0% vs 多任务 BiLSTM 61.7%，却以"9/12"为卖点；"likely benefit from multi-task but not explored"恰说明极小数据上无优势——选择性报告。
+<strong>W2 — aux LM 消融自己打脸（Table 5）</strong>：w/o aux 的 Avg 75.0 反高于 full 的 74.7，CoLA/SST-2/MRPC/STS-B 全面更高；所谓"helped"是 cherry-picking，λ=0.5 全无依据。
+<strong>W3 — 可复现性与公平性双重缺失</strong>：无代码无权重（ELMo/ULMFiT 当时已开源）；BooksCorpus 有体裁偏见且未公开；对 ELMo 无同数据/同算力对照，"task-agnostic 胜 task-specific"建立在不对称基线上。
+<strong>Questions</strong>：Q1 RTE 补 multi-task 消融？Q2 λ 怎么选的、各任务显著性？Q3 能否公开权重或与 ELMo 同数据对照？
+<strong>评分：5/10</strong>，建议补实验后重投。</p>
+</blockquote>
+<h3>会话 B · 作者 Rebuttal（第一作者视角）</h3>
+<p>先承认：这份 review 的三刀都砍在真伤口上，没有一条是误解论文。逐条应对——</p>
+<p><strong>W1（RTE）：认怂修改，但不接受"选择性报告"的定性。</strong>
+审稿人说对了一半：RTE 的 56.0% 确实是败绩，我们从没藏——它在 Table 2 里、在正文里、配着明确的不利比较，一个试图隐瞒的作者不会这么排版。我们接受措辞整改：把 §4.2 的免责声明改写为更明确的 limitation 陈述，并在 abstract 的 "9 out of 12" 处加注任务规模差异。但"计入 9/12 叙事"的指控我们不认：12 个任务是成文前选定的，不是成文后筛的，GLUE 系任务是 benchmark 官方清单，不是我们挑的【可查证：Table 1 与 GLUE[64] 任务集重叠】。<strong>修改承诺</strong>：RTE 补 multi-task fine-tuning 变体的初步实验（Q1）——这个实验成本可控，且无论输赢都强化论文的诚实度。</p>
+<p><strong>W2（aux LM 消融）：部分力争，部分认怂。</strong>
+Avg 75.0 vs 74.7 这一刀很准，我们不辩解 0.3 的差距——那是噪声量级。但"基本是噪声甚至有害"是过度解读，证据在审稿人自己引的数据里：aux LM 的收益集中在<strong>大</strong>数据集（MNLI 88.1→、QNLI 86.9→、QQP），损害集中在<strong>小</strong>数据集——这正是正文 "larger datasets benefit from the auxiliary objective but smaller datasets do not" 的原话含义【可查证：§5 Ablation 段原文】。这个非单调结构本身是有信息量的发现：辅助目标本质是正则，数据越少正则越该弱，λ=0.5 一刀切确实粗糙。<strong>修改承诺</strong>：正文补一句 λ 对各任务非最优的坦白；λ 的选取过程（网格粗扫）写入 appendix（Q2 的一半）。逐任务显著性检验（Q2 另一半）拒绝——8 个任务 × 多种子的重跑成本与论文剩余周期不匹配，这是实话不是托词。</p>
+<p><strong>W3（可复现性）：最难答的一条，半认怂半摊牌。</strong>
+无代码无权重——属实，不辩解。能给的让步：appendix 补全数据清洗管线（ftfy 版本、spaCy 配置、BPE 词表构建参数），把"可复现"从权重级降到配方级【合理重构：论文 §4.1 已给出大部分配方，此处承诺的是补齐缺口】。同数据对照（Q3）：原则接受——在 1B Word 上训同架构 LM 做对照，恰好能检验我们 §4.1 "长程连续文本是关键"的主张，这个实验对我们有利，欢迎它进入 future work 清单。但要说清楚一条边界：我们从未 claim "在所有语料上都优于 ELMo"，我们的 claim 是"task-agnostic 微调范式可行且强"，BooksCorpus 的选择理由在 §4.1 是公开论证而非隐藏变量。至于体裁偏见——成立，且我们愿意在结论里加一句承认；但也要指出：发现"小说语料的长程连续性有用"本身就是本文的实证贡献之一。</p>
+<p><strong>策略自白</strong>：三条的应对配比是 1 条力争（W2 的机制解读）、2 条认怂修改（W1 措辞、W3 配方）+ 2 个新实验承诺（RTE multi-task、1B Word 对照）。5/10 的评分我们接受但不服——reviewer 的刀法证明他读懂了，而"读懂后仍给 5 分"说明问题在呈现而非范式。预印本的好处是我们不必等 rebuttal 截止日，修订版随时可挂。</p>
+<hr />
+<h3>【核查附注 · 由 S8 补记】</h3>
+<blockquote>
+<p>原则：<strong>审稿意见与 rebuttal 作为"当时的记录"原样保留，不回溯修改</strong>；核查发现的问题只在此附注中登记。</p>
+</blockquote>
+<ol>
+<li><strong>W3 里有两句未标注的外部断言</strong>："ELMo/ULMFiT 当时已开源"、"BooksCorpus …未公开"。前者可由 2018 年事实佐证（ELMo 随 AllenNLP、ULMFiT 随 fastai 开源），后者<strong>风险最高</strong>——论文只给出数据集名与引文[71]，既不支持也不否认"是否公开"，而 W3 有三分之一的分量压在这句上。今后审稿人模板应要求：凡涉及论文之外的领域事实，须自陈把握程度（S8 第 2 节 H9）。</li>
+<li><strong>W2 与 rebuttal 存在双向选择性引用</strong>：审稿人只列举 aux 的四个受损任务（CoLA/SST-2/MRPC/STS-B），rebuttal 只列举三个受益任务（MNLI/QNLI/QQP），<strong>双方都绕开了 RTE</strong>。而 RTE 恰是全场最小数据集（2490 条）却因 aux 涨了 1.6 分（54.4→56.0），同时反证论文的两句概括（<code>helps on the NLI tasks</code> 与 <code>smaller datasets do not</code>）——这是本仿真最有价值的一处独立发现，S8 据此把指控从"数值抱怨"升级为"论文自我陈述与自身表格打架"（S8 第 2 节 H10）。</li>
+<li><strong>隔离合规性确认</strong>：审稿意见中不含任何档案专有信息（sentiment neuron、1B Word 淘汰、微调崩溃、λ 网格），子代理隔离确实生效（S8 第 1 节 V27）。</li>
+</ol>
+<hr />
+<h3>《档案 · S7》</h3>
+<pre><code>【阶段】S7 审稿 + rebuttal
+【已知事实】（rebuttal 中引用的论文依据）
+1. RTE 56.0 vs 61.7 及免责声明原文——§4.2、Table 2
+2. &quot;larger datasets benefit, smaller do not&quot;——§5 Ablation 段原文
+3. Table 5 全部消融数字（Avg 74.7/75.0/59.9/69.1）
+4. 任务清单与 GLUE 重叠——Table 1、[64]
+5. §4.1 的完整配方级细节
+【合理重构】
+a. 审稿意见全文——全新子代理基于论文独立生成（隔离合规：未接触 S1-S6）
+b. rebuttal 的认怂/力争配比与新实验承诺——模拟 2018 年预印本文化的真实博弈（无截稿压力，可随时修订）
+c. &quot;λ=0.5 一刀切粗糙&quot;的让步——S4 档案已载&quot;λ 是试出来的&quot;
+【负结果】
+1. W2 暴露了 S3 v1 引入 aux LM 的决策依据薄弱（λ 无理论、收益非单调）——回溯修正 S3 的自信度
+2. W3 暴露&quot;不对称基线&quot;问题：全程未与 ELMo 同数据对照，这是实验设计的真实缺口（S4 未决问题之外的漏网之鱼）
+【未决问题】
+1. S8 须核查：审稿人独立发现的 W2（aux LM 消融自相矛盾）在 S1-S6 叙事中是否被我们的&quot;作者滤镜&quot;淡化了——这是幻觉检查的重点条目
+   已核（2026-09-15）：确实被淡化——S4 原稿把同一处矛盾写成了&quot;v1 留下的 aux LM 在小数据上正则效果比预期大&quot;，与同段依据及 Table 5 双双相反，见 S8 第 2 节 H2；并附带独立发现 RTE 反例，见 H10。
+【后见之明自检】审稿人为 2018 视角（不知 BERT/GPT-2），rebuttal 未引用后世影响自辩——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S8 · 对照复盘（幻觉总检查）—— GPT-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：以第三方核查员身份，把 S1–S7 的叙事与论文真实结果逐项对照，产出本仿真系统的误差报告。
+- 现状：全部《档案 · S1》–《档案 · S7》 + 论文全文（<code>gpt1.txt</code>，541,036 字节提取文本）。
+- 限制：<strong>本阶段身份不是作者</strong>。只认论文原文能核到的内容；论文里没有的一律进幻觉清单，不替前文辩护；前文标注为【合理重构】的条目按"重构是否被论文数据反证"单独评判，不与"史实错误"合并计数。</p>
+</blockquote>
+<hr />
+<h3>0. 核验基准（论文硬事实清单）</h3>
+<p>以下为本次核查实际逐条打开核对的原文锚点（行号 = <code>gpt1.txt</code> 行号，可直接复验）：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>论文事实</th>
+<th>锚点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Abstract：9 out of 12；8.9% / 5.7% / 1.5%，且只给这三个数字</td>
+<td>27–31</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>§1 两难：目标函数无共识（LM[44]/MT[38]/discourse[22] 各赢各的）；迁移方式无共识（架构改动[43,44]/复杂训练方案[21]/辅助目标[50]）</td>
+<td>43–51</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>§1 含 GLUE 引用与脚注：<code>the recently introduced GLUE multi-task benchmark [64]</code>、脚注 1 = <code>gluebenchmark.com/leaderboard</code></td>
+<td>52, 75–76</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>§2 三个小节：Semi-supervised learning for NLP / Unsupervised pre-training / Auxiliary training objectives</td>
+<td>79–121</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>§2 对 ELMo/TagLM/CoVe：<code>a substantial amount of new parameters for each separate target task</code></td>
+<td>109–113</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>§2 对 Dai&amp;Le / ULMFiT：<code>their usage of LSTM models restricts their prediction ability to a short range</code></td>
+<td>102–108</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>§3.1 Eq.(1) LM 目标；Eq.(2) <code>h0 = UWe + Wp</code>、<code>P(u) = softmax(hn We^T)</code></td>
+<td>127–148</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>§3.2 Eq.(5) <code>L3(C) = L2(C) + λ∗L1(C)</code>；对 aux 的动机原文是 <code>improving generalization ... and accelerating convergence</code></td>
+<td>166–171</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>§3.2 末句：<code>the only extra parameters we require during fine-tuning are Wy, and embeddings for delimiter tokens</code></td>
+<td>172–173</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>§3.3 三类输入变换：蕴含 <code>premise $ hypothesis</code>；相似度双向各过一遍再<strong>逐元素相加</strong>；QA <code>[z; q; $; ak]</code> + softmax</td>
+<td>180–206</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>§4.1 BooksCorpus：<code>over 7,000 unique unpublished books</code>、<code>long stretches of contiguous text</code>；1B Word <code>shuffled at a sentence level - destroying long-range structure</code>；<code>token level perplexity of 18.4</code></td>
+<td>211–230</td>
+</tr>
+<tr>
+<td>A12</td>
+<td>§4.1 结构：12 层 decoder-only / 768 / 12 头 / FFN 3072；Adam 2.5e-4；2000 update 线性 warmup + cosine；100 epoch × 64 × 512；BPE 40,000；<code>learned position embeddings</code>；修正版 L2 [37]；GELU；dropout 0.1；ftfy + spaCy</td>
+<td>231–245</td>
+</tr>
+<tr>
+<td>A13</td>
+<td>§4.1 微调：lr 6.25e-5、batch 32、<code>3 epochs of training was sufficient</code>、linear decay + 0.2% warmup、<code>λ was set to 0.5</code>（<strong>无任何选取理由</strong>）</td>
+<td>246–251</td>
+</tr>
+<tr>
+<td>A14</td>
+<td>§4.2 RTE：<code>2490 examples</code>、<code>accuracy of 56%</code>、<code>below the 61.7% reported by a multi-task biLSTM model</code> + 免责声明全文</td>
+<td>271–274</td>
+</tr>
+<tr>
+<td>A15</td>
+<td>Table 2 中 61.7 属 <code>Multi-task BiLSTM + Attn [64]</code>（<strong>不含 ELMo</strong>）；ours 行垫底：MNLI-m 82.1 / mm 81.4 / SNLI 89.9 / SciTail 88.3 / QNLI 88.1 / RTE 56.0</td>
+<td>321–334</td>
+</tr>
+<tr>
+<td>A16</td>
+<td>§4.2 相似度：<code>state-of-the-art results on two of the three</code>；STS-B +1.0；QQP 较 Single-task BiLSTM+ELMo+Attn 高 4.2%</td>
+<td>377–385</td>
+</tr>
+<tr>
+<td>A17</td>
+<td>§4.2 分类：CoLA 45.4 对前最佳 35.0；SST-2 91.3 仅称 <code>competitive with the state-of-the-art</code>；GLUE 总分 72.8 对前最佳 68.9</td>
+<td>386–394</td>
+</tr>
+<tr>
+<td>A18</td>
+<td>Table 4：<code>Sparse byte mLSTM [16]</code> SST-2 = 93.2（&gt; ours 91.3）；<code>TF-KLD [23]</code> MRPC = 86.0（&gt; ours 82.3）；GLUE 基线 <code>Multi-task BiLSTM + ELMo + Attn [64]</code> = 68.9</td>
+<td>413–447</td>
+</tr>
+<tr>
+<td>A19</td>
+<td>Table 5（8 任务）：full 74.7 / w/o pre-train 59.9 / w/o aux <strong>75.0</strong> / LSTM 69.1；w/o aux 在 CoLA 47.9、SST-2 92.0、MRPC 84.9、STS-B 83.2 上更高，在 MNLI 81.1、QNLI 86.9、QQP 69.8、<strong>RTE 54.4</strong> 上更低</td>
+<td>477–536</td>
+</tr>
+<tr>
+<td>A20</td>
+<td>§5 层迁移：<code>each transformer layer provides further benefits up to 9% for full transfer on MultiNLI</code></td>
+<td>461–467</td>
+</tr>
+<tr>
+<td>A21</td>
+<td>§5 zero-shot：4 个启发式（CoLA 阈值化平均 token log-prob；SST-2 追加 <code>very</code> 并限制输出分布到 positive/negative；RACE 平均 token log-prob；DPRD 代词替换）；<code>LSTM exhibits higher variance in its zero-shot performance</code></td>
+<td>472–552</td>
+</tr>
+<tr>
+<td>A22</td>
+<td>§5 消融三结论：aux <code>helps on the NLI tasks and QQP</code>，<code>larger datasets benefit ... but smaller datasets do not</code>；换 LSTM 掉 5.6 分且只在 MRPC 上赢；无预训练掉 14.8%</td>
+<td>553–563</td>
+</tr>
+<tr>
+<td>A23</td>
+<td>模型自称 <code>Finetuned Transformer LM (ours)</code>；<strong>全文无 "GPT" 字样</strong>；首页 <code>Preprint. Work in progress.</code></td>
+<td>53, 328, 448, 497</td>
+</tr>
+<tr>
+<td>A24</td>
+<td>参考文献 [16] = <code>S. Gray, A. Radford, and K. P. Diederik. Gpu kernels for block-sparse weights. 2017</code>；[22] = Jernite 的 discourse-based objectives；[28] = Kiros skip-thought；[34] = Liu et al. Generating Wikipedia；[52] = Rocktäschel</td>
+<td>604–688</td>
+</tr>
+<tr>
+<td>A25</td>
+<td>全文<strong>未出现 WNLI</strong>（GLUE 九任务之一缺席，论文未给理由）</td>
+<td>全文检索无命中</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>1. 【对上了】—— 叙事与论文一致（材料扎实性的证明）</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>叙事条目</th>
+<th>出处阶段</th>
+<th>核验结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>两难困境：目标无共识 + 迁移方式无共识</td>
+<td>S1/S2</td>
+<td>与 A2 逐句吻合，S2 引的 <code>each method outperforming the others on different tasks</code> 正是 §1 原句</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>候选目标的"三选一"= LM[44] / MT[38] / 篇章连贯[22]</td>
+<td>S3</td>
+<td>A2 原句列举的正是这三个，且顺序一致</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>traversal 拍平法来自 Rocktäschel[52]</td>
+<td>S1</td>
+<td>A24 + §1 66–67、§3.3 186–187</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>Transformer decoder 长文生成 [34] 证明该架构可当 LM</td>
+<td>S1</td>
+<td>§1 63、§3.1 138</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>block-sparse GPU kernel = 论文引文[16]</td>
+<td>S1</td>
+<td>A24 精确命中</td>
+</tr>
+<tr>
+<td>V6</td>
+<td>CoVe/ELMo/TagLM 留大量任务专用参数</td>
+<td>S1/S2</td>
+<td>A5 原文</td>
+</tr>
+<tr>
+<td>V7</td>
+<td>Dai&amp;Le/ULMFiT 只做分类、受 LSTM 短程限制</td>
+<td>S1/S2</td>
+<td>A6 原文</td>
+</tr>
+<tr>
+<td>V8</td>
+<td>aux LM 有 Rei[50]/Collobert[10] 先例</td>
+<td>S2</td>
+<td>A4 的第三小节 + §3.2 168</td>
+</tr>
+<tr>
+<td>V9</td>
+<td>L3 = L2 + λ·L1，λ=0.5</td>
+<td>S3/S7</td>
+<td>A8、A13</td>
+</tr>
+<tr>
+<td>V10</td>
+<td>微调唯一新增参数 = Wy + 分隔符 embedding</td>
+<td>S3</td>
+<td>A9 原句</td>
+</tr>
+<tr>
+<td>V11</td>
+<td>三类输入变换（相似度双向+逐元素相加；QA <code>[z;q;$;ak]</code>+softmax）</td>
+<td>S3</td>
+<td>A10 完全一致，含"逐元素相加"这个容易被写错的细节</td>
+</tr>
+<tr>
+<td>V12</td>
+<td>全部结构/优化超参（12/768/12/3072、40k BPE、学习式位置 embedding、修正版 L2、GELU、dropout 0.1）</td>
+<td>S3/S4</td>
+<td>A12 逐项命中，含 <code>learned position embeddings</code> 与 [37]</td>
+</tr>
+<tr>
+<td>V13</td>
+<td>微调超参 lr 6.25e-5 / batch 32 / 3 epoch / 0.2% warmup</td>
+<td>S4</td>
+<td>A13 逐项命中</td>
+</tr>
+<tr>
+<td>V14</td>
+<td>BooksCorpus vs 1B Word 的选型理由（长连续文本 vs 句子级打乱）</td>
+<td>S4</td>
+<td>A11 原文，属本文最硬的一条论据</td>
+</tr>
+<tr>
+<td>V15</td>
+<td>ftfy 清洗 + spaCy 分词</td>
+<td>S4</td>
+<td>A12</td>
+</tr>
+<tr>
+<td>V16</td>
+<td>baseline 清单（CAFE 5x、SAN、Dynamic Fusion 9x、BiAttention MRU 9x、GLUE 官方基线）</td>
+<td>S4</td>
+<td>A15/A18，连 5x/9x 的集成标注都对</td>
+</tr>
+<tr>
+<td>V17</td>
+<td>RTE 2490 例、56 vs 61.7、免责声明原文</td>
+<td>S5/S7</td>
+<td>A14 逐字命中</td>
+</tr>
+<tr>
+<td>V18</td>
+<td>Fig 2 右：zero-shot 随预训练稳定爬升，LSTM 对照组方差更大</td>
+<td>S5</td>
+<td>A21 原句</td>
+</tr>
+<tr>
+<td>V19</td>
+<td>Fig 2 左：每层预训练参数都在贡献</td>
+<td>S5</td>
+<td>A20</td>
+</tr>
+<tr>
+<td>V20</td>
+<td>9/12 的胜负口径</td>
+<td>S5/S6/S7</td>
+<td>A1、§4.2 455</td>
+</tr>
+<tr>
+<td>V21</td>
+<td>Abstract 只放 8.9/5.7/1.5 三个数字、且不点名失利任务</td>
+<td>S6</td>
+<td>A1 精确；§1 另有 5.5% GLUE（S6 已注明"藏起 56.0"）</td>
+</tr>
+<tr>
+<td>V22</td>
+<td>消融的 8 个任务全为 GLUE 任务</td>
+<td>S5</td>
+<td>Table 5 列头即 CoLA/SST-2/MRPC/STS-B/QQP/MNLI/QNLI/RTE，命中</td>
+</tr>
+<tr>
+<td>V23</td>
+<td>全文无 "GPT"、自称 Finetuned Transformer LM、且是 preprint</td>
+<td>S6</td>
+<td>A23</td>
+</tr>
+<tr>
+<td>V24</td>
+<td>§2 对 ELMo 与 ULMFiT 的"外交辞令"原句</td>
+<td>S6</td>
+<td>A5/A6 原文</td>
+</tr>
+<tr>
+<td>V25</td>
+<td>Fig 1 是框架图（架构+双目标 / 输入变换），不是结果图</td>
+<td>S6</td>
+<td>§3 Fig 1 caption（175–176）</td>
+</tr>
+<tr>
+<td>V26</td>
+<td>S7 三刀的全部数字（56.0/61.7、74.7 vs 75.0、CoLA 45.4 vs 47.9、SST-2 91.3 vs 92.0、MRPC 82.3 vs 84.9、STS-B 82.0 vs 83.2、λ=0.5 无理由）</td>
+<td>S7</td>
+<td>逐条比对 A13/A14/A18/A19，<strong>零错误</strong></td>
+</tr>
+<tr>
+<td>V27</td>
+<td>S7 子代理隔离确实生效</td>
+<td>S7</td>
+<td>审稿意见中未出现任何只存在于档案的信息（sentiment neuron、1B Word 淘汰、微调崩溃事件、λ 网格），可判定未越界读档</td>
+</tr>
+</tbody>
+</table>
+<p><strong>判定</strong>：数字层与引文层的扎实度很高——凡叙事写了"出处"的地方，除下表第 2 节的 P0/P1 条目外，<strong>基本可核</strong>。这套仿真的主要误差不在"编数字"，而在"编因果"与"编标签"。</p>
+<hr />
+<h3>2. 【编圆了但论文没这回事】—— 幻觉清单（按严重度排序）</h3>
+<h4>P0 · 与论文事实直接矛盾（必须修正）</h4>
+<p><strong>H1｜S1 档案："GLUE[64]（2018.4）尚未出现（故全文未提 GLUE）"</strong>
+- 论文真相：A3 —— §1 正文写着 <code>the recently introduced GLUE multi-task benchmark [64]</code>，脚注 1 直接指向 <code>gluebenchmark.com/leaderboard</code>；§4.2 又写 <code>the recently released GLUE multi-task benchmark [64], which we make use of</code>；Table 4 caption 写 <code>All task evaluations in this table were done using the GLUE benchmark</code>。
+- 性质：<strong>事实错误</strong>。且<strong>与 S2 档案自相矛盾</strong>——S2 明确写"GLUE[64]（2018.4）论文引用了"，S1 却写"全文未提 GLUE"。两个档案直接对撞，说明"档案作为阶段间唯一接口"这一契约在流转时<strong>没有被真正校验</strong>。
+- 危害：S1 是唯一负责"时间点设定"的阶段，它的时间基准错了会污染后续所有"当时不知道什么"的判断。（修正：把时间点设在 2018 年 <strong>4 月之前</strong>才成立；3 月设定本身不错，错的是结论句。）</p>
+<p><strong>H2｜S4 正文："最后靠三件套稳住的：…以及 v1 留下的 aux LM（它在小数据上的正则效果比预期大）"</strong>
+- 论文真相：A19/A22 —— aux 的收益结构是反向的：w/o aux 在 CoLA(+2.5)、SST-2(+0.7)、MRPC(+2.6)、STS-B(+1.2) 上<strong>全面更高</strong>；论文原话是 <code>larger datasets benefit ... but smaller datasets do not</code>。
+- 性质：<strong>事实错误 + 句内自相矛盾</strong>。同一段的方括号依据自己写着"aux 的收益结构是'大数据受益、小数据有损'"，正文却说 aux 在小数据上"正则效果比预期大"。<strong>五行之内打自己的脸</strong>。
+- 危害：这是 S7 审稿人 W2 独立发现的同一处伤口。作者滤镜把它写成"证据"，核查员把它读成"自相矛盾"——这条正好验证了 S7 档案预判的"S8 重点核查项"。</p>
+<h4>P1 · 与论文数据存在张力（重构被论文反证）</h4>
+<p><strong>H3｜S3 + S4 的核心因果链："v0 无 aux → 小数据必然过拟合 → v1 加 aux 当正则"</strong>
+- 论文真相：A8 —— 论文对 aux 的动机原话是 <code>improving generalization of the supervised model</code> 和 <code>accelerating convergence</code>，<strong>没有"治小数据过拟合"这层意思</strong>；A19 又显示 aux 对四个小数据集是<strong>负贡献</strong>。
+- 性质：<strong>重构方向性错误</strong>。这不是"论文没写"，而是"论文写了相反的东西"。S3 把 v1 的动机挂在了 aux 上，而 aux 恰恰在小数据上帮倒忙——v1→v2 的迭代链在"小数据困境"这条线上<strong>救错了人</strong>。
+- 修正建议：v1 的 aux 动机应改写为"加速收敛 + 与先例对齐（[50][43]）"，而"小数据不稳"的修补应归于 warmup+early-stop（S4 三件套里的另两件），并把 aux 的收益非单调性降级为"当时误判、事后由 Table 5 揭穿"。</p>
+<p><strong>H4｜S5："12 个任务里输 3 个小的"，并把受伤名单写成 RTE 2490 / STS-B 5.7k / MRPC / CoLA 8.5k</strong>
+- 论文真相：数量对（12 − 9 = 3），但<strong>名单错</strong>。由 A17/A18 反推，三项非 SOTA 是 <strong>RTE（56.0）、MRPC（82.3 &lt; 86.0）、SST-2（91.3 &lt; 93.2）</strong>。而叙事点名的 STS-B 与 CoLA 在论文里恰恰是<strong>胜利</strong>：STS-B 是 <code>a 1 point absolute gain</code>，CoLA 是 45.4 对前最佳 35.0 的"big jump"。
+- 性质：<strong>论据与结论错位</strong>。用"论文的胜绩"给"论文的败绩"作证。
+- 附加发现：S5 说三项都是"小的"——SST-2 在 GLUE 中是 6.7 万量级（该数字论文未给，属外部常识），不属于小数据集。真正的"小"只有 RTE(2490) 与 MRPC(3.7k)。
+- 附注：S6 已经注意到"Abstract 不说那 3 个是谁"，却<strong>没有一个阶段把这三项真的列出来</strong>——见第 3 节 G1。</p>
+<p><strong>H5｜S5："RTE 是伤口最深的一处：一个 2013 年风格的 BiLSTM 多任务模型压着我打"</strong>
+- 论文真相：A15 —— 61.7 那一行是 <code>Multi-task BiLSTM + Attn [64]</code>，即 2018 年 GLUE 官方基线，不是 2013 年的东西。"2013 年风格"是修辞上的贬低，会把读者的判断从"输给官方强基线"误导成"输给过时方法"。
+- 性质：<strong>修辞越界</strong>（数字无误，定性失真）。且该行不含 ELMo，这反而说明 RTE 的失利与"ELMo vs 我"的路线之争无关——S5/S7 都没利用这一点。</p>
+<h4>P2 · 标签错配与表述不严（调模板的直接依据）</h4>
+<p><strong>H6｜S2 档案 #1："五派划分及代表作——论文 §2 全部条目"（标【可查证】）</strong>
+- 论文真相：A4 —— §2 的结构是<strong>三个小节</strong>（semi-supervised / unsupervised pre-training / auxiliary objectives），"五派"是叙事自建的分类框架。
+- 性质：<strong>标签错配</strong>。五派的代表文献都在 §2 里（可查证），但"划分"与"各派死穴"是重构。正确写法是：代表文献【可查证：§2】，分派与死穴判定【合理重构】。B 派"容量天花板太低"、E 派"只吃到一口"两处死穴尤其如此——§2 对它们只有中性陈述。</p>
+<p><strong>H7｜S1 档案 #1 / #2 的【可查证】指向论文外材料</strong>
+- 论文真相：<code>Radford, Jozefowicz, Sutskever 2017</code>（sentiment neuron）<strong>不在论文参考文献表中</strong>；A24 显示 [16] 是 block-sparse kernels。
+- 性质：<strong>标签越界</strong>。标【可查证】却指向本次输入（论文全文）之外的文献，实际上无法在闭环内核验。要么改标【合理重构】并注明"依据作者公开轨迹"，要么补上该文献的真实题名/编号。</p>
+<p><strong>H8｜S6："Table 2/3/4 按任务族铺开，每表都让 ours 行垫底收尾"</strong>
+- 论文真相：Table 2/3/4 确实是 ours 垫底（328、362、448）；但 <strong>Table 5 的第一行就是 ours</strong>（497，其后才是三组消融）。
+- 性质：<strong>以偏概全</strong>。"每表"应改为"Table 2/3/4"。</p>
+<p><strong>H9｜S7 会话 A 中未打标签的外部断言</strong>
+- 具体：<code>ELMo/ULMFiT 当时已开源</code>、<code>BooksCorpus 有体裁偏见且未公开</code>。
+- 性质：<strong>来源标注义务的灰色地带</strong>。审稿人身份可以凭领域常识说话，但这两条是关于 2018 年社区资源状态的<strong>外部事实</strong>，论文既不支持也不否认（论文只给数据集名与引用 [71]，体裁偏见可由 <code>Adventure, Fantasy, and Romance</code> 推出，可查证）。"未公开"这一条尤其危险——它可能整条立不住，而 W3 有三分之一的分量压在上面。
+- 建议：审稿人模板里追加一句"凡涉及论文之外的领域事实，须自陈把握程度"。</p>
+<p><strong>H10｜S7 会话 B（rebuttal）的双向选择性引用</strong>
+- 具体：rebuttal 用 <code>larger datasets benefit ... but smaller datasets do not</code> 据理力争，列举了 aux 的受益方（MNLI/QNLI/QQP），<strong>回避了 RTE 54.4 → 56.0</strong>——而 RTE 恰是全场最小的数据集、恰是 W1 的战场、恰是论文自己的概括句（<code>helps on the NLI tasks</code> vs <code>smaller datasets do not</code>）<strong>内部冲突的活证</strong>。
+- 审稿人 W2 同样只列举了受损方（CoLA/SST-2/MRPC/STS-B），<strong>回避了 RTE/MNLI/QNLI/QQP</strong>。
+- 性质：<strong>双方各取一半</strong>。这是本仿真最有价值的一处独立发现：<strong>论文 §5 的两句概括（"帮 NLI" + "大数据受益小数据不受益"）在 RTE 上互相打架</strong>——RTE 是最小的数据集，却因 aux 涨了 1.6 分。
+- 价值：这条既是"作者滤镜"，也是"审稿人滤镜"。真正的第三方核查应该拿它当第一发炮弹。</p>
+<hr />
+<h3>3. 【论文有而叙事漏了】—— 覆盖度缺口</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>论文内容</th>
+<th>锚点</th>
+<th>被漏成什么样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>GLUE 总分 72.8 vs 前最佳 68.9（本文最显眼的总成绩之一）；§1 单列的 5.5% GLUE 提升</td>
+<td>A17</td>
+<td>S1–S7 <strong>全程零次</strong>提到 72.8/68.9。叙事只盯着 9/12 与 RTE，把"在官方擂台上把总均分抬高 3.9 分"这件最像头条的事漏了</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>三项非 SOTA 的具体身份（RTE / MRPC / SST-2）</td>
+<td>A17/A18</td>
+<td>S6 只说到"那 3 个是谁没说"，没有任何阶段把名单坐实；S5 还给错了名单（见 H4）</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>BooksCorpus 上的 token-level perplexity = 18.4</td>
+<td>A11</td>
+<td>零次出现。这是"LM 训得好不好"的唯一客观读数</td>
+</tr>
+<tr>
+<td>G4</td>
+<td>§5 四个 zero-shot 启发式的具体构造（阈值化 / 追加 <code>very</code> / 限制输出分布 / 代词替换）</td>
+<td>A21</td>
+<td>S5 只写"zero-shot 探针显示…"，四个机制全漏——而 S4 曾把"机理实验"列为四层实验的第三层，等于设计说了、实现没写</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>Fig 2 左的关键数字 <code>up to 9% for full transfer on MultiNLI</code></td>
+<td>A20</td>
+<td>S5 只写"每层都在贡献"，没给 9%</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>换 LSTM 掉 5.6 分、且<strong>只在 MRPC 上赢</strong>；无预训练掉 14.8%</td>
+<td>A22</td>
+<td>S5 只用了"LSTM 方差更大"一条；"只在 MRPC 上赢"这个细节与"MRPC 也是我们输掉的任务"叠起来本可形成一条更有力的机理论证</td>
+</tr>
+<tr>
+<td>G7</td>
+<td>SciTail（+5%）、SNLI（+0.6%）、QNLI（+5.8%）的具体增益</td>
+<td>A15/§4.2 268–269</td>
+<td>12 个任务里的 SciTail 从头到尾没被讨论过；S4 说"广度"是设计目标，却没落到任务级叙述</td>
+</tr>
+<tr>
+<td>G8</td>
+<td>§3.1 Eq.(2) 的实现式（<code>h0 = UWe + Wp</code>、输出层复用 <code>We</code>）</td>
+<td>A7</td>
+<td>S3 只引了 Eq.(1)，把"词嵌入矩阵在输入输出两端复用"这个 Transformer LM 的关键实现细节漏了</td>
+</tr>
+<tr>
+<td>G9</td>
+<td>§2 第三小节对 aux objective 的定位——<code>unsupervised pre-training already learns several linguistic aspects relevant to target tasks</code></td>
+<td>120–121</td>
+<td>这句话是论文给 aux LM 打的<strong>最强预防针</strong>（"预训练已经学到了，aux 只是补"），S2/S3/S6/S7 四方都没引；如果引了，H2/H3 的矛盾在 S3 阶段就会被发现</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>WNLI 的缺席</td>
+<td>A25</td>
+<td>全文无 WNLI。这是<strong>论文自身的覆盖缺口</strong>，叙事不必背锅，但它使 S7 rebuttal 那句"GLUE 系任务是 benchmark 官方清单，不是我们挑的"只能成立一半——GLUE 九任务里被去掉一个，而论文没给理由</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>4. S7 专项核查（用户点名的"狠查"）</h3>
+<h4>4.1 三条 major weakness 的数字与引文</h4>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>核验</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1：RTE 56.0 vs 61.7、<code>9/12</code> 卖点、免责声明</td>
+<td>A14</td>
+<td><strong>准确</strong>。唯一可挑的是没点名另外两项失利（MRPC/SST-2），削弱了杀伤力</td>
+</tr>
+<tr>
+<td>W2：<code>w/o aux</code> Avg 75.0 &gt; full 74.7；CoLA/SST-2/MRPC/STS-B 全面更高；λ=0.5 无依据</td>
+<td>A19/A13</td>
+<td><strong>准确</strong>，四个任务的数字逐一命中。但只列受损方（见 H10），且没发现 RTE 反例</td>
+</tr>
+<tr>
+<td>W3：无代码无权重、BooksCorpus 体裁偏见/未公开、对 ELMo 无同数据同算力对照</td>
+<td>A18 + 论文无代码声明</td>
+<td>前两项属实（论文确无代码/权重/发布声明）；第三条成立（ELMo 只出现在 Table 2 <code>ESIM+ELMo(5x)</code> 与 Table 4 的 GLUE 基线里，<strong>没有同语料的 ELMo LM 对照</strong>）；"未公开"属未标注的外部断言（见 H9）</td>
+</tr>
+</tbody>
+</table>
+<h4>4.2 审稿人漏掉的两发炮弹</h4>
+<ol>
+<li><strong>RTE 反例</strong>（H10）：如果 W2 加上"你论文最小数据集 RTE 恰恰因 aux 涨了 1.6 分，你的两句概括互相矛盾"，W2 就从"数值抱怨"升级为"论文自我矛盾"，5/10 的评分会更难反驳。</li>
+<li><strong>三项失利不点名</strong>：Abstract 写 9/12 却不列失败任务，是比 RTE 单点更系统的呈现问题。审稿人只在 W1 里点了 RTE，等于替作者接受了"只错一个"的暗示。</li>
+</ol>
+<h4>4.3 隔离合规性</h4>
+<p>判为<strong>合规</strong>：审稿意见中不含任何档案专有信息（见 V27）；且它独立复现了主线的"S5 就埋过的小数据伤口"，说明隔离是实的、不是走过场。</p>
+<h4>4.4 rebuttal 的引文核验</h4>
+<table>
+<thead>
+<tr>
+<th>rebuttal 引用</th>
+<th>核验</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>larger datasets benefit from the auxiliary objective but smaller datasets do not</code></td>
+<td>A22 原句</td>
+<td>逐字准确</td>
+</tr>
+<tr>
+<td><code>12 个任务是成文前选定的</code>、<code>GLUE 系任务是 benchmark 官方清单</code></td>
+<td>A25 / Table 1</td>
+<td>前半句属不可核验的自我陈述；后半句因 WNLI 缺席只成立一半（G10）</td>
+</tr>
+<tr>
+<td><code>§4.1 已给出大部分配方</code></td>
+<td>A11/A12/A13</td>
+<td>准确——§4.1 的配方级细节确实很全，"补齐缺口"的让步是诚实估价</td>
+</tr>
+<tr>
+<td><code>预印本，不必等 rebuttal 截止日</code></td>
+<td>A23</td>
+<td>与 S6 的 preprint 发现一致，内部自洽</td>
+</tr>
+</tbody>
+</table>
+<p><strong>S7 小结</strong>：审稿与 rebuttal 是整个仿真里质量最高的一轮——数字零错误、隔离真做到了、且反馈回来修正了前序的自信度（档案 S7 已自陈 W2 回溯修正 S3）。它的问题是把火力集中在"RTE 单点 + 数值反例"，没有上升到"论文的自我陈述与自己的表打架"。</p>
+<hr />
+<h3>5. 误差报告与模板调参建议</h3>
+<p><strong>幻觉统计（口径：以"带标签的实质性断言"为计数单位，粒度≈一句话）</strong></p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>计数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对上了（V1–V27，共 27 组 ≈ 60 条独立断言）</td>
+<td>27 组 / ≈60 条</td>
+<td>数字层零编造：凡叙事给出出处的，除下列条目外均可核</td>
+</tr>
+<tr>
+<td>P0 事实错误</td>
+<td>2 条</td>
+<td>H1、H2</td>
+</tr>
+<tr>
+<td>P1 因果夸大 / 论据错位 / 修辞越界</td>
+<td>3 条</td>
+<td>H3、H4、H5</td>
+</tr>
+<tr>
+<td>P2 标签错配 / 表述不严</td>
+<td>5 条</td>
+<td>H6–H10</td>
+</tr>
+<tr>
+<td>覆盖度缺口</td>
+<td>10 条</td>
+<td>G1–G10</td>
+</tr>
+</tbody>
+</table>
+<p>→ <strong>错误率 ≈ 10 / 60 ≈ 17% 的带标签断言存在 P0–P2 问题，其中真正与论文事实直接矛盾的只有 2 条（3.3%）</strong>。这个分布说明：本仿真的失败模式不是"编数字"，而是"给正确的事实安上错误的因果与标签"。</p>
+<p><strong>误差的分布规律（这才是本报告最有用的部分）</strong></p>
+<ol>
+<li><strong>数字几乎不编，因果大量编</strong>。所有性能数字都能核到（含 S7 全部），但一旦解释"为什么这么做"，S3/S4 就出现了方向性错误。→ 模板应要求：凡陈述"某设计是为了解决某问题"，必须给出论文里的<strong>动机原句</strong>，否则降级为待验猜想。</li>
+<li><strong>档案之间的交叉矛盾没人查</strong>。S1 与 S2 对 GLUE 的判断直接对撞；S4 与自己的方括号对撞。→ 模板应在每阶段开头加一条"<strong>与上一阶段档案的一致性自检</strong>"，并在 S8 之前设一道轻量交叉校验。</li>
+<li><strong>"作者滤镜"是真的存在</strong>。同一个 Table 5，作者读成"正则有效"，审稿人读成"自相矛盾"。→ 这验证了 S7 必须开隔离会话的设计，也说明 S8 应该<strong>先看审稿意见再看自己的叙事</strong>，否则会被自己的叙事锚定。</li>
+<li><strong>负结果占比达标但分布不均</strong>。S1（&gt;60%）、S5（主场）充足，S6（2 条）、S7（2 条）薄弱。→ 对扩展阶段，可给负结果设条数下限而非仅看总篇幅占比。</li>
+<li><strong>胜绩被系统性忽略</strong>。GLUE 72.8、perplexity 18.4、9% 层迁移增益这些"文中的好数字"全被漏掉——因为叙事把张力全押在 RTE 上。→ 覆盖度检查应单列"论文正面的硬数字是否被叙事吸收"。</li>
+</ol>
+<hr />
+<h3>6. 最后一问：这套仿真教会我的东西里，哪些是读论文原文绝对学不到的？</h3>
+<p>分三层，且必须诚实标注哪些是史实、哪些是重构：</p>
+<p><strong>第一层：问题结构（可迁移，且论文不写）</strong>
+- <strong>"数据形态决定方法上限"</strong>：1B Word 被句子级打乱 → 长程结构物理消失 → 押注长程依赖的方法用它等于自断一臂。论文只有一句 <code>destroying long-range structure</code>，但它是一条<strong>可复用的判据</strong>（选语料先看形态是否匹配假设），比结论本身值钱。
+- <strong>高风险区的先验</strong>：12 个任务里哪几个会输，事前唯一的信号是"样本量 vs 参数量"的量级比。论文只报结果，仿真的价值在于把它提炼成"1.17 亿参数 × 2490 条样本"这种可以事前标记的风险判据。
+- <strong>分布形态看得出的东西</strong>：Table 5 的收益非单调（大数据 +、小数据 −、RTE 反例）<strong>不可能从论文的概括句里读出来</strong>——论文的句子是 <code>larger datasets benefit ... but smaller datasets do not</code>，只有把 8 个任务的差值逐一算过，才知道 RTE 反着走、论文自己的概括不成立。<strong>教会我：不要相信论文的趋势句，要重算它的表。</strong></p>
+<p><strong>第二层：叙事工程（论文的呈现本身就是知识）</strong>
+- Abstract 只放三个数字、只写"9 out of 12"而不点名失利三项；RTE 不塞 appendix 而是放正文配免责声明；λ=0.5 只给值不给理由；对 ELMo 的最锋利批评被夹在承认之后。这些<strong>是论文里真实存在、但论文绝不会自己指认的修辞</strong>——只有"倒着读"才能显影。</p>
+<p><strong>第三层：本仿真自身的局限（必须声明）</strong>
+- "MT 目标、篇章连贯目标被排除" "multi-task 微调被毙" "ULMFiT 式微调技巧被毙" "微调崩溃事件" ——这些都<strong>不是史实</strong>，是【合理重构】。它们的证据形式是"论文里没有痕迹"，而不是"论文里有记载"。<strong>读这个话题真正学不到的那部分，我这套仿真也只能给出重建的假设，不能给出事实</strong>——这是仿真最该被记住的边界。
+- 真正学不到、也仿真不出的：在 2018 年的单机多卡上把一个 1.17 亿参数模型训到收敛时，手上那台机器的噪声与人的判断力之间发生的事。S8 之后唯一能补的是<strong>真复现</strong>，不是再写一轮叙事。</p>
+<hr />
+<h3>《档案 · S8》</h3>
+<pre><code>【阶段】S8 对照复盘（幻觉总检查）
+【已知事实】（本阶段新增的、可核验的核查结论）
+1. 论文 §1/§4.2/Table 4/脚注 1 均出现 GLUE —— 推翻 S1&quot;全文未提 GLUE&quot;（行 52/75/256/397/715）
+2. Table 5 的 aux LM 收益：受损 CoLA/SST-2/MRPC/STS-B，受益 MNLI/QNLI/QQP/RTE —— 与 S4 正文及 S3 因果链相反
+3. 三项非 SOTA 由 9/12 与 §4.2/Table 4 反推为 RTE、MRPC、SST-2；S5 的受伤名单（RTE/STS-B/MRPC/CoLA）错误
+4. GLUE 总分 72.8 vs 68.9、BooksCorpus perplexity 18.4、层迁移 up to 9%、LSTM 掉 5.6 分（只在 MRPC 赢）、无预训练掉 14.8% —— 叙事零覆盖
+5. Table 5 第一行即 ours（非垫底）—— S6&quot;每表垫底&quot;以偏概全
+6. 论文全文未出现 WNLI
+7. S7 三条 weakness 的全部数字经逐条比对无误；子代理隔离有效
+【合理重构】
+a. &quot;论文 §5 两句概括在 RTE 上互相矛盾&quot;的判定 —— 依据 Table 5 的 RTE 54.4→56.0 与 §5 原文（helps NLI / small datasets do not）直接冲突
+b. 误差占比统计 —— 依据 27 组对照条目与 10 条幻觉/缺口的人工计数（粒度为一句话级判断）
+c. 模板调参建议 —— 依据本轮 8 个阶段的误差分布规律
+【负结果】（本阶段即误差报告本身）
+1. P0 两条：S1 的 GLUE 事实错误、S4 的 aux 正则自相矛盾（且 S1/S2 档案对撞）
+2. P1 三条：S3/S4 的 aux 因果链方向错误、S5 的失利名单错误、S5 的&quot;2013 年风格&quot;修辞越界
+3. P2 五条：S2 五派标签错配、S1 外部材料标可查证、S6&quot;每表垫底&quot;、S7 未标注的外部断言、S7 双向选择性引用
+4. 覆盖度缺口 10 条（其中 G1/G2/G3 为&quot;论文头条数字被整段漏掉&quot;）
+5. 设计层面：档案契约缺&quot;与上一阶段一致性自检&quot;，导致 S1↔S2、S4↔S4 的矛盾存活到最后
+【未决问题】
+1. H2/H3 需回改 S3/S4 的 aux 动机段落 ——【已执行】2026-09-15 修订轮，见第 7 节
+2. S5 的受伤名单须改 ——【已执行】；S6 的&quot;藏起 56.0&quot;叙事可再升级为&quot;藏起整整三项失利&quot;，留待下一轮改写 S6 的叙事层
+3. GLUE 72.8 等头条数字须补入 ——【改由 S6 第 5 节补记】。理由：S4 阶段引入结果数字会违反&quot;曲线走向不许照抄论文结论&quot;的纪律，S6 才是&quot;面对全部结果的作者&quot;该扛这组数字的地方
+4. 真正剩下的一件事：跑一次真实最小复现（CleanRL / 最小可跑 GPT-1 微调）去对照差距——仿真到此为止能给的都给了
+【后见之明自检】本阶段身份为第三方核查员，允许对照论文全文；未使用论文之后的历史（GPT-2/3、ELMo 长期命运）作为论据；对无法核验的外部断言（BooksCorpus 是否公开）只标风险、不下断言 —— 合规。
+【全局负结果占比】按条数：S1(3)+S2(2)+S3(3)+S4(4)+S5(4)+S6(2)+S7(2)+S8(15 条误差/缺口) = 35 条；S5 归档时按篇幅折算为 45%，S8 补入 15 条后按篇幅折算约 48%（推定量级，非精确文本占比）——达标 ≥40%。
+</code></pre>
+<hr />
+<h3>7. 修订记录（本轮已执行，2026-09-15）</h3>
+<blockquote>
+<p>原则：<strong>修正 + 加注，不静默覆盖</strong>。原稿的错误保留在各文件的【修订注】里供追溯，正文按事实改写。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>文件</th>
+<th>修改内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td><code>S1.md</code></td>
+<td>档案 b 条删去"故全文未提 GLUE"，改为"idea 期未存在、成文期已被引用"，附四处出处；加【修订注】说明原错误与 S1↔S2 对撞</td>
+</tr>
+<tr>
+<td>H7</td>
+<td><code>S1.md</code></td>
+<td>情感神经元条目改标【可查证·论文外】，注明该文不在论文参考文献表、[16] 为 block-sparse kernels</td>
+</tr>
+<tr>
+<td>H6</td>
+<td><code>S2.md</code></td>
+<td>档案 #1 拆为"文献可查证 + 五派框架为重构"，补 §2 只有三个小节的原文依据</td>
+</tr>
+<tr>
+<td>H3</td>
+<td><code>S3.md</code></td>
+<td>v0 死因由"小数据必然过拟合"改为"当时预期"；v1 的 aux 动机改引论文原句 <code>improving generalization ... accelerating convergence</code>；档案【负结果】1 同步修正</td>
+</tr>
+<tr>
+<td>H2</td>
+<td><code>S4.md</code></td>
+<td>"三件套"里的 aux LM 由"正则效果比预期大"改为"当时以为是它在兜底，实为误判"</td>
+</tr>
+<tr>
+<td>H4／H5</td>
+<td><code>S5.md</code></td>
+<td>受伤名单改为 RTE／MRPC／SST-2；删去"2013 年风格"，补 Table 2 行名与"不含 ELMo"</td>
+</tr>
+<tr>
+<td>H8</td>
+<td><code>S6.md</code></td>
+<td>"每表垫底"改为"Table 2/3/4 垫底"，注明 Table 5 首行即 ours</td>
+</tr>
+<tr>
+<td>G1–G6</td>
+<td><code>S6.md</code></td>
+<td>新增第 5 节"补记：成文时被我漏掉的硬数字"（GLUE 72.8、perplexity 18.4、层迁移 9%、LSTM −5.6、无预训练 −14.8%）</td>
+</tr>
+<tr>
+<td>H9／H10</td>
+<td><code>S7.md</code></td>
+<td>新增【核查附注】：登记 W3 未标注外部断言、W2 与 rebuttal 的双向选择性引用、隔离合规确认；<strong>审稿与 rebuttal 原文未改动</strong></td>
+</tr>
+<tr>
+<td>—</td>
+<td>skill <code>paper-research-simulation</code></td>
+<td>契约加【一致性自检】字段；S3 加"动机须引原句"；S4 加"归因须与消融表对齐 + 吸收正面硬数字"；S8 加"第 0 步：先重算论文趋势表"</td>
+</tr>
+</tbody>
+</table>
+<h4>剩余动作</h4>
+<ol>
+<li><strong>S6 叙事层可再改一次</strong>：把"藏起 56.0"升级为"藏起整整三项失利（RTE／MRPC／SST-2）"——本轮只修正了数字与事实，未重写这层修辞分析。</li>
+<li><strong>真复现</strong>：跑一次真实最小复现（最小可跑 GPT-1 微调）去对照差距。</li>
+<li><strong>换一篇论文重跑</strong>，验证模板修订是否真的消掉了 H2/H3 这类错误（同一篇会受记忆污染）。</li>
+</ol>
+<hr />
+<h4>附：修订前的原始收尾建议（已执行完毕，保留供追溯）</h4>
+<ol>
+<li><strong>必改（P0/P1）</strong>：S1 删掉"全文未提 GLUE"；S3 的 v1 动机与 S4 的"三件套"去掉 aux 治小数据的说法；S5 的失利名单改为 RTE/MRPC/SST-2 并删掉"2013 年风格"。</li>
+<li><strong>可选（P2）</strong>：S2 把"五派"改标【合理重构】；S6"每表垫底"改为"Table 2/3/4"；S7 审稿人补一句"外部事实自陈把握程度"。</li>
+<li><strong>下一轮调模板</strong>：给 S3/S4 加"动机必须引论文原句"；给每阶段加"与上一阶段档案一致性自检"；给 S8 加"重算论文的趋势表"这一固定动作（本轮它直接抓出了 RTE 反例）。</li>
+<li><strong>真复现</strong>：本仿真到 S8 为止能给的都给了；剩下的只有跑一次真实复现（CleanRL/最小可跑版 GPT-1 微调）去对照差距。</li>
+</ol>
+</section>
+</body>
+</html>

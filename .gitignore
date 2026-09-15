@@ -1,0 +1,10 @@
+# OS / 编辑器
+Thumbs.db
+.DS_Store
+*.log
+
+# Python（脚本工具链）
+__pycache__/
+*.pyc
+
+# 大文件说明：examples/gpt1/ 下的合订 PDF/HTML 是成品展示，保留追踪

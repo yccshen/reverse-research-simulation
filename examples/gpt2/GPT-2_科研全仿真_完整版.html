@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>GPT-2 科研全仿真 · 完整版</title>
+<style>
+  @page { size: A4; margin: 15mm 13mm 14mm 13mm; }
+  html { font-size: 10.5pt; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+    color: #1a1a1a; line-height: 1.55; margin: 0; padding: 0 5mm; max-width: 192mm;
+  }
+  .cover { page-break-after: always; padding-top: 46mm; }
+  .cover h1 { font-size: 26pt; color: #14273f; margin: 0 0 6px; letter-spacing: 1px; line-height: 1.25; }
+  .cover .sub { font-size: 12pt; color: #4a5b6e; margin: 0 0 20px; }
+  .cover .rule { height: 3px; background: #1f3a5f; width: 62mm; margin: 14px 0 16px; }
+  .cover .meta { font-size: 9.6pt; color: #57606a; line-height: 1.75; }
+  .cover .toc { margin-top: 22px; border-top: 1px solid #d6dee7; padding-top: 12px; }
+  .cover .toc div { font-size: 10pt; color: #26405c; padding: 2.5px 0; }
+  .cover .toc .lv2 { padding-left: 14px; color: #4a5b6e; font-size: 9.4pt; }
+  section.stage { page-break-before: always; }
+  h1 { font-size: 18pt; color: #14273f; border-bottom: 2.5px solid #1f3a5f;
+       padding-bottom: 6px; margin: 0 0 12px; }
+  h2 { font-size: 13pt; color: #14273f; margin: 18px 0 8px; border-left: 5px solid #2f5d8a;
+       padding-left: 8px; page-break-after: avoid; }
+  h3 { font-size: 11pt; margin: 12px 0 5px; color: #22364f; page-break-after: avoid; }
+  h4 { font-size: 10.2pt; margin: 10px 0 4px; color: #2f4257; page-break-after: avoid; }
+  p, li { font-size: 10.2pt; }
+  ul, ol { padding-left: 18px; margin: 5px 0; }
+  li { margin: 2px 0; }
+  hr { border: none; border-top: 1px dashed #c3ccd6; margin: 15px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9pt; }
+  th, td { border: 1px solid #c8d0d9; padding: 4px 6px; text-align: left; vertical-align: top;
+           word-break: break-word; }
+  th { background: #eef3f8; color: #14273f; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+         background: #f2f5f8; padding: 0 3px; border-radius: 2px; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.5pt;
+        background: #f7f9fb; border: 1px solid #dbe3ea; border-left: 3px solid #8fa6bd;
+        padding: 7px 9px; white-space: pre-wrap; word-break: break-word;
+        line-height: 1.45; margin: 8px 0 12px; }
+  pre code { background: none; padding: 0; font-size: 8.5pt; }
+  blockquote { margin: 8px 0; padding: 6px 11px; background: #fdf7ec;
+               border-left: 4px solid #d0a24c; color: #4a3d24; font-size: 9.4pt; }
+  blockquote p { font-size: 9.4pt; margin: 4px 0; }
+  blockquote strong { color: #7a5210; }
+  strong { color: #14273f; }
+</style>
+</head>
+<body>
+<div class="cover">
+<h1>GPT-2 科研全仿真 · 完整版</h1>
+<div class="sub">Language Models are Unsupervised Multitask Learners —— 九阶段逆向复现（S0–S9）</div>
+<div class="rule"></div>
+<div class="meta">基于公开材料的第一人称合理重构</div>
+<div class="toc"><div><strong>目录</strong></div>
+<div class="lv2">S0 · 选材闸 —— GPT-2 科研全仿真</div><div class="lv2">S1 · idea 诞生 —— GPT-2 科研全仿真</div><div class="lv2">S1.5 · 内部博弈 —— GPT-2 科研全仿真</div><div class="lv2">S2 · 文献调研 —— GPT-2 科研全仿真</div><div class="lv2">S3 · 建模迭代 —— GPT-2 科研全仿真</div><div class="lv2">S4 · 数据 + 实验（双轨）—— GPT-2 科研全仿真</div><div class="lv2">S5 · 困难与转折 —— GPT-2 科研全仿真</div><div class="lv2">S6 · 成文 —— GPT-2 科研全仿真</div><div class="lv2">S7 · 审稿 + rebuttal —— GPT-2 科研全仿真</div><div class="lv2">S8 · 对照复盘（幻觉总检查）—— GPT-2 科研全仿真</div><div class="lv2">语言模型自己会做任务，这件事我用了半年才敢说出口</div>
+</div>
+</div>
+<section class="stage">
+<h2>S0 · 选材闸 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：判定《Language Models are Unsupervised Multitask Learners》（Radford et al., 2019）是否适配本仿真流水线，给出放行/拒绝结论与理由。
+- 现状：论文全文已入库（24 页，含 Appendix A 生成样本 Table 7–17）。无上一阶段档案。
+- 限制：只做防御性检查，不做叙事；不放行就终止，不"带病推进"。</p>
+</blockquote>
+<h3>论文基本信息</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标题</td>
+<td>Language Models are Unsupervised Multitask Learners</td>
+</tr>
+<tr>
+<td>作者</td>
+<td>Alec Radford、Jeffrey Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever（OpenAI，San Francisco）；首页以星号标注前两位与末两位共四人同为"同等贡献"【可查证：论文首页作者行与脚注"Equal contribution"】</td>
+</tr>
+<tr>
+<td>形态</td>
+<td>技术报告 / 预印本，24 页；<strong>非会议投稿</strong>（无 venue、无 camera-ready 信息、无审稿致谢）【可查证：全文无 venue 字段；Acknowledgements 唯一列出的反馈人是四位草稿读者】</td>
+</tr>
+<tr>
+<td>发布</td>
+<td>2019 年 2 月 14 日【可查证·论文外：OpenAI 官方博客与该仓库发布时间；论文文本本身不含日期】</td>
+</tr>
+<tr>
+<td>核心 claim</td>
+<td>语言模型在零样本、不改任何参数与架构的前提下即可执行下游任务；容量是这一能力的关键【可查证：Abstract 第 3 句、§1 末段、§7】</td>
+</tr>
+<tr>
+<td>主实验</td>
+<td>Table 3（零样本，10 列 × 5 行）+ Figure 1（多任务 scaling 曲线）+ §3.2–3.8 七个任务探针</td>
+</tr>
+</tbody>
+</table>
+<h3>逐条过闸</h3>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>判定</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单方法论文（非综述/非 benchmark/非大系统报告）</td>
+<td><strong>通过</strong></td>
+<td>全文围绕一个方法（WebText 上训练的 Transformer LM）展开；七个任务只是同一模型的探针，不是七个方法</td>
+</tr>
+<tr>
+<td>有明确核心 claim 与可定位的主实验</td>
+<td><strong>通过</strong></td>
+<td>claim 见上；主实验可定位到 Table 3 与 Figure 1–4</td>
+</tr>
+<tr>
+<td>主实验数 ≤5 为佳</td>
+<td><strong>有条件通过</strong></td>
+<td>"数据集 × 任务"共 8 个数据集 + 7 个任务探针，超出 5；但它们共享同一个模型、同一套评测脚本，属"一个主实验的多面孔"。判定：可跑，但 S3/S4 必须以 method 与表 3 为主轴，否则篇幅失控</td>
+</tr>
+<tr>
+<td>有开源代码或足够方法细节，支撑"建模迭代"</td>
+<td><strong>通过（有缺口）</strong></td>
+<td>脚注 5 给出 <code>github.com/openai/gpt-2</code>（【可查证】）；§2.2–2.3 给了输入表示、层数、d_model、pre-LN、残差初始化缩放、context 1024、batch 512。<strong>缺口：§2.3 的三个架构改动全部只给做法不给动机</strong>，S3 必须据此把动机降级为待验猜想</td>
+</tr>
+<tr>
+<td>用户具备前置知识</td>
+<td><strong>通过</strong></td>
+<td>需要：自回归 LM、Transformer decoder、BPE、困惑度、零样本评测。用户方向为 RL/推理模型，具备</td>
+</tr>
+</tbody>
+</table>
+<h3>三条必须随行标注的风险（本轮新增，供模板复用）</h3>
+<ol>
+<li><strong>无消融表</strong>：GPT-1 有 Table 5（逐任务消融差值）可作 S4 的归因对齐物；GPT-2 全文<strong>没有任何消融表</strong>。最接近消融的只有两处：§3.1 的 de-tokenizer 增益"2.5 to 5 perplexity"（无表）与 Table 4 的 <code>GPT-2 no hint</code> 行（−6.4 R-AVG）。→ 本论文的 S4 无法执行"归因必须与消融表逐任务差值对齐"这条纪律，只能整条降级为待验猜想。<strong>这是与 GPT-1 首跑最大的方法论差异，必须在 S4/S8 显式声明。</strong></li>
+<li><strong>无同行评审</strong>：GPT-1 的 S7 可以借"投会议被审"的博弈规则；GPT-2 从未经过正式评审，真实的把关发生在（a）四位草稿读者的内部反馈（【可查证：Acknowledgements】）与（b）发布前的误用风险评估【可查证·论文外：2019 年分阶段发布安排；论文脚注 5 只承诺"downloading and using the <strong>small</strong> model"】。S7 的会话设定须据此改写，不得虚构审稿人来自某个会议。</li>
+<li><strong>被引文献时间跨度大</strong>：参考文献里含 2019 年 1 月的 Transformer-XL（[Dai et al., 2019]）与 2019 年 1 月的 Natural Questions（[Kwiatkowski et al., 2019]）【可查证：References】。→ S2 的"只许引用发表日之前文献"这条限制，须以 2019 年 2 月为界，不能沿用 GPT-1 的 2018 年 3 月。</li>
+</ol>
+<h3>结论</h3>
+<p><strong>放行。</strong> 与 GPT-1 相比，本论文更适配数据驱动型仿真的强项（WebText 的构建与清洗本身就是主战场），但缺消融表这一条会削弱 S4 的归因纪律，S8 需相应加大"覆盖度缺口"的核查权重。</p>
+<hr />
+<h3>《档案 · S0》</h3>
+<pre><code>【阶段】S0 选材闸
+【已知事实】
+1. 论文为一篇单方法技术报告，6 位作者，前两位为同等贡献，末两位（Amodei、Sutskever）标注为通讯/资深等价符号【可查证：论文首页脚注】
+2. 论文无 venue 字段，无审稿致谢；Acknowledgements 仅列出四位草稿反馈人与 Google 训练基础设施的协助者【可查证：Acknowledgements 段】
+3. 核心 claim 有三处同源表述：Abstract（原句 reach 55 F1 on the CoQA dataset ... without using the 127,000+ training examples）、§1 末段（原句 without any parameter or architecture modification）、§7（原句 without the need for explicit supervision）【可查证：三处原文】
+4. 主实验可定位：Table 3（零样本 10 列乘 5 行）、Figure 1 至 Figure 4、§3.2 至 §3.8 七节任务探针【可查证】
+5. 方法细节给到层数、d_model、pre-LN、残差初始化按 1 除以根号 N 缩放、context 由 512 增至 1024、batch 512、词表 50,257【可查证：§2.2 至 §2.3、Table 2】
+6. 论文不含任何消融表；最接近的两处是 §3.1 的 de-tokenizer 增益区间（2.5 至 5 perplexity，无表）与 Table 4 的 GPT-2 no hint 行【可查证：全文检索&quot;ablation&quot;零命中】
+7. 参考文献含 2019 年 1 月的工作（Transformer-XL、Natural Questions），故文献边界为 2019 年 2 月【可查证：References】
+【合理重构】
+a. 论文形态为技术报告而非会议投稿，故 S7 的审稿人设定改为&quot;投稿前内部评审加发布风险评审&quot;——依据：Acknowledgements 的反馈人名单与脚注 5 只公开小模型这一事实互相印证（重构）
+b. 六个作者的资历结构支持 S1.5 的三方博弈设定（一作、资深、合作者）——依据：同等贡献标记与资深标记的分工（重构）
+【负结果】
+1. 候选考虑过的替代做法是把 S7 仍然写成&quot;投顶会被审&quot;——被否，死因是虚构不在场的评审流程，违反来源标注义务
+2. 候选考虑过跳过 S0 直接进 S1（用户要求一次性跑完）——被否，死因是闸门的作用正是拦掉&quot;无消融表加非投稿&quot;这类隐性风险，跳过等于把风险推到 S8 才暴露
+（本阶段负结果占比不足 40%，是 S0 的性质所致：闸门阶段以判定为主，负结果在 S1 起成为主体）
+【未决问题】
+1. 无消融表这一缺口，S4 的归因纪律如何改写？（留给 S4）
+2. 非投稿论文的 rebuttal 该对着谁写？（留给 S7）
+3. Table 3 有 10 列却称 8 个数据集，计数口径如何？（留给 S8 第 0 步已并行处理）
+【一致性自检】本阶段无上一阶段档案，不适用；已确认本阶段判断不与论文任一事实冲突。
+【后见之明自检】未使用任何实验结果支撑闸门判定；&quot;适配性强&quot;仅以论文形态与章节结构论证，未引用性能数字——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S1 · idea 诞生 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"语言模型可以不做微调就直接做任务"这个 idea 诞生前一周的第一作者视角。
+- 现状：上一阶段《档案 · S0》（论文形态、claim 定位、无消融表）。时间点设为 2018 年 10 月——GPT-1 已挂出四个月，BERT 刚公开。
+- 限制：只用 2018 年 10 月前公开材料；禁止引用论文任何实验结果；禁止预知 1.5B、WebText、Table 3。</p>
+</blockquote>
+<h3>1. 我当时在做什么，什么刺到了我</h3>
+<p>GPT-1 那篇是我们自己发的，结果不算难看，但我心里有个疙瘩一直没解开。</p>
+<p>我们把判别式任务拍平成一条序列、只在最后加一个线性层，架构零改动——这一步走通了。但走通的<strong>代价</strong>是我原来那个执念的退让：我还是得给每个任务准备标注数据。GLUE 的数据是人一条条标出来的；QA 的数据是人一条条标出来的。模型越大、越好，就越像是在把人的标注吃得更干净，而不是"自己会了"。这跟 2017 年那个情感神经元给我的直觉是拧着的——那个模型没人教它做情感分类，它自己长出了一个管情感的单元【可查证：Radford, Jozefowicz, Sutskever 2017，arXiv:1704.01444】。</p>
+<p>然后十月初 BERT 挂出来了【可查证：Devlin et al., arXiv:1810.04805，2018 年 10 月】。他们把双向的目标加上微调，在 GLUE 上把我们一起架在火上。GLUE 那个榜是当时所有人的靶心。</p>
+<p><strong>刺到我的不是输赢，是那条路的天花板</strong>：如果继续在"预训练 + 微调"这条轴上比，比的是谁的标注数据用得更狠、谁的目标函数更巧。这条路的天花板是标注数据的总量。而标注数据是人手做出来的，人手是有价格的。也就是说，我们这条路往上走，会撞到"人类愿意标多少"这堵墙。</p>
+<h3>2. 我的第一个 naive 想法</h3>
+<p>最直接的：<strong>把 GPT-1 那套继续做大</strong>。四层变八层，10 亿参数变 50 亿，语料从 BooksCorpus 换成能爬到的一切网页，然后去 GLUE 上把 BERT 掀翻。</p>
+<p>这个想法甚至不需要论证，它是当时实验室里的默认档位。</p>
+<h3>3. 它卡在哪，为什么死</h3>
+<p>它死了三次，我每次都想救，每次都没救活。</p>
+<p><strong>第一死：它没有回答任何新问题。</strong> 打赢 BERT 只证明"我们的工程量比他们大"，不证明"语言模型学会了任务"。哪怕我们赢了，我也说不出为什么赢。这对我没用——我要的是理解，不是名次。</p>
+<p><strong>第二死：它撞在数据上。</strong> GLUE 就那么点数据。多任务方向已经有人把 (dataset, objective) 对堆到 10 个和 17 个【可查证：§1 原文 the two most ambitious efforts to date have trained on a total of 10 and 17 (dataset, objective) pairs respectively，指 McCann et al. 2018 与 Bowman et al. 2018】。我当时写下的一句自问后来原样进了论文：当前机器学习系统需要成百上千个样本才能归纳出泛化良好的函数，按这个数，多任务训练大概也需要成百上千个有效的 (dataset, objective) 对才兑现得了它的承诺。<strong>继续堆数据集，就是拿人手去填一个指数级的坑。</strong> 这条路在算术上就是死的。</p>
+<p><strong>第三死：它和"泛化"这两个字背道而驰。</strong> 论文 §1 里那句"当前系统的普遍毛病是单任务、单域训练"，我当时是自己拿它来打自己的：再做一个单任务单域的 GLUE 模型，就是又往这个毛病里添一笔。</p>
+<h3>4. 转机</h3>
+<p>三件事撞在了一起，时间是一周内。</p>
+<p><strong>一是那个玩具式的论证。</strong> 我盯着 GPT-1 的目标函数看的时候，意识到一件事：监督学习的目标和语言建模的目标<strong>是同一条式子</strong>，只是监督只在一小段序列上算 loss【可查证：§2 原文 Since the supervised objective is the the same as the unsupervised objective but only evaluated on a subset of the sequence】。如果这是同一函数，那"能不能做任务"就不是能力问题，是<strong>优化到没到收敛</strong>的问题。也就是说，任何监督任务，都是语言建模分布里的一个子集。这意味着不需要为每个任务设计目标——只需要一个足够好的密度估计。</p>
+<p><strong>二是 McCann 他们递过来的那把刀。</strong> decaNLP 里那句"语言提供了一种灵活的方式把任务、输入、输出都表示为符号序列"【可查证：§2 原文 language provides a flexible way to specify tasks, inputs, and outputs all as a sequence of symbols】。他们举的例子是 <code>(translate to french, english text, french text)</code>。<strong>他们用这句话论证"可以做一个多任务模型"，我读成了另一件事：任务说明本身就是文本的一部分，那它就可以是训练数据的自然成分。</strong> 他们要多标 10 个数据集，我连标都不用标——只要网上有人写过"英语句子 = 法语句子"。</p>
+<p><strong>三是我想通了互联网的性质。</strong> Weston 2016 那篇对话学习的工作证明了一种可能：不给奖励信号，直接从前向预测里学【可查证：§2 引用 Weston 2016, Dialog-based language learning】。但他被"对话"这个设定框住了。我当时的判断是：<strong>互联网上的信息是被动可得的，不需要交互</strong>。有人在网页里写"她是法国人，她说 Je ne suis pas un imbécile"——那这条网页本身就同时包含任务说明、输入和输出。</p>
+<p>拼图合上：<strong>不做微调，不设计目标，把语料做得足够大足够杂，然后假设一个容量足够的语言模型会为了把下一个词预测得更准，被迫去学会这些示范里的任务。</strong> 这不是"我们教它做任务"，是"它为了预测得更准不得不学会做任务"。</p>
+<p>我对这个想法毫无把握。§2 里我留了那句退路："preliminary experiments confirmed that sufficiently large language models are able to perform multitask learning in this toy-ish setup but learning is much slower than in explicitly supervised approaches"【可查证：§2 原文】——这是我在动手之前就看到的：<strong>这条路走得通，但慢。</strong> 慢意味着要靠规模去换。</p>
+<hr />
+<h3>《档案 · S1》</h3>
+<pre><code>【阶段】S1 idea 诞生
+【已知事实】
+1. 作者 2017 年做过情感神经元工作（arXiv:1704.01444），论文 §1 引为 Radford et al., 2017【可查证：§1 引用行】
+2. GPT-1 发表于 2018 年，论文 §2 多处以其为架构基线（原句 The model largely follows the details of the OpenAI GPT model）【可查证：§2.3】
+3. BERT 于 2018 年 10 月公开，论文将其列为&quot;最小的第二个模型等同 BERT 最大模型&quot;的对照【可查证：§3 开头】
+4. 多任务学习当时最激进的两项工作分别只训了 10 与 17 个 (dataset, objective) 对【可查证：§1 原文】
+5. 论文自陈的 meta-learning 类比：每个 (dataset, objective) 对就是从数据集与目标分布里采出的一个训练样本；当前系统需成百上千样本才能归纳出泛化良好的函数【可查证：§1 原文】
+6. 监督目标与无监督目标同式、仅 evaluand 子集不同；故无监督目标的全局最小点也是监督目标的全局最小点【可查证：§2 原文，本论文的核心理论论证】
+7. decaNLP（McCann et al., 2018）已论证可用符号序列表达任务、输入、输出，并给出 translate to french 的样例格式【可查证：§2 原文与所举序列样例】
+8. Weston 2016 在对话设定下做过无奖励信号的直接学习证明【可查证：§2 引用】
+9. 作者自陈的预备实验结论：足够大的 LM 能做这种玩具式多任务学习，但远比显式监督慢【可查证：§2 原文】
+【合理重构】
+a. 时间点设为 2018 年 10 月、触发场景为 BERT 公开当周——依据：引文 [Devlin 2018-10] 与 [Radford 2018-06] 的时间差；BERT 是论文里唯一被当作&quot;对标对象&quot;引用的同期工作（重构）
+b. 用&quot;标注数据的成本是这条路的天花板&quot;作为第一动机——依据：§1 原文把&quot;采集数据集、设计目标&quot;的规模化困难列为动机主轴（重构，论文未写成第一人称动机句）
+c. 第三个 naive 想法（自建带标注的 web QA 对）被否决的场景——依据：§2.1 明确拒绝&quot;对任务做预先假设&quot;的做法（原句 we want to avoid making assumptions about the tasks to be performed ahead of time）（重构）
+【负结果】
+1. naive 想法一&quot;把 GPT-1 继续做大去打 GLUE 榜&quot;被毙，死因三条：不回答新问题；标注数据是天花板；与泛化背道而驰
+2. naive 想法二&quot;把 (dataset, objective) 对继续堆到几十上百&quot;被毙，死因是算术：兑现承诺需要成百上千对，人手填不起
+3. naive 想法三&quot;自己造带标注的任务数据&quot;被毙，死因是它把任务选择权交还给了研究者，等于放弃&quot;不预设任务&quot;这一唯一优势
+4. 预备实验已显示要走的路比监督慢一个量级，故&quot;不靠规模也能赢&quot;这一分支当场死亡
+（本阶段负结果即主体内容，占比约 65%）
+【未决问题】
+1. 语料从哪来、怎么保证它既大又杂还不脏？（留给 S4 数据轨）
+2. 容量到多少才够？需要多大才&quot;够用&quot;？（留给 S3 与 S4 的模型矩阵）
+3. 零样本怎么评？没有任务专用输出层，答案怎么从生成文本里取出来？（留给 S3）
+4. 别人的 LM 已经做过零样本单任务，我们的边界在哪？（留给 S2）
+【一致性自检】上一阶段《档案 · S0》的两条已知事实与本阶段无冲突：S0 记录论文无消融表，本阶段未依赖任何消融结论；S0 记录 claim 的三处同源表述，本阶段的动机推断与之同向。
+【后见之明自检】未引用任何论文实验结果、未出现 1.5B 与 7/8 等数字；&quot;靠规模换速度&quot;仅以预备实验的定性结论论证，未预知规模必然有效——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-01】</strong> 《合理重构》a 条写作"BERT 是论文里唯一被当作对标对象引用的同期工作"。<strong>"唯一"不成立</strong>：Universal Transformer（Dehghani et al., 2018）同为同期工作，在 §3.3 被引作 LAMBADA 准确率的 19% 对照【可查证：§3.3 原文】；Transformer-XL（Dai et al., 2019）则被引作 Table 3 若干列的 SOTA 来源【可查证：Table 3 caption】。现改为"论文中最主要的同期对标对象"。<strong>严重度 P2（表述不严），不触及 S1 的任何实质判断。</strong></p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S1.5 · 内部博弈 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"零样本任务迁移"这个方向在团队内部被质疑、砍 scope、最终定型的过程。
+- 现状：上一阶段《档案 · S1》（三个 naive 想法之死、监督目标与无监督目标同式的论证）+ 论文作者列表与致谢。
+- 限制：时间点同 S1（2018 年 10 月）；无人知道论文最终成功；每个立场必须有利益动机；每个判断打标签。</p>
+</blockquote>
+<h3>作者结构与各自的账本</h3>
+<p>六位作者，前两位标单星号、末两位标双星号，脚注文字是"Equal contribution"（即星号所标者代表同等贡献）【可查证：论文首页脚注原句】。也就是说，<strong>四个人被标为同等贡献</strong>，中间两位（Rewon Child、David Luan）没有标记。这个结构本身就说明：这不是一个人写的故事，四条线都有话语权。</p>
+<p>我按仿真需要把立场归成三角（<strong>作者数、分工结构为【合理重构】，依据是同等贡献标记的分布与致谢里"Google 训练基础设施协助者"这条线索所指向的算力依赖</strong>）：</p>
+<ul>
+<li><strong>一作（我）</strong>：账本是"做出一个别人没做过的东西"。愿意冒险，愿意为了一个说不清能不能成的 claim 烧掉几个月。</li>
+<li><strong>资深作者（Sutskever 位）</strong>：账本是"故事线站得住、投稿/发布不翻车"。求稳，管叙事的一致性。</li>
+<li><strong>合作者（Amodei 位 + 另两位同等贡献者）</strong>：账本最杂——Amodei 那边还多一本"这东西放出去会不会被滥用"的账；Child / Luan 那边是工程与算力的账。他们的天然动作是砍 scope。</li>
+</ul>
+<h3>分歧一：语料用 Common Crawl 还是自己爬</h3>
+<p><strong>谁和谁</strong>：我一作 vs 合作者。</p>
+<p><strong>争什么</strong>：Common Crawl 免费、量大到近乎无限，而且不是我一个人在用——直接下就行。合作者的反击很直接：这东西脏。而且不是猜的，<strong>Trinh &amp; Le 那篇已经公开抱怨过 Common Crawl 里存在大量"content are mostly unintelligible"的文档</strong>【可查证：§2.1 原文引用】。</p>
+<p><strong>我为什么不让</strong>：自建爬虫意味着至少一个月工期，而且爬下来还是脏的。我在会上说过"我们是在做语言模型，模型自己会从噪声里学"。</p>
+<p><strong>收口</strong>：合作者赢了一半，但赢的方式很漂亮——他没有说"不许用网页"，他说"网页可以，但要有人替我们筛过"。<strong>Reddit 上至少 3 个 karma 的出站链接</strong>【可查证：§2.1 原文】是全网唯一一个现成的、免费的、由人投票产生的内容质量信号。这一句一出来，我就没法再争：爬虫还是要自己写（我输），但爬的对象不用我造（他让）。<strong>先例被推翻、方案被保留，这是团队里最常见的妥协形态。</strong></p>
+<h3>分歧二：这一篇要不要给微调结果</h3>
+<p><strong>谁和谁</strong>：我一作 vs 资深作者。这是最激烈的一次。</p>
+<p><strong>争什么</strong>：资深作者的意思是——<strong>必须给 GLUE 或 decaNLP 的微调数字</strong>。理由不是学术，是防御："你这篇一个微调数字都没有，审稿人第一句话就是'你们没跟 BERT 比'。我不用你说服我，我要的是别人挑不出这个口子。"</p>
+<p><strong>我的立场</strong>：不能给。原因也不纯是学术——<strong>只要论文里出现一个微调数字，整篇的叙事就从"语言模型自己会做任务"塌缩成"我们的模型微调也不错"</strong>。而后者我们大概率打不过 BERT，因为我们用的是单向模型，他们自己那篇的卖点就是双向【可查证：§6 末段原文承认这一不确定性："it is unclear whether the additional training data and capacity of GPT-2 is sufficient to overcome the inefficiencies of uni-directional representations demonstrated by BERT"】。</p>
+<p><strong>收口</strong>：<strong>用一句承诺换掉一组实验。</strong> §6 最后一段写下"we plan to investigate fine-tuning on benchmarks such as decaNLP and GLUE"【可查证：§6 末段原文】。这句话在博弈上的作用是双份的：对内部的资深作者，它是"我们没忘，只是下一篇"；对外部的审稿人，它是一道提前封口的胶带。<strong>这是一个纯粹的叙事决策，被写成了科研计划的口吻。</strong></p>
+<h3>分歧三：只出最大的那个模型，还是出一串</h3>
+<p><strong>谁和谁</strong>：合作者（算力与工期）vs 我一作。</p>
+<p><strong>争什么</strong>：合作者的账很好算——训一个 15 亿参数的模型已经很贵了，训四个就是四份钱。而且如果只报最大的，论文短、进度快、风险少。他的原话大意是："你的 claim 是零样本能做任务，那就报一个数字，做出来就行。"</p>
+<p><strong>我为什么死活要四个</strong>：因为我的核心 claim 不是"能做任务"，是<strong>"容量是这件事的关键"</strong>。这个 claims 里"容量"是自变量，只有一个点就画不出因果关系。只报最大模型，等于我说的每一句关于容量的判断都变成不可验证的断言。</p>
+<p><strong>收口</strong>：合作者条件性让步，代价是<strong>尺寸要 log-uniform 均匀铺开、不能再加第五个</strong>【可查证：§3 开头原句 We trained and benchmarked four LMs with approximately log-uniformly spaced sizes】。这四个点后来撑起了全文三张主图（Figure 1、Figure 2、Figure 3）与摘要里那句"improves performance in a log-linear fashion across tasks"。<strong>一次被折价的坚持：我要四档，得到四档，但失去了继续往上加的自由。</strong></p>
+<hr />
+<h3>被砍掉的 scope（不是因为它错，是因为没人手 / 没算力 / 怕风险）</h3>
+<ol>
+<li>
+<p><strong>多语言。</strong> 这是最疼的一次。我原来想的是"语料越杂越好，那多语言当然更杂"。被砍的理由<strong>不是学术而是分析成本</strong>：一旦语料里混进多语言，所有单语评测集的重叠分析与困惑度口径全都得重做一遍；而团队要用同样的时间交一份能站住的分析。<strong>结果是一刀切：主动移除所有非英语网页</strong>【可查证：§3.7 原句 we deliberately removed non-English webpages from WebText as a filtering step】。
+   <strong>这个砍法后来以一种很讽刺的方式回到论文里</strong>：那台字节级语言检测器发现 WebText 里仍然残留 10MB 法语——滤不干净【可查证：§3.7 原文】。而正是这 10MB，成了"完全没教过翻译任务，却出现 11.5 BLEU Fr→En"这一结果的解释材料。<strong>被砍掉的方向没有消失，它以证据的形式回来了。</strong></p>
+</li>
+<li>
+<p><strong>把整套权重和语料直接开放。</strong> 一开始的默认计划是全开——GPT-1 就是这么做的，代码和数据都放出去了。这次被砍，砍的人是合作者，理由不是工期也不是算力，是<strong>风险</strong>。最终的形态是分阶段：先放小模型，最大的那个压着【可查证·论文外：2019 年 2 月的分阶段发布安排；论文脚注 5 可作内证——它承诺公开的只是 "Preliminary code for downloading and using the small model"，"small" 这个词是全文唯一的模型开放承诺】。
+   我想强调这条的性质：<strong>它不是实验做得不够，是一次主动的、不可逆的自我限制。</strong></p>
+</li>
+<li>
+<p><strong>给每个任务设计专用 prompt / 后处理。</strong> 这是我在 S3 里一直想偷偷加回来的一条腿，砍它的过程放在 S3 讲。</p>
+</li>
+</ol>
+<hr />
+<h3>《档案 · S1.5》</h3>
+<pre><code>【阶段】S1.5 内部博弈（多作者分歧）
+【已知事实】
+1. 作者共 6 位，Radford 与 Wu 标星号，Amodei 与 Sutskever 标双星号，脚注写明二者均代表同等贡献；Child、Luan 无标记；全体单位均为 OpenAI【可查证：论文首页作者行与脚注】
+2. 致谢明确感谢&quot;all the Googlers who helped us with training infrastructure&quot;并列出 10 位以上的具体人员，说明训练基础设施依赖外部协作【可查证：Acknowledgements 段】
+3. 论文拒绝直接使用 Common Crawl，理由是质量；并引用 Trinh &amp; Le 2018 对 Common Crawl 中大量文档&quot;content are mostly unintelligible&quot;的抱怨；作者自陈在初始实验中观察到类似问题【可查证：§2.1 原文】
+4. 最终语料采用&quot;Reddit 出站链接 + 至少 3 karma&quot;这一人类策展代理启发式【可查证：§2.1 原文】
+5. 论文全文不含任何微调数字；§6 末段以计划口吻承诺后续研究 decaNLP 与 GLUE，并自陈不确定单向表征的劣势能否被数据量与容量补上【可查证：§6 末段原文】
+6. 共训练并评测四档模型，规模为近似对数均匀分布【可查证：§3 开头原文】
+7. 主动移除全部非英语网页；但字节级语言检测仍发现约 10MB 法语残留【可查证：§3.7 原文】
+8. 论文脚注 5 只承诺公开可下载并使用小模型所需的初步代码【可查证：论文脚注 5 原文】
+【合理重构】
+a. 三方立场模型（一作冒险 / 资深求稳 / 合作者砍 scope）与三次分歧的具体争点——依据：同等贡献标记的分布、致谢中的算力依赖、以及论文里三处&quot;留下了折价痕迹&quot;的原文（Reddit 启发式、四档 log-uniform、末段的微调承诺）（重构）
+b. 语料来源之争的具体翻盘台词（&quot;网页可以，但要有人替我们筛过&quot;）——依据：§2.1 从&quot;拒绝 Common Crawl&quot;直接跳到&quot;只用人类策展过的链接&quot;，中间的取舍痕迹只能由这条逻辑补上（重构）
+c. 全量开源的默认计划被安全考量否决——依据：脚注 5 的 small 一词与公开的分阶段发布事实（重构加论文外查证）
+【负结果】
+1. 分歧一：自建爬虫方案被否，死因是工期与收益不成比例
+2. 分歧二：本篇给出微调结果被否，死因是会把整篇叙事从&quot;自己会做任务&quot;塌缩为&quot;微调也不错&quot;
+3. 分歧三：追加第五个更大模型的请求被否，死因是算力
+4. 被砍 scope 一：多语言，死因是分析成本（后续以 10MB 法语残留的形式部分复活）
+5. 被砍 scope 二：全量权重与语料开源，死因是误用风险，是一次主动的自我限制
+（本阶段负结果为主体内容，占比约 55%）
+【未决问题】
+1. 既然不移除任务假设、又不给微调，答案怎么从生成文本里取出来？（留给 S3）
+2. 语言检测器没滤干净的非英语数据，会不会污染评测？（留给 S4）
+3. 分阶段发布意味着&quot;1.5B 的参数细节可公开到什么程度&quot;要在成文时一并决定（留给 S6）
+【一致性自检】本阶段与上一阶段档案无冲突：S1 记录&quot;语料从哪来&quot;列为未决问题，本阶段给出了内部博弈版本的答案且与 S4 数据轨的锚点一致；S1 记录&quot;B 与 C 派划清界限&quot;，本阶段分歧二正是那条划界在团队内部的投影，方向一致。
+【后见之明自检】未引用 Table 3 或任何性能数字；&quot;容量是关键&quot;仅以论证结构说明为何必须四档，未断言四档必然呈现某种趋势——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S2 · 文献调研 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"我站在哪"——零样本任务迁移这个问题在 2019 年 2 月之前的前人工作地图。
+- 现状：上一阶段《档案 · S1》《档案 · S1.5》（方向已定：不做微调、不预设任务、靠容量）。
+- 限制：只许引用 2019 年 2 月之前的文献。论文 related work 未提但当时已存在的关键工作可以补，但必须注明"论文未引"。</p>
+</blockquote>
+<h3>1. 四派地图，各派代表作与死穴</h3>
+<h4>A 派：表征迁移（用别人的表征，跑自己的任务）</h4>
+<p>代表作：word2vec / GloVe / Skip-thought【可查证：§5 引用 Mikolov 2013、Pennington 2014、Kiros 2015】、CoVe【可查证：§5 引用 McCann 2017】、ELMo【可查证：§5 引用 Peters 2018】。</p>
+<p><strong>死穴</strong>：迁过去的只是表示，任务模型本身还得任务专用。ELMo 在下游要叠自己的 BiLSTM 与 attention【可查证：§2 引用链】——也就是说无监督学到的东西只负责输入层，真正的判断仍然由标注数据现场学。</p>
+<p><strong>我对它的态度</strong>：划清界限，而且是硬的。这一派的极限就是"更好的初始化"，不是"自己会做任务"。</p>
+<h4>B 派：预训练 + 微调（我的出生地）</h4>
+<p>代表作：Dai &amp; Le 2015【可查证：§1 引用】、ULMFiT【可查证：§5 引用 Howard &amp; Ruder 2018】、GPT-1【可查证：§2.3 原句 The model largely follows the details of the OpenAI GPT model】、BERT【可查证：§3 开头】。</p>
+<p><strong>死穴</strong>：<strong>必须有监督数据</strong>。这一派的所有进展都可以被读成"如何更省地用标注数据"，而不是"可以不标注"。</p>
+<p><strong>亲缘</strong>：这是我的亲生母亲，我不否认。架构、优化器、训练配方几乎全是继承的。但我这次要走到她的反面去——<strong>我要证明没有她那个尾巴（微调步）也能活</strong>。§1 那句话我写得很清楚：这一派"仍然需要监督训练才能执行任务"【可查证：§1 原句 These methods still require supervised training in order to perform a task】。BERT 尤其关键：它的双向目标本身就规定了下游要接一个任务头，它<strong>在结构上就宣布零样本是不可能的</strong>——这就给了我们一个别人不会来抢的空位。</p>
+<h4>C 派：显式多任务 / 任务描述</h4>
+<p>代表作：decaNLP/MQAN【可查证：§2 引用 McCann et al. 2018】、One Model To Learn Them All【可查证：§2 引用 Kaiser et al. 2017】、Yogatama 2019 与 Bowman 2018【可查证：§1 引用】。</p>
+<p><strong>死穴（我认为是致命的）</strong>：每个 (dataset, objective) 对都得是人造出来的，并且都要标注。"最激进的两项工作分别只训了 10 与 17 个对"【可查证：§1 原文】。按机器学习系统动辄需要成百上千样本才能泛化的经验，这条路要兑现就得要成百上千个对。<strong>它不是一个方向选错了，它是一个规模指标选错了。</strong></p>
+<p><strong>亲缘</strong>：半个亲生。它给了我"语言可以描述任务"这把刀（S1 已记），但它的任务描述是<strong>人为发明的控制码</strong>；我的任务描述是<strong>语料里本来就有的自然文本</strong>。就差这一步，性质完全不同：它造数据，我找数据。</p>
+<h4>D 派：无监督任务学习的前身（单点突破）</h4>
+<p>代表作：Weston 2016 对话式语言学习【可查证：§2 引用】、Schwartz 2017 常识推理【可查证：§1 引用】、Radford 2017 情感神经元【可查证：§1 引用】、Karpathy 2015 的 RNN 可解释单元【可查证：§5 引用】、Liu 2018 的 Wikipedia 生成模型顺带学会跨语言译名【可查证：§5 原文 the observation of Liu et al. (2018) that a model trained to generate Wikipedia articles also learned to translate names between languages】。</p>
+<p><strong>死穴</strong>：全是单任务、单数据集的 proof of concept，而且大多止于定性观察。这一派没有一篇做过系统评测，所以谁也没法说"这是普遍现象"还是"这是运气好"。</p>
+<p><strong>亲缘</strong>：<strong>血最亲的一派。</strong> §5 里我自己承认了：真正鼓舞我的不是别人，是 Liu 2018 那个"生成维基百科的模型顺带学会了翻译人名"【可查证：§5 原句 More inspirational to our work was...】。这句话之所以鼓舞我，是因为它说明"顺带学会"不是我们那篇情感神经元的孤例。</p>
+<h3>2. 惊魂时刻：我以为没人做过，查到发现有人做过</h3>
+<p>这个时刻发生在我准备写"零样本任务迁移是空白"这句话的时候。</p>
+<p>我去查 Winograd Schema Challenge 的榜，发现 <strong>Trinh &amp; Le 2018 已经用语言模型做过了，而且没在 WSC 上训练</strong>【可查证：§2.1 与 §3.4 都引用了 Trinh &amp; Le 2018】。他们的做法是"比较两种消解哪个概率更高"。<strong>这就是零样本任务执行</strong>——跟我打算做的事在性质上是同一件。</p>
+<p>当时我盯着屏幕坐了一会儿。如果这件事已经有人做过，我那篇论文的第一句话就不成立了。</p>
+<p><strong>后来是怎么活下来的</strong>，靠的是去读他们那篇的两处细节：</p>
+<ol>
+<li>
+<p><strong>他们用的是一个"小样本的 Common Crawl 子集"，而且这个子集是"只保留与目标数据集最相似的文档"筛出来的</strong>【可查证：§2.1 原文 Trinh &amp; Le (2018)'s best results were achieved using a small subsample of Common Crawl which included only documents most similar to their target dataset, the Winograd Schema Challenge】。<strong>这句话救了整篇论文。</strong> 因为"只保留与目标任务最相似的文档"意味着他们已经把任务知识<strong>预先注入了反</strong>——这是一个针对 WSC 量身定制的语料。而我要是能把语料做得完全不带任务偏好，还能赢，性质就不同了。§2.1 里我写了这句自我定位：我们要避免预先对任务做假设【可查证：§2.1 原文 we want to avoid making assumptions about the tasks to be performed ahead of time】。<strong>这句话表面上是方法论，实际上是我在被抢先之后画的那条分界线。</strong></p>
+</li>
+<li>
+<p><strong>他们只做了一个任务。</strong> 一个任务无法区分"语言模型普遍会做任务"和"语言模型的某条路径恰好撞对了这个任务"。<strong>要证明前者，就得换很多任务、换很多数据集，而这一点恰好是我这边唯一有优势的地方——我有容量和语料。</strong> 于是"广度"就成了我的护城河。§3 里七个任务探针的排布，根子在这个惊魂时刻。</p>
+</li>
+</ol>
+<h3>3. 补记：论文没引、但当时已经存在、我认为该引的两条</h3>
+<p>（本节的标签性质不同：以下两条是<strong>论文未引</strong>的同期工作，我按 S2 的纪律补上，供 S8 判断是否构成覆盖度缺口）</p>
+<ol>
+<li><strong>Xiong et al. 关于 Pre-LN 的工作</strong>——论文 §2.3 用了"把 LayerNorm 挪到子块输入"这个改动，却没有任何引用【可查证：§2.3 原文只写做法不给引用与动机】。当年这类"深层 Transformer 训练稳定性"的知识主要散在代码与口头传播里。这一条对 S3 很关键：<strong>它意味着 §2.3 的三个架构改动在论文里是无引用、无动机的</strong>，S3 只能把它们写成待验猜想。</li>
+<li><strong>Universal Transformer（Dehghani et al., 2018）</strong>——论文只在 LAMBADA 一节把它当作对照数字引用（19%）【可查证：§3.3 引用】，没有在 related work 里讨论它"用循环深度换容量"的路线。这条路线与"靠参数规模换能力"是直接竞争的假设，<strong>不讨论它，等于回避了本文最核心的自变量之争。</strong></li>
+</ol>
+<hr />
+<h3>《档案 · S2》</h3>
+<pre><code>【阶段】S2 文献调研
+【已知事实】
+1. 表征迁移一派的代表与引用位置：GloVe（§5）、Skip-thought（§5）、CoVe（§5）、ELMo（§5）、词向量与上下文表征的迁移谱系（§1）【可查证：各引用行】
+2. 预训练加微调一派：Dai &amp; Le 2015（§1）、ULMFiT（§5）、GPT-1（§2.3 明示本模型沿用其细节）、BERT（§3 开头）；§1 明言这些方法仍需要监督训练才能执行任务【可查证：§1 原句】
+3. 多任务一派：decaNLP（§2，含任务可表示为符号序列的论证）、One Model To Learn Them All（§2）、Yogatama 2019 与 Bowman 2018（§1）；最激进的两项仅训 10 与 17 个 (dataset, objective) 对【可查证：§1 原文】
+4. 单点突破一派：Weston 2016（§2）、Schwartz 2017（§1）、Radford 2017（§1）、Karpathy 2015（§5）、Liu 2018（§5，§5 明言其&quot;更具启发性&quot;）【可查证：各引用行】
+5. Trinh &amp; Le 2018 已用语言模型在 Winograd Schema Challenge 上取得零样本性质的结果；其最佳结果建立在&quot;只保留与目标数据集最相似的文档&quot;的 Common Crawl 子样本上【可查证：§2.1 与 §3.4 原文】
+6. 论文明确以&quot;避免预先对任务做假设&quot;作为与 Trinh &amp; Le 的分界策略【可查证：§2.1 原文】
+7. 论文 §2.3 列出三处架构改动（LayerNorm 前移、末层后追加 LayerNorm、残差路径初始化按 N 的平方根反比缩放），三处均无引用、无动机句【可查证：§2.3 原文】
+8. Universal Transformer 在论文中仅作为 LAMBADA 对照数字出现（19%），未进入 related work 讨论【可查证：§3.3 引用，§5 无其条目】
+【合理重构】
+a. &quot;惊魂时刻&quot;的具体场景与两处救命细节的读取顺序——依据：§2.1 对 Trinh &amp; Le 语料筛选方式的批评写得极为具体，这类具体性通常来自&quot;被抢先之后的逐句复盘&quot;（重构）
+b. 与 C 派的本质差异定位为&quot;造数据 vs 找数据&quot;——依据：§2.1 拒绝预先假设任务、§2.1 用人类策展信号替代人工筛选，两处锚点共同指向这条边界（重构）
+【负结果】
+1. 最初假设&quot;零样本任务迁移是空白&quot;被证伪，Trinh &amp; Le 2018 已做过单任务版本，该假设当场作废
+2. 想用&quot;我们是第一个&quot;作为卖点的分支死亡，被迫改为用&quot;广度&quot;作为卖点
+3. 想在 related work 里把 BERT 归入&quot;另一条路线、不作比较&quot;的处理被否，死因是它是同期唯一直接竞争物，回避会引火烧身
+（本阶段负结果占比约 45%；第 8 条已知事实另构成一处覆盖度缺口候选，交 S8 判定）
+【未决问题】
+1. §2.3 三处架构改动的动机无处可查，S3 该怎么处理？（留给 S3，纪律要求降级为待验猜想）
+2. 语料要做到&quot;完全不带任务偏好&quot;，具体怎么实现？（留给 S4 数据轨）
+3. 广度这条护城河要挖到多宽才够？七个任务是够还是不够？（留给 S4 实验轨与 S6）
+【一致性自检】本阶段与《档案 · S1》《档案 · S1.5》无冲突：S1 把&quot;C 派只是给刀&quot;写为转机来源，本阶段把它写为&quot;半个亲生但路线不同&quot;，两处一是借鉴其论证、一是划清其做法，方向一致；S1.5 记录&quot;多语言语料被砍&quot;，本阶段 A 派地图里未出现跨语言迁移的替代路线，不构成新的可选分支。
+【后见之明自检】未引用任何论文自身的性能数字来评价前人；对 Trinh &amp; Le 的处理只用了其做法描述，未用任何&quot;我们后来赢了&quot;的口吻——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-02】</strong> 《已知事实》第 7 条写作"三处均无引用、无动机句"，<strong>其中"无引用"不实</strong>。§2.3 原句为 <code>Layer normalization (Ba et al., 2016) was moved to the input of each sub-block, similar to a pre-activation residual network (He et al., 2016)</code>——<strong>归一化前移这一处有 Ba et al., 2016 与 He et al., 2016 两处引用</strong>。另两处（末端追加 LayerNorm、残差权重按 1/√N 缩放）确实无引用。正确表述应为：<strong>四处改动均无动机句；其中归一化前移一处有两处引用，其余三处无引用。</strong>
+<strong>说明</strong>：S3 依据本条做出的"整批降级为待验猜想"这一决定<strong>不受影响</strong>——降级依赖的是"引不出论文的动机原句"，而不是"没有引用"（引用 ≠ 动机）。但原稿把"无引用"写成了降级的辅助理由之一，属于论据错位，<strong>严重度 P1</strong>。同一处错误在 S3.md 中重复出现，见该文件对应修订注。</p>
+<p><strong>【修订注 · S8 核查 · H-G2-02b】</strong> 《合理重构》b 条中"造数据 vs 找数据"的定位保持不变；但第 3 节补记第 1 条的标题"论文没引、但当时已经存在"对 Pre-LN 路线而言亦不严谨：论文对所引的 He et al. 2016 pre-activation 残差网络的<strong>类比</strong>是有引用的，缺的是对"深层 Transformer 的归一化位置选择"这一具体做法的引用。现改为："论文未引深层 Transformer 归一化位置的具体做法文献，仅有 pre-activation 残差网络的类比引用。"<strong>严重度 P2。</strong></p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S3 · 建模迭代 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原方法从 v0 到论文最终形态的迭代链，中间版本一个都不许跳。
+- 现状：上一阶段《档案 · S1》《档案 · S1.5》《档案 · S2》（方向定型：不做微调、不预设任务、任务描述来自自然文本；且 §2.3 三处架构改动无引用无动机）。
+- 限制：v0/v1 可以是【合理重构】，但每一版的死因必须让内行信服。<strong>凡陈述"某个设计是为了解决某个问题"，必须引出论文里的动机原句，否则降级为待验猜想。</strong></p>
+</blockquote>
+<h3>v0：把微调那一刀砍掉，其他原样不动</h3>
+<p>最直接的形式化：GPT-1 的流水线是「预训练 → 拍平成序列 → 加线性层 → 微调」。我把最后两步直接删掉，留下「预训练 → 拍平成序列 → 采样」。</p>
+<p>具体做法是：把任务写成一段文本，喂进去，让模型接着写，从写出来的东西里取答案。比如问答就写"问题……答：____"，让模型续写。</p>
+<p><strong>它为什么不够</strong>——三个层次：</p>
+<ol>
+<li>
+<p><strong>接口层：答案取不出来。</strong> 模型续写的是<strong>网页文本的分布</strong>，不是<strong>答案的分布</strong>。我问"谁是第一个被弹劾的总统"，它接着写"这个问题在历史上有很多讨论。安德鲁·约翰逊是第一位……"——答案在里面，但不在开头，我不知道该切哪一段。<strong>注意这不是工程问题，是目标函数的问题</strong>：语言建模只保证"整段文本的概率高"，从不保证"答案出现在某个固定位置"。这一条后来在 LAMBADA 上以最干净的形式复现：模型给出的<strong>大多是句子的合法续写，但不是合法的最后一个词</strong>【可查证：§3.3 原句 most predictions are valid continuations of the sentence, but are not valid final words】。它证明的不是模型不会，而是<strong>模型没有被告知"这里要的是那个词"</strong>。</p>
+</li>
+<li>
+<p><strong>效率层：慢一个量级。</strong> 论文 §2 留下了我自己写的预备实验结论：足够大的语言模型确实能做这种玩具式的多任务学习，<strong>但远比显式监督慢</strong>【可查证：§2 原文 learning is much slower than in explicitly supervised approaches】。慢意味着必须用规模和时间去换——这是全篇最终走向"四档 log-uniform 模型矩阵"的真正原因，也是合作者在 S1.5 里让步的代价。
+   附带一句理论上的安慰：监督目标与无监督目标是同一条式子，只是 evaluand 是子集，所以无监督目标的全局最小点也是监督目标的全局最小点【可查证：§2 原文】。<strong>这句话的用处是防线，不是进展</strong>：它保证这条路"原则上能到"，但不保证"我们能到"。</p>
+</li>
+<li>
+<p><strong>风险层：我拿什么证明它是"学"的？</strong> 如果模型只是把训练语料里出现过的问答原样背出来，那我做出的东西叫<strong>检索</strong>，不叫零样本任务学习。这一层在 v0 阶段我甚至不知道怎么设计检验，但它像根刺一样留在计划里——<strong>后来它变成了整整一节（§4 Generalization vs Memorization）。</strong></p>
+</li>
+</ol>
+<h3>v1：先救输入——表示层死了两回</h3>
+<p>v0 的接口问题我不打算用后处理硬解（S1.5 已经砍掉那条腿）。换个思路：<strong>如果不改模型，能不能改"文本怎么进模型"？</strong></p>
+<p><strong>第一条死路：字符 / 词级 BPE。</strong> 参考的 BPE 实现是在 Unicode 码点上做的【可查证：§2.2 原文 reference BPE implementations often operate on Unicode code points and not byte sequences】。这意味着要覆盖全部 Unicode 字符串，基础词表就得超过 130,000【可查证：§2.2 原文 This would result in a base vocabulary of over 130,000 before any multi-symbol tokens are added】——而当时 BPE 任务上常用的词表是 32k 到 64k【可查证：§2.2 原文 the 32,000 to 64,000 token vocabularies often used with BPE】。<strong>代价不是钱，是分配：词表是有限的，多出来的 7 万多个槽位本来可以装词。</strong></p>
+<p><strong>第二条死路：直接上字节级 LM。</strong> 字节这个粒度天然满足"任何 Unicode 字符串都能算概率"这个要求【可查证：§2.2 引用 Gillick et al. 2015 作为该思路的先例】。但字节级语言模型在 One Billion Word Benchmark 上打不过词级模型【可查证：§2.2 原文 current byte-level LMs are not competitive with word-level LMs】；<strong>而且我自己在 WebText 上重跑，也看到了同样的差距</strong>【可查证：§2.2 原句 We observed a similar performance gap in our own attempts to train standard byte-level LMs on WebText】。这一条是"文献说不行，我自己也验证了不行"。</p>
+<p><strong>活下来的版本：字节级 BPE。</strong></p>
+<p>它的定位是"字符级与词级之间的实用中间态"【可查证：§2.2 原文 a practical middle ground between character and word level】。三个具体决策：</p>
+<ul>
+<li>基础词表 <strong>256</strong>（字节）而不是 13 万【可查证：§2.2 原文 only requires a base vocabulary of size 256】；</li>
+<li><strong>禁止跨字符类别合并</strong>：直接把 BPE 用在字节序列上会产生次优合并，因为它是频率贪婪的启发式，结果会把 <code>dog</code>、<code>dog.</code>、<code>dog!</code>、<code>dog?</code> 各占一个槽位【可查证：§2.2 原文，含这四个具体形态】——"limited vocabulary slots and model capacity 的次优分配"【可查证：§2.2 原文 sub-optimal allocation of limited vocabulary slots and model capacity】；</li>
+<li><strong>对空格开一个例外</strong>：这一条例外"显著提升压缩效率，同时只带来极小的词碎片化"【可查证：§2.2 原文 We add an exception for spaces which significantly improves the compression efficiency while adding only minimal fragmentation of words across multiple vocab tokens】——<strong>这是全文少数给出"代价—收益"对比的一句话，所以它是动机可查证的</strong>。</li>
+</ul>
+<p>最终词表 50,257【可查证：§2.3 原文 The vocabulary is expanded to 50,257】。</p>
+<p><strong>v1 暴露的新问题</strong>：输入表示修好了，"答案在哪"的问题一点没动。v1 只让模型能把任何字符串读进来、算得出概率，<strong>读得进来 ≠ 答得对</strong>。</p>
+<h3>v2：最后一块拼图不是架构，是"接口约定"</h3>
+<p>到这里我卡了很久。真正的转折不是某个模块，是<strong>我放弃了"让模型自己知道要干什么"这个念头</strong>。</p>
+<p>McCann 他们那句"语言可以把任务、输入、输出都表示为符号序列"【可查证：§2 原文】在 S1 时被我读成"任务说明可以是训练数据的自然成分"。到 v2 我才意识到它的另一半用途：<strong>它同时是推理时的接口约定</strong>。既然任务是文本，那我就在推理时<strong>把任务写进上下文</strong>——不是改模型，是改我给它的那段文本。</p>
+<p>论文里七处探针全部是这个约定的实例【可查证：以下逐句取自 §3】：</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>接口约定（论文原句）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>阅读理解（CoQA）</td>
+<td>条件于文档、对话历史、以及最后一个 token <code>A:</code>【§3.5】</td>
+</tr>
+<tr>
+<td>摘要（CNN/DM）</td>
+<td>在文章后加上 <code>TL;DR:</code>，再生成 100 个 token【§3.6】</td>
+</tr>
+<tr>
+<td>翻译（WMT-14）</td>
+<td>上下文给若干 <code>english sentence = french sentence</code> 样例对，最后以 <code>english sentence =</code> 收尾【§3.7】</td>
+</tr>
+<tr>
+<td>问答（Natural Questions）</td>
+<td>用问答样例对做种，帮助模型推断该数据集的短答风格【§3.8】</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这就是最后一块拼图：零样本 ≠ 零格式。</strong> 模型不需要微调，但需要<strong>接口</strong>；接口不是新参数，是一段人写的自然文本。它把 v0 的"答案取不出来"降级成了"答案在哪一段"的工程细节——语义上仍然是零样本，因为模型没有为任何任务更新过权重。</p>
+<p><strong>然后是架构侧的四刀。</strong> §2.3 列出的改动是：</p>
+<ol>
+<li>LayerNorm 移到每个子块的输入，类似 pre-activation 残差网络【可查证：§2.3 原文】；</li>
+<li>在最后一个自注意力块之后追加一个 LayerNorm【可查证：§2.3 原文】；</li>
+<li>一个新的初始化，把残差层权重按 1/√N 缩放，N 为残差层数【可查证：§2.3 原文】；</li>
+<li>上下文从 512 提到 1024，batch 从（GPT-1 的）更小值提到 512【可查证：§2.3 原文】。</li>
+</ol>
+<p><strong>纪律自检（这一节必须扣死）：以上四条，论文全部只写"做了什么"，一句动机都没给，也没有任何引用。</strong> 按 S3 的纪律，任何"某设计是为了解决某问题"的说法都必须引出论文原句——这里引不出来。所以这四刀在本阶段<strong>一律降级为待验猜想</strong>，标注如下：</p>
+<table>
+<thead>
+<tr>
+<th>改动</th>
+<th>论文给出的动机句</th>
+<th>本阶段判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LayerNorm 前移</td>
+<td>无</td>
+<td>待验猜想（深层网络训练稳定性的常见处方之一）</td>
+</tr>
+<tr>
+<td>末端追加 LayerNorm</td>
+<td>无</td>
+<td>待验猜想</td>
+</tr>
+<tr>
+<td>残差初始化按 1/√N 缩放</td>
+<td>无</td>
+<td>待验猜想（"account for the accumulation on the residual path with model depth"是描述、不是动机）</td>
+</tr>
+<tr>
+<td>context 512→1024 / batch 512</td>
+<td>无</td>
+<td>待验猜想</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这几行是本轮与 GPT-1 首跑最大的一处方法论差异。</strong> GPT-1 当年 S3 犯的错，是把 v1 的辅助目标动机写成"治小数据过拟合"——而论文 §3.2 的动机原句是"提升泛化并加速收敛"，Table 5 的逐任务差值更是反着的：<strong>动机写错，整条迭代链就救错了人。</strong> 那一轮的教训是"必须引出原句"；这一轮的处境更硬：<strong>原句根本不存在</strong>。所以这里没有可救的错，只有必须承认的不可知——四条架构改动的真实动机，任何仿真都只能重构，S8 必须把它们整批列入"编圆了但论文没这回事"的高危区。</p>
+<h3>4. 对照论文最终方法：我的迭代链和它的距离</h3>
+<p>（本段允许看论文，其余段落不许）</p>
+<table>
+<thead>
+<tr>
+<th>我的版本</th>
+<th>论文最终形态中的对应物</th>
+<th>距离</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0 删微调 + 采样</td>
+<td>§2 的"零样本、不改参数与架构"总纲</td>
+<td>无距离，v0 就是论文的第一性原理</td>
+</tr>
+<tr>
+<td>v0 的接口问题</td>
+<td>§3.3 承认部分预测是合法续写而非合法末词；用 stop-word filter 近似补救</td>
+<td><strong>论文没有消灭这个问题，只是给它加了一个近似补丁</strong>。这是本文最诚实也最脆弱的一处</td>
+</tr>
+<tr>
+<td>v1 字节级 BPE + 禁跨类合并 + 空格例外</td>
+<td>§2.2 全文</td>
+<td>无距离，逐条对上；唯一未获动机的是空格例外之外的合并策略</td>
+</tr>
+<tr>
+<td>v2 的上下文接口约定</td>
+<td>§3.5–§3.8 四处格式</td>
+<td>无距离，且这四处是"零样本"claim 得以成立的实际承载物</td>
+</tr>
+<tr>
+<td>v2 的四刀架构改动</td>
+<td>§2.3</td>
+<td><strong>有距离，且这个距离无法测量</strong>：论文不给动机，所以我无法判断我的重构是否与真实决策同因。这四刀整批降级</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>《档案 · S3》</h3>
+<pre><code>【阶段】S3 建模迭代
+【已知事实】
+1. 预备实验结论：足够大的语言模型能在玩具式设定下做多任务学习，但比显式监督慢得多【可查证：§2 原文】
+2. 监督目标与无监督目标同式，仅 evaluand 为子集，故二者的全局最小点重合【可查证：§2 原文】
+3. 参考 BPE 实现在 Unicode 码点而非字节上操作；覆盖全部 Unicode 需超过 130000 的基础词表；当时常用 BPE 词表为 32000 至 64000【可查证：§2.2 原文】
+4. 字节级 LM 在 One Billion Word Benchmark 上不及词级；作者在 WebText 上的自行尝试观察到同样差距【可查证：§2.2 原文】
+5. 字节级 BPE 基础词表为 256；直接对字节序列做 BPE 会因频率贪婪启发式产生次优合并，例如 dog 的多种形态各占槽位；故禁止跨字符类别合并，并对空格例外；空格例外显著提升压缩效率且碎片化极小【可查证：§2.2 原文，其中空格例外是全文少数给出代价收益对比的动机句】
+6. 最终词表扩至 50257【可查证：§2.3 原文】
+7. §2.3 四处架构与训练改动（LayerNorm 前移、末块后追加 LayerNorm、残差层权重按 1 除以根号 N 初始化缩放、context 由 512 增至 1024 与 batch 512）全部只给做法，无动机句、无引用【可查证：§2.3 原文，全文无相关引用】
+8. 七处任务探针的实际接口约定：CoQA 条件于文档加对话历史加末 token A:；摘要为文章后加 TL;DR: 并生成 100 token；翻译为若干 english sentence = french sentence 样例对加英文句子等号收尾；问答为问答样例对做种【可查证：§3.5、§3.6、§3.7、§3.8 原文逐句】
+9. LAMBADA 的误差形态：多数预测是句子的合法续写，但不是合法的最后一个词；作者据此认为模型没有利用&quot;必须是句末词&quot;这一约束【可查证：§3.3 原文】
+【合理重构】
+a. v0 的形态（删去微调与任务头、直接续写取答案）与它的三层死因——依据：§2 的总纲与预备实验结论、§3.3 的误差形态描述（重构）
+b. v1 的两条死路顺序（先试字词级 BPE、再试纯字节级、最后落到字节级 BPE）——依据：§2.2 的叙述顺序本身即为该顺序（重构程度低，接近论文叙述序的还原）
+c. v2 的转折点定位为&quot;任务写进上下文的接口约定&quot;而非任何模块——依据：§3.5 至 §3.8 四处格式在论文中承担了零样本 claim 的全部实现（重构）
+【负结果】
+1. v0 被毙，死因三层：接口层答案不可定位、效率层比监督慢一个量级、风险层无法排除记忆解释
+2. v1 第一方案（字词级 BPE）被毙，死因是 130000 以上的基础词表挤占有限的词表槽位与模型容量
+3. v1 第二方案（纯字节级 LM）被毙，死因是文献与自己实验双重验证的不及词级性能
+4. v2 的四刀架构改动动机不可查证，整批降级为待验猜想——这是本阶段最重的一条负结果：不是方案被否，而是&quot;归因资格&quot;被否
+5. 想用后处理抽取答案的路线在 v0 阶段即被否（S1.5 已记录的 scope 砍除）
+（v0 与 v1 的死因构成本阶段负结果主体，连同第 4 条，占比约 60%）
+【未决问题】
+1. 语料要多大多杂才会自发出现任务示范？需要的规模是能估算还是只能试？（留给 S4 数据轨）
+2. 四条架构改动的真实动机如果永远查不到，S8 该怎么给它们定级？（留给 S8）
+3. 记忆解释要怎么被排除？（★ 本阶段明确挂起的最大钩子，正文里没有任何一节能绕过它，留给 S4 与 S8）
+【一致性自检】与《档案 · S1》《S1.5》《S2》无冲突：S1 记&quot;预备实验显示比监督慢&quot;，本阶段 v0 死因第 2 条与之一致；S1.5 记录&quot;给每任务设计专用后处理被砍&quot;，本阶段 v2 用的上下文接口不是后处理（不改输出、只改输入），不构成对 S1.5 决议的回退，已在此显式说明；S2 记录&quot;§2.3 三处改动无引用无动机&quot;，本阶段据其执行了降级，处理方向一致。
+【后见之明自检】未引用 Table 3 任何数值；v2 的容量预期只写&quot;必须靠规模换速度&quot;，未断言某档规模必然奏效，也未提及最终四档的具体尺寸——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-02】</strong> 正文写"以上四条，论文全部只写'做了什么'，一句动机都没给，<strong>也没有任何引用</strong>"——<strong>"也没有任何引用"不实</strong>。§2.3 的归一化前移一处带两处引用（Ba et al., 2016；He et al., 2016）。正确表述：<strong>四处均无动机句；归一化前移一处有两处引用，其余三处无引用。</strong> 降级决定不变（降级依赖的是"引不出动机原句"）。<strong>严重度 P1</strong>，与 S2.md 同源。</p>
+<p><strong>【修订注 · S8 核查 · H-G2-03】</strong> 《合理重构》b 条把 v1 的两条死路顺序写成"先试字词级 BPE、再试纯字节级"，并标注"重构程度低，接近论文叙述序的还原"。<strong>这个标注不成立</strong>：§2.2 的实际叙述序是 <strong>先讲字节级（优雅但打不过词级）→ 再讲 BPE 作为折中 → 再讲参考实现按码点操作导致 13 万词表的问题 → 最后给禁止跨类合并的修补</strong>【可查证：§2.2 段落顺序】。即真实顺序与我的写法相反。现改标为<strong>中重度重构</strong>，并说明顺序系按"致命程度"重排（13 万词表更像先被撞上的墙）。<strong>严重度 P2。</strong></p>
+<p><strong>【修订注 · S8 核查 · H-G2-03b】</strong> §4 对照表 v1 行写"无距离，逐条对上；唯一未获动机的是空格例外之外的合并策略"，句式含混。现改为："逐条对上；其中空格例外有明确的代价—收益对比句，属动机可查证；禁止跨类合并本身只有理由（BPE 频率贪婪导致 dog 的多种形态各占槽位）而无引用；三处架构改动与训练侧改动均无动机句。"<strong>严重度 P2。</strong></p>
+<p><strong>【修订注 · S8 核查 · H-G2-09】</strong> v0 死因第 3 层结尾写"……但它像根刺一样留在计划里——<strong>后来它变成了整整一节（§4）</strong>"。<strong>这是本阶段的一处后见之明泄漏</strong>：本阶段开头的纪律明令"每一版的死因必须说得让内行信服"且全阶段不得预知论文最终形态，而"后来它变成了整整一节"直接引用了论文的章节编排（后见）。现改为："这一层在 v0 阶段甚至没有检验手段，只能作为悬置的钩子记下来（见本阶段《档案》未决问题第 3 条）。"<strong>严重度 P1（后见之明泄漏）。</strong> 该处由 S8 的"反向后见之明核查"查出，是全部七个阶段里唯一一处泄漏。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S4 · 数据 + 实验（双轨）—— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原"数据从哪来、为什么这么测"背后的博弈。本论文的数据轨是主战场，篇幅不低于实验轨。
+- 现状：上一阶段《档案 · S3》（v0/v1/v2 定型：字节级 BPE + 上下文接口约定；四条架构改动无动机、整批待验）。
+- 限制：承认算力与工期限制；实验叙事里的曲线走向不许照抄论文结论（那属于 S8 的对照材料）。<strong>另加一条本论文专属的限制：全文无消融表，故本阶段的归因纪律无法执行，只能整条降级——见第 9 条。</strong></p>
+</blockquote>
+<h3>【数据轨】</h3>
+<h4>1. 数据从哪来：四个候选，三个被否</h4>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th>谁支持</th>
+<th>否决理由（论文依据）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Common Crawl</td>
+<td>我（一作，理由：免费、近乎无限）</td>
+<td><strong>两种否决叠加</strong>：文献层面，Trinh &amp; Le 2018 已公开抱怨其中大量文档"content are mostly unintelligible"，且他们的解法是"只保留与目标数据集最相似的文档"，这等于把任务知识预先注进语料；<strong>作者层面，我们在自己的初始实验里观察到了同样的质量问题</strong>【可查证：§2.1 原文两处】</td>
+</tr>
+<tr>
+<td>Wikipedia</td>
+<td>合作者（理由：干净、可控）</td>
+<td><strong>被主动移除</strong>，理由不是脏而是"干净得太大众"：它是许多数据集的共同来源，与测试任务重叠会让分析复杂化【可查证：§2.1 原句 We removed all Wikipedia documents from WebText since it is a common data source for other datasets and could complicate analysis due to overlapping training data with test evaluation tasks】</td>
+</tr>
+<tr>
+<td>单域语料（新闻 / 小说 / 书籍）</td>
+<td>无</td>
+<td>与核心 claim 直接冲突：我们要的恰恰是<strong>域的多样性</strong>，单域语料在定义上做不到</td>
+</tr>
+<tr>
+<td>Reddit 出站链接</td>
+<td>合作者（S1.5 分歧一的收口）</td>
+<td>——<strong>被采纳</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>采纳方案的两句关键原文必须逐字记住</strong>：
+- 「只抓取经过人类策展/筛选的网页」，因为"人工筛选整份网页爬取会异常昂贵"【可查证：§2.1 原文】；
+- 「抓取 Reddit 上至少获得 3 个 karma 的所有出站链接」，这可以看作"其他用户是否觉得这个链接有趣、有教育意义或只是好笑"的启发式指标【可查证：§2.1 原文】。</p>
+<p><strong>"至少 3 个 karma"这个数字是整条数据轨的支点</strong>：它用一个免费的、由人投票产生的代理信号，替换掉了"人工筛选"这个买不起的工序。它同时也是 §2.1 里我们与 Trinh &amp; Le 划界线的物质基础——<strong>他们的语料带任务偏好，我们的不带。</strong></p>
+<p>抽取器：Dragnet 与 Newspaper 的组合【可查证：§2.1 原文】。</p>
+<h4>2. 清洗与筛选：三次返工（本阶段第一条负结果重点区）</h4>
+<p><strong>返工一：<code>&lt;UNK&gt;</code> 和分词痕迹反过来咬了我们。</strong>
+我们在 S3 赌的是"字节级输入 → 不需要任何有损预处理与分词"，这句话我们当时觉得很漂亮。<strong>但下游数据集的另一个方向是脏的</strong>：那些评测集大多经过激进的标准化，带着"断开标点与缩写、被打乱句子"这类分词痕迹【可查证：§3.1 原文 aggressively standardized text, tokenization artifacts such as disconnected punctuation and contractions, shuffled sentences】，甚至出现 <code>&lt;UNK&gt;</code> 这个字符串——而它在 WebText 里极端罕见，40 亿字节里只出现 26 次【可查证：§3.1 原文】。
+<strong>结果是我们要反向造工具。</strong> 论文的解法是造"可逆的去分词器"，把尽可能多的预处理痕迹还原掉，并且特别强调它们<strong>可逆</strong>，所以数据集的对数概率仍然算得出来；论文把它定位为"一种简单的域适配"【可查证：§3.1 原文 invertible de-tokenizers ... can be thought of as a simple form of domain adaptation】。
+<strong>这条的教训很硬：我们为了"不引入分词偏差"而放弃分词，结果不得不为别人的分词偏差写一个逆向器。规避一个偏差，不消除它，只是换了个方向撞上去。</strong></p>
+<p><strong>返工二：非英语滤不干净。</strong>
+按 S1.5 的决议，我们主动移除全部非英语网页【可查证：§3.7】。<strong>然后语言检测器给出的答案是：WebText 里还剩 10MB 法语</strong>【可查证：§3.7 原文 detected only 10MB of data in the French language】。
+当时这是一条"过滤器没做干净"的坏消息，写进论文时它变成了一条证据（见 S5）。</p>
+<p><strong>返工三：评测集自己也不干净。</strong>
+我们在做 CBT 的数据重叠分析时发现，测试集里的一本书——吉卜林的《丛林之书》——就在 WebText 里【可查证：§3.2 原文 Data overlap analysis showed one of the CBT test set books, The Jungle Book by Rudyard Kipling, is in WebText】。<strong>处理方式是放弃测试集、改报验证集</strong>【可查证：§3.2 原文 we report results on the validation set which has no significant overlap】。这条后来直接催生了 §4 整节——<strong>我们知道"要查重叠"这件事，是《丛林之书》教的，不是反过来。</strong></p>
+<h4>3. 数据规模怎么定的</h4>
+<p><strong>坦白讲：不是算出来的，是过滤器的边界决定的。</strong></p>
+<ul>
+<li>抓取始点是全部 Reddit 出站链接，规模是 <strong>4500 万条链接</strong>【可查证：§2.1 原文 these 45 million links】；</li>
+<li>去重与启发式清洗之后，得到<strong>略多于 800 万篇文档、总计 40GB 文本</strong>【可查证：§2.1 原文 slightly over 8 million documents for a total of 40 GB of text】；</li>
+<li>时间上切成 <strong>2017 年 12 月之前的链接</strong>，这一版被明确称作 WebText 的"初步版本"【可查证：§2.1 原文 a preliminary version of WebText which does not include links created after Dec 2017】。</li>
+</ul>
+<p><strong>"40GB 不是上限，是这一次的余量"——这一点有两处独立内证：</strong>
+1. 论文 §3 说所有模型<strong>都还在欠拟合 WebText</strong>，给更多训练时间，留出集的困惑度仍在改善【可查证：§3 原文 All models still underfit WebText and held-out perplexity has as of yet improved given more training time】；
+2. §4 用 Figure 4 展示训练集与测试集性能<strong>一起随模型规模上升而改善</strong>，并据此再次得出"即便 GPT-2 在很多方面仍在 WebText 上欠拟合"【可查证：§4 原文】。</p>
+<p><strong>这两句是整篇论文在数据轨上的自白：规模没有到顶，是工期和算力到顶了。</strong></p>
+<h3>【实验轨】</h3>
+<h4>4. 核心问题 → 倒推出需要哪几个实验</h4>
+<p>我要回答的核心问题有三个，每个都倒逼出一组实验：</p>
+<table>
+<thead>
+<tr>
+<th>核心问题</th>
+<th>倒推出的实验</th>
+<th>论文落点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>容量是不是这件事的关键？</td>
+<td>训练四档规模（近似对数均匀），在全部指标上铺出曲线</td>
+<td>§3 开头、Table 2、Figure 1（多任务）、Figure 2（CBT）、Figure 3（WSC）、Figure 4（WebText 自身）</td>
+</tr>
+<tr>
+<td>零样本到底能不能真做任务？</td>
+<td>七个任务探针，每个都用该领域自己的指标</td>
+<td>§3.2 CBT、§3.3 LAMBADA、§3.4 WSC、§3.5 CoQA、§3.6 摘要、§3.7 翻译、§3.8 问答</td>
+</tr>
+<tr>
+<td>这是任务学习还是记答案？</td>
+<td>用 8-gram Bloom 过滤器量化重叠</td>
+<td>§4，Table 6 + Figure 5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>第三组实验是我在 S3 v0 就埋下的那根刺。</strong> 它的设计细节值得记下来：Bloom 过滤器装 WebText 训练集的 8-gram，字符串先归一化为"只含小写字母数字词、单空格分隔"以提高召回；误报率上界压到 1e-8，并用 100 万个字符串做验证，<strong>命中数为零</strong>【可查证：§4 原文三处】。</p>
+<h4>5. baseline 选谁、最怕被谁比下去</h4>
+<p><strong>原则</strong>：每个任务用它自己领域的既有最好结果，不另造统一 baseline。论文 Table 3 的 SOTA 行来自五个不同来源并逐列标注【可查证：Table 3 caption】。</p>
+<p><strong>最怕的三处（按怕的程度排）</strong>：
+1. <strong>One Billion Word Benchmark。</strong> 这是我们主动认输的那一列——它是最大的数据集，而且它自己的预处理最有破坏性：句级打乱"移除了全部长程结构"【可查证：§3.1 原文 1BW's sentence level shuffling removes all long-range structure】。<strong>我们模型的长处正好是长程依赖，这一列把我们的长处切掉了。</strong>
+2. <strong>摘要。</strong> 我们心里有数：定性上像模像样，定量上会很难看。
+3. <strong>翻译。</strong> En→Fr 方向我们完全没底，因为语料里非英语是<strong>被我们主动删掉的</strong>。这一列的预期本来是"随便报个数、承认不行"。</p>
+<h4>6. 超参数怎么定的</h4>
+<p><strong>只有一句可查证的交代</strong>：每个模型的学习率是人工调的，目标是在 WebText 的 5% 留出样本上取得最好的困惑度【可查证：§3 原文 The learning rate of each model was manually tuned for the best perplexity on a 5% held-out sample of WebText】。</p>
+<p><strong>其余全部无交代</strong>：batch 512、context 1024、优化器细节、训练步数、warmup、权重衰减——论文一个数都没给【可查证：§2.3 与 §3 均无对应文字】。这是一篇技术报告在可复现性上最大的缺口，S8 必须把它算成覆盖度缺口而不是幻觉。</p>
+<h4>7. 消融实验：本论文没有消融表，纪律无法执行</h4>
+<p><strong>这是本节的结论，也是整轮仿真最重要的一条方法论差异。</strong></p>
+<p>GPT-1 有 Table 5（逐任务的微调消融差值），所以它的 S4 可以执行"凡归因必须与消融表逐任务差值对齐"这条纪律——那次正是靠这条纪律，把"辅助目标在小数据上帮助更大"的叙事抓成反例。</p>
+<p><strong>GPT-2 全文不存在任何消融表。</strong> 全文最接近消融的只有两处，且都不是消融：</p>
+<ol>
+<li><strong>去分词器</strong>：只给了"对 GPT-2 有 2.5 到 5 的困惑度增益"这个区间【可查证：§3.1 原文】，<strong>没有对照表，无法逐行核</strong>；</li>
+<li><strong>Table 4 的 <code>GPT-2 no hint</code> 行</strong>：这是真正的单变量对照（去掉 <code>TL;DR:</code> 提示），也是全文唯一一处可以逐格做差值的对照——它的差值在 S8 处理。</li>
+</ol>
+<p><strong>所以本阶段的归因纪律执行方式是：整批降级。</strong> 任何"某个设计起了作用"的说法，在本论文里都只能停留在待验猜想，因为没有可对齐的差值表。<strong>这不是我们偷懒，是论文没给对齐物。S8 应把"S4 归因纪律无法执行"本身记为一条结构性发现。</strong></p>
+<h4>8. 至少一次"实验崩了"（本阶段负结果重点区）</h4>
+<p><strong>崩溃一：照抄前人的评测设定，结果被坑。</strong>
+LAMBADA 的既有最好结果是在"受限预测设定"下取得的——模型的输出被约束成只能从<strong>上下文里出现过的词</strong>里选。我们按最稳的做法照搬了这个设定。<strong>它在我们身上起的是反作用：19% 的答案根本不在上下文里</strong>【可查证：§3.3 原文 For GPT-2, this restriction is harmful rather than helpful since 19% of answers are not in context】。
+<strong>这个坑的性质很重要</strong>：不是我们方法有问题，是"继承别人的评测协议"这个动作本身有风险——协议里可能藏着一条只在别人的模型上成立的隐含假设（"答案一定在上下文里"）。</p>
+<p><strong>崩溃二：数据重叠把测试集判了死缓。</strong>
+CBT 的《丛林之书》（见数据轨返工三）。排查路径：做分词与语料统计时顺手跑了一次 n-gram 重叠 → 命中 → 只能改报验证集。</p>
+<p><strong>崩溃三：目标数据集被前人净化过，而我们的模型没见过净化后的文本。</strong>
+这是数据轨返工一在实验侧的表现：<code>&lt;UNK&gt;</code> 与断开标点让模型在"它明明读过的东西"上表现变差。</p>
+<h4>9. 本阶段必须吸收的正面硬数字（对照清单，供 S8 使用）</h4>
+<p>⚠️ 这一节的写法需要单独声明：<strong>以下数字属于"最终报出来的结果"，不是"当时的预期"。</strong> 它们写在这里的唯一目的是让 S8 有据可对——上一轮 GPT-1 的首跑把 GLUE 72.8 对 68.9 整段漏掉了，导致覆盖度缺口没被发现。<strong>本节的列表是交付物，不是叙事中的预测，也不得被 S8 之外的阶段引用。</strong></p>
+<p><strong>（a）主表与核心结果</strong>
+- 零样本刷新 <strong>8 个语言建模数据集中的 7 个</strong>的记录（摘要、§3.1、§7 三处同源）【可查证】；
+- Table 3 十列 × 四档模型 + SOTA 行的完整数值矩阵（数值经 S8 第 0 步重算，此处不重复抄录，只登记"必须全数吸收"）；
+- LAMBADA 困惑度 <strong>99.8 → 8.63</strong>（摘要口径写 8.6）；准确率无过滤 <strong>52.66%</strong>、加停用词过滤器 <strong>63.24%</strong>，相对既有最好结果提升 <strong>4%</strong>【可查证：§3.3、Table 3】；
+- CBT：常用名词 <strong>93.3%</strong>、命名实体 <strong>89.1%</strong>【可查证：§3.2】；
+- Winograd Schema Challenge：<strong>70.70%</strong>，比既有最好结果提升 <strong>7%</strong>【可查证：§3.4】；
+- CoQA：<strong>55 F1</strong>，在不使用 <strong>127,000+</strong> 条人工问答对的前提下追平或超过 <strong>4 个 baseline 中的 3 个</strong>【可查证：§3.5、摘要】。</p>
+<p><strong>（b）失败与接近失败的两列（必须吸收，不许只报赢的）</strong>
+- One Billion Word Benchmark：<strong>42.16</strong>，显著劣于既有结果（SOTA 行 21.8）【可查证：Table 3】；
+- 摘要（Table 4，ROUGE F1）：<code>GPT-2 TL;DR:</code> R-1 <strong>29.34</strong> / R-2 <strong>8.27</strong> / R-L <strong>26.58</strong> / 平均 <strong>21.40</strong>，只"刚刚超过"随机抽 3 句（<code>Random-3</code> 平均 <strong>20.98</strong>），而 SOTA <code>Bottom-Up Sum</code> 平均 <strong>32.75</strong>【可查证：Table 4】；
+- 摘要去掉任务提示后平均<strong>下降 6.4 点</strong>（21.40 → 15.03）【可查证：§3.6、Table 4】；
+- 翻译：WMT-14 En→Fr <strong>5 BLEU</strong>（略差于双语词典逐词替换），Fr→En <strong>11.5 BLEU</strong>（优于若干无监督基线，但远低于当前最好 <strong>33.5 BLEU</strong>）【可查证：§3.7】；
+- 问答：Natural Questions 精确匹配 <strong>4.1%</strong>，最小模型不超过简单基线的 <strong>1.0%</strong>，正文称 GPT-2 "<strong>5.3 倍</strong>"于最小模型；在其最有信心的 <strong>1%</strong> 问题上准确率 <strong>63.1%</strong>；与开放域问答系统的 <strong>30% 至 50%</strong> 区间相比"仍然差得多得多"【可查证：§3.8】。</p>
+<p><strong>（c）重叠与记忆分析（第三组实验）</strong>
+- 常用 LM 数据集测试集与 WebText 训练集重叠 <strong>1–6%</strong>，平均 <strong>3.2%</strong>；这些数据集与各自训练集的重叠平均 <strong>5.9%</strong>【可查证：§4】；
+- 1BW 与自身训练集重叠接近 <strong>13.2%</strong>；WikiText-103 测试集只有 60 篇文章，至少重叠 <strong>1.6%</strong>【可查证：§4】；
+- LAMBADA 平均重叠 <strong>1.2%</strong>；剔除任何重叠的样本后，困惑度由 <strong>8.6 变为 8.7</strong>、准确率由 <strong>63.2% 降至 62.9%</strong>【可查证：§4】；
+- CoQA 新闻域约 <strong>15%</strong> 文档已在 WebText 中，模型在这些文档上表现好约 <strong>3 F1</strong>；跨域平均增益约 <strong>0.5–1.0 F1</strong>【可查证：§4】。</p>
+<p><strong>（d）定性侧的两条</strong>
+- Winograd：273 个样例中只有 10 个与 WebText 训练集有 8-gram 重叠，其中 2 个是假匹配，剩下 8 个里只有 1 个出现在"泄露答案"的语境中【可查证：§4】；
+- 三个 <UNK> 级别的奇怪事实：<code>&lt;UNK&gt;</code> 在 40 亿字节里只出现 26 次；WebText 里法语只有 10MB；CBT 测试集的一本书在训练语料里【可查证：§3.1、§3.7、§3.2】。</p>
+<hr />
+<h3>《档案 · S4》</h3>
+<pre><code>【阶段】S4 数据与实验（双轨）
+【已知事实】
+1. 候选语料四个：Common Crawl（被否）、Wikipedia（被主动移除）、单域语料（不适用）、Reddit 出站链接（采纳）；Common Crawl 的否决理由是文献抱怨加作者自验的双重质量问题，Wikipedia 的移除理由是它是许多数据集的共同来源、重叠会复杂化分析【可查证：§2.1 原文】
+2. 采纳方案：抓取 Reddit 上至少获得 3 个 karma 的全部出站链接，理由是可作为&quot;其他用户是否觉得有趣或有教育意义&quot;的启发式；人工筛选整份网页爬取因昂贵被排除【可查证：§2.1 原文】
+3. 规模：4500 万条链接，去重与启发式清洗后略多于 800 万篇文档、40GB 文本；只保留 2017 年 12 月之前创建的链接，该版本被明确称为初步版本【可查证：§2.1 原文】
+4. 文本抽取使用 Dragnet 与 Newspaper 的组合【可查证：§2.1 原文】
+5. 下游数据集带激进标准化与分词痕迹（断开标点与缩写、打乱句子）；字符串 &lt;UNK&gt; 在 WebText 的 40 亿字节中仅出现 26 次；解法是可逆去分词器，被定位为一种简单的域适配【可查证：§3.1 原文】
+6. CBT 测试集的一本书《丛林之书》在 WebText 中，故改报无显著重叠的验证集【可查证：§3.2 原文】
+7. 非英语网页被主动移除，但字节级语言检测仍发现约 10MB 法语残留【可查证：§3.7 原文】
+8. 训练了四档近似对数均匀间隔的模型；学习率人工调节以在 WebText 的 5% 留出样本上取得最佳困惑度【可查证：§3 原文】
+9. 所有模型仍欠拟合 WebText；训练集与测试集性能随规模同步改善（Figure 4）【可查证：§3、§4 原文】
+10. 记忆检验使用 8-gram Bloom 过滤器，误报率上界 1e-8，并用 100 万个字符串验证且命中数为零；字符串归一化为小写字母数字加单空格以提升召回【可查证：§4 原文】
+11. 论文全文无消融表；最接近的两处是去分词器增益区间（2.5 至 5 困惑度，无表）与 Table 4 的 GPT-2 no hint 行（全文唯一可逐格做差值的单变量对照）【可查证：全文】
+12. 论文未交代 batch 512 与 context 1024 之外的任何训练超参（优化器、步数、warmup、权重衰减均无）【可查证：§2.3、§3 均无对应文字】
+【合理重构】
+a. 三次返工的真实顺序（先撞 &lt;UNK&gt; 与分词痕迹、再发现非英语残留、再撞评测集重叠）——依据：论文各节的叙述顺序与&quot;数据重叠分析&quot;这个动作只在 CBT 一节被提及（重构）
+b. &quot;最怕被谁比下去&quot;的三处排序及其理由——依据：§3.1 对 1BW 预处理破坏性的专门解释、§3.6 对摘要质量的自我贬低、§3.7 对非英语被删除的自陈（重构）
+c. 40GB 是工期余量而非算出的上限——依据：§3 与 §4 两处独立的&quot;仍欠拟合&quot;表述（重构程度低，接近论文自陈）
+【负结果】
+1. Common Crawl 方案被否，死因是文献与自己实验双重验证的质量问题
+2. 摘要任务的本体两次接近失败：只比随机抽三句好 0.42 个平均分；去掉任务提示后掉 6.4 分
+3. 1BW 一列主动认输，死因是它自身的句级打乱摧毁了长程结构
+4. 翻译 En 到 Fr 只有 5 BLEU，略差于词典逐词替换
+5. 数据轨三次返工：去分词器逆流、非英语滤不干净、评测集自污染
+6. 消融纪律在本论文无法执行，全部组件归因整批降级为待验猜想——本阶段最重的一条负结果
+（本阶段负结果占比约 45%）
+【未决问题】
+1. LAMBADA 上 52.66% 与 63.24% 两个口径如何在成文时处理？（本阶段已挂号，留给 S6 与 S8）
+2. 正文的&quot;5.3 倍&quot;与它自己给出的 1.0% 基线无法直接对账，是笔误还是另一个分母？（本阶段已挂号，留给 S8）
+3. 四条架构改动永远拿不到动机，S8 如何给它们定级？（沿用 S3 的钩子）
+4. 摘要任务只赢随机基线 0.42 分，成文时要不要放在显眼位置？（留给 S6）
+【一致性自检】与上一阶段档案无冲突：S3 记&quot;v0 的答案不可定位&quot;与 v2 的上下文接口，本阶段 §3.5 至 §3.8 的接口约定即为其实例；S3 记&quot;四条架构改动无动机&quot;，本阶段第 12 条进一步确认训练超参同样无交代，方向一致；S1.5 记&quot;多语言被砍&quot;，本阶段 10MB 法语残留即为该决议的后果，并在此明确：该残留后来成为翻译结果的解释材料，不构成对 S1.5 决议的推翻。
+【后见之明自检】第 9 节吸收了正面硬数字，属于本阶段设计好的对照清单，已在节首显式声明它不代表当时的预期；本阶段其余部分未以任何曲线走向或结论口吻叙述，Table 3 的完整数值矩阵留待 S8 第 0 步重算后引用——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-04】</strong> 第 9 节（c）第 1 条原样登记了论文的表述"常用 LM 数据集测试集与 WebText 训练集重叠 <strong>1–6%</strong>，平均 3.2%"。<strong>该区间与论文自己的 Table 6 不符</strong>：表中 WebText-train 列的实际范围是 PTB <strong>0.88%</strong> 到 enwik8 <strong>6.31%</strong>【可查证：Table 6】。作为"论文声称的登记"，原样记录本身无错，但<strong>必须加注</strong>，否则本清单会把论文的口径错误向下游传递。现补注：<strong>该区间为论文原话，实际区间为 0.9%–6.3%；平均值 3.2% 复核无误。</strong> 本条属 S4 的连带风险，严重度 <strong>P2</strong>。</p>
+<p><strong>【修订注 · S8 核查 · H-G2-05】</strong> 第 9 节（b）最后一条写作"正文称 GPT-2 '5.3 倍'<strong>于最小模型</strong>"。<strong>论文并未写明这个倍数以谁为分母</strong>——§3.8 原句只说 <code>GPT-2 answers 5.3 times more questions correctly</code>，紧邻的两个明确数字是 4.1% 与 1.0%。我在登记时擅自补全了口径，属于过度解读。现改为原样登记：<strong>"正文称 5.3 倍，未写明比较对象；与它自己给出的 1.0% 基线直接相除只能得到 4.1 倍"</strong>（该矛盾由 S7 隔离审稿人独立发现，S8 认定成立）。<strong>严重度 P2。</strong></p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S5 · 困难与转折 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：把前四个阶段埋下的失败集中引爆，找出这个项目离死掉最近的那一次。本阶段负结果是主角，不是点缀。
+- 现状：《档案 · S1》《S1.5》《S2》《S3》《S4》。
+- 限制：不许编造论文结果层面的失败（论文确实成功了）；只能写过程中真实的挫败类型——方向误判、实现 bug、理论证不出、审稿人预判。</p>
+</blockquote>
+<h3>至暗一：深层的模型训不起来（持续约六周）</h3>
+<p><strong>症状</strong>：模型往上堆层数的时候，浅的那几档还能出曲线，深的那几档一上来就发散；把学习率压到很小能稳住，但损失降得比浅模型还慢。<strong>换句话说，加参数没有换来收益，只换来了不稳定性。</strong></p>
+<p><strong>我当时怎么判断该救还是该弃</strong>：判断的依据不是"能不能训起来"，而是"这个不稳定是超参问题还是结构问题"。判定为结构问题的理由很简单——<strong>学习率调小能稳住说明这不是数据或目标的问题，是尺度的问题</strong>：信息在残差通路上逐层累积，深层拿到的量级和浅层不是一个数量级。</p>
+<p><strong>转折</strong>：§2.3 里那三刀就是对这个症状的处方——LayerNorm 前移到子块输入（类似 pre-activation 残差网络）、在最后一个自注意力块之后追加一层 LayerNorm、并把残差层权重按 1/√N 初始化缩放【可查证：§2.3 原文三处】。第三刀尤其对症状：论文那半句话是"account for the accumulation on the residual path with model depth"——<strong>"残差通路上的累积"这几个字，正是我当时在日志里看到的东西的名字。</strong></p>
+<p>⚠️ <strong>但必须在这里扣死一句话：论文没有给这三刀任何动机，也没有引用。</strong> 上面那段"症状—处方"的对应关系，是<strong>我按症状重构的</strong>，属于【合理重构】，不是论文的记载。真实的原因可能是这三刀，也可能其中两刀是另一件工作的副产品、或者是为了别的目的顺带加的。<strong>这一段是本轮仿真风险最高的一处重构，S8 必须把它列为高危项。</strong></p>
+<h3>至暗二：我们差点相信"模型会自己从噪声里学"（持续约三周）</h3>
+<p>Common Crawl 拉下来之后，第一批样本里满屏是不可读的文档。我在 S1.5 的会上说过"我们是在做语言模型，模型自己会从噪声里学"——<strong>这句话被我自己的实验数据打回来了。</strong></p>
+<p>关键的一击不是"数据脏"，是<strong>论文里我们自己写下的这条对照</strong>：Trinh &amp; Le 2018 拿到好结果的办法是"只保留与目标数据集最相似的文档"【可查证：§2.1 原文】。这说明连他们那样做的人也认为<strong>语料的域匹配</strong>比<strong>语料的量</strong>更重要——如果我们承认这一点，那"靠量硬吃"这条路线的一整条腿就断了。</p>
+<p><strong>转折</strong>：不是技术突破，是一次立场转换——<strong>从"多即是好"改成"多且被筛过才是好"</strong>。而筛的办法不能花钱（人工筛选整份爬取"异常昂贵"【可查证：§2.1】），所以只能找现成的人类信号。这就是 S1.5 分歧一的收口动作在技术侧的完整形态。</p>
+<h3>至暗三：零样本跑出来了，但跑出来的是"合理的废话"（最接近死掉的一次）</h3>
+<p><strong>这是整个项目最危险的两周。</strong></p>
+<p>LAMBADA 的第一版结果出来的时候，我盯着预测看了很久。模型每次都给出一段非常像样的话——语法没错、主题没错、风格没错——<strong>但不是题目要那个词</strong>。</p>
+<p>论文 §3.3 把那次的诊断写得非常克制：多数预测是句子的合法续写，但不是合法的最后一个词，这说明"模型没有利用'这个词必须是句子的最后一个词'这一额外且有用的约束"【可查证：§3.3 原文】。</p>
+<p><strong>我当时的判断是：这个失败可能是致命的，原因不在评测，在目标函数。</strong> 语言建模的损失函数从头到尾只知道"整段文本的概率要高"，它从来没有被告诉过"这里有一个人在等你给一个词"。<strong>如果这就是根本困难，那么零样本这条路的天花板可能就在"合理续写"这一层，永远越不过去。</strong> 而只要这个怀疑成立，S1 里那三个 naive 想法立刻全都复辟——因为它们至少能报数字。</p>
+<p><strong>我用了两个标准决定"救"</strong>：
+1. <strong>这个失败是"能力不足"还是"约束缺失"？</strong> 判据是：如果给模型加上那个缺失的约束，它会不会立刻变好。<strong>会，那就不是能力问题。</strong>
+2. <strong>补救动作会不会污染 claim？</strong> 这是我当时最怕的地方——加一个后处理把答案从候选里挑出来，看起来就是"微调"的软版本。</p>
+<p><strong>转折</strong>：停用词过滤器【可查证：§3.3 原文 Adding a stop-word filter as an approximation to this further increases accuracy】。它的性质是"对缺失约束的<strong>近似</strong>"，不是学习、不是训练、不碰任何参数；而且论文里它被明确写成 approximation，没有伪装成方法的一部分。
+<strong>同时还有第二个更硬的确认</strong>：既有的最好结果是在"受限预测"设定下取得的——<strong>答案被约束为只能从上下文里出现过的词里选</strong>，而我们<strong>照抄这个设定之后反而变差，因为 19% 的答案根本不在上下文里</strong>【可查证：§3.3 原文】。
+<strong>这个反例救了我</strong>：它证明"约束的取舍"不是我们的短板，是这个任务的评测协议本身就有立场；既有的最好结果吃到了那个立场的红利。<strong>于是这件事从"我们不行"改判成"口径不同"。</strong> 这一改判后来直接决定了成文时的写法（见 S6）。</p>
+<h3>至暗四：唯一的失败是最大数据集（持续到写论文的那天）</h3>
+<p>1BW 出来的时候是 42.16，显著劣于既有结果。<strong>而且它不是在边缘上输，是输了一个量级。</strong></p>
+<p>这件事很难消化的地方在于它的方向：<strong>我们自己全篇的主轴是"数据越多、模型越大越好"，结果最好的数据反而最差。</strong> 如果这个反常是随机的，那我们的核心叙事就有裂缝。</p>
+<p><strong>我们花了很长时间排查它是不是 bug</strong>，最后落到论文 §3.1 的那句解释上：1BW 同时是最大的数据集、又有最有破坏性的预处理——<strong>它的句级打乱"移除了全部长程结构"</strong>【可查证：§3.1 原文】。</p>
+<p><strong>这条把裂缝补上了，补的方式不是"我们没错"，而是"数据规模不是独立的变量，它和预处理捆绑在一起"。</strong> 一个更大的数据集如果被自己的预处理切碎了长程依赖，它对我们模型的难度可以比一个小数据集更高。<strong>这不是一次被挽救的失败，是一次被理解了的失败——而理解它的代价是我们必须承认：本文"规模越大越好"这句话是有前提的，前提写在 §3.1 的第三段，而不是标题里。</strong></p>
+<h3>复盘：这些坑能不能在 S1 就避开？</h3>
+<p>诚实回答，分三类：</p>
+<p><strong>能避开的（三条，都是"本该更谨慎"而不是"运气不好"）：</strong></p>
+<ol>
+<li><strong>CBT 的《丛林之书》重叠。</strong> 评测集清单定下来的时候，跑一次 n-gram 重叠检查只需要几小时。<strong>这一条完全是我们没做功课。</strong> 事后它反过来催生了 §4 整节——<strong>用一个大事故换来一节方法论，是净赚还是净亏，取决于有没有别人先替我们付过学费。</strong></li>
+<li><strong>LAMBADA 的受限预测设定。</strong> 我们照抄了一个评测协议而没读它的隐含假设（"答案一定在上下文里"）。<strong>读一眼前人的评测脚本就能避开。</strong></li>
+<li><strong>Common Crawl 的质量。</strong> 论文自己引了 Trinh &amp; Le 的抱怨——<strong>也就是我们在动手之前，就已经有一份写在纸上的警告</strong>，只是被我的"多即是好"压过去了。避开它的代价是要自己写爬虫，那是工期问题，不是认知问题。</li>
+</ol>
+<p><strong>不能避开的（两条，属于当年的知识边界）：</strong></p>
+<ol start="4">
+<li><strong>深层训练不稳。</strong> 2018 年这套知识主要散在代码、邮件和口头传播里，没有一篇能引的文献说清"残差累积 + 归一化位置 + 初始化尺度"该怎么配。<strong>我们今天能把它写成三段因果链，靠的是事后把日志和处方对起来——当时我面对的就是一片发散的数字。</strong></li>
+<li><strong>"合理续写 ≠ 合法末词"这个错配。</strong> 这不是失误，是发现。<strong>它只有在跑完之后才看得见</strong>，而它一旦被看见就改变了我们对整个零样本路线的理解（S3 v0 那根刺最终长成了 §4）。</li>
+</ol>
+<p><strong>最后一条，属于"必须提前预判但不能提前解决"的：</strong></p>
+<ol start="6">
+<li><strong>审稿人会说"这不就是把规模推到极限"。</strong> 这个预判在 S6 里被处理成 §5 的一句外交辞令（把 Hestness 2017 的 scaling 分析拉进来，把"我们只是放大"改写成"我们的结果与该趋势一致并延伸到 10 亿参数以上"）。<strong>预判到了，但解决不了——因为那句批评本身是对的。</strong></li>
+</ol>
+<hr />
+<h3>全局负结果占比统计（截至 S5）</h3>
+<p>按各阶段叙事正文（不含《档案》块）的汉字数估算：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>负结果占比（估）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>约 65%</td>
+</tr>
+<tr>
+<td>S1.5</td>
+<td>约 55%</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>约 45%</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>约 60%</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>约 45%</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>约 70%</td>
+</tr>
+<tr>
+<td><strong>累计</strong></td>
+<td><strong>约 56%（远高于 40% 的下限）</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：负结果占比达标，且五条最高纪律中"负结果 ≥40%"这一条在本论文上比 GPT-1 更容易满足——因为这篇论文本身承认的失败更多（1BW、摘要、En→Fr、QA、非英语残留、欠拟合）。</strong></p>
+<hr />
+<h3>《档案 · S5》</h3>
+<pre><code>【阶段】S5 困难与转折
+【已知事实】
+1. §2.3 列出三处模型侧改动（LayerNorm 前移、末块后追加 LayerNorm、残差层权重按 1 除以根号 N 缩放），并给出&quot;account for the accumulation on the residual path with model depth&quot;这一描述性表述，但无任何动机句与引用【可查证：§2.3 原文】
+2. Trinh &amp; Le 2018 取得最佳结果的方式是只保留与目标数据集最相似的文档；人工筛选整份网页爬取被论文判定为异常昂贵【可查证：§2.1 原文】
+3. LAMBADA 的误差诊断：多数预测是合法续写而非合法末词，模型未利用&quot;必须是句末词&quot;这一约束；加停用词过滤器作为该约束的近似可提升准确率【可查证：§3.3 原文】
+4. 既有最好结果使用受限预测设定（答案须出现在上下文中）；该限制对 GPT-2 有害，因为 19% 的答案不在上下文里【可查证：§3.3 原文】
+5. 1BW 上表现显著劣于既有工作；论文给出的解释是它同时是最大数据集且预处理破坏性最强，句级打乱移除了全部长程结构【可查证：§3.1 原文】
+6. 论文 §5 主动把 Hestness et al. 2017 的容量与数据规模分析纳入讨论，并比较自己的结果与该趋势【可查证：§5 原文】
+【合理重构】
+a. 四周至暗时刻的具体形态、持续时长与&quot;该救还是该弃&quot;的两条判据——依据：§2.3 的三处改动只对&quot;深层不稳定&quot;这一症状成立，§3.3 的误差诊断句是唯一能解释该次危机的原文（重型重构）
+b. 深层训练不稳被判定为结构问题而非超参问题——依据：三处改动中有两处（归一化位置、初始化尺度）在性质上只对尺度类问题有效（重构）
+c. 1BW 反常曾被当作 bug 排查——依据：§3.1 用整整一段解释该异常，解释的详尽程度暗示它曾被当作疑点（重构）
+【负结果】
+1. 深层模型发散，持续约六周，靠三处架构改动压住；但这三处改动的动机不可查证
+2. 差点采信&quot;模型自己会从噪声里学&quot;，被自己的实验数据打回
+3. 零样本首版产出&quot;合理续写而非合法末词&quot;，一度判定可能致命，并一度考虑退回微调路线
+4. 1BW 一列显著失败，最终以&quot;规模与预处理捆绑&quot;重新解释
+5. 三条本可提前避开但没避开的失误：CBT 评测集重叠未先查、LAMBADA 评测协议未先读、Common Crawl 质量警告已被文献写在纸面上
+6. 审稿人会指&quot;只是把规模推到极限&quot;这一预判被确认无法解决，只能改写
+（本阶段负结果为主体内容，占比约 70%）
+【未决问题】
+1. 三处架构改动的&quot;症状—处方&quot;重构属于重型重构，S8 如何定级？（交 S8）
+2. LAMBADA 的停用词过滤器会如何进入成文叙事？（交 S6）
+3. 1BW 的前提条件（规模与预处理捆绑）在成文时要不要写进显眼位置？还是留在 §3.1 第三段？（交 S6）
+【一致性自检】与《档案 · S3》《S4》无冲突：S3 已把四处架构与训练改动整批降级为待验猜想，本阶段沿用该降级并给出症状侧的重构，未越过 S3 划定的边界；S4 第 9 节吸收的硬数字未被本阶段当作失败叙事的素材来源（1BW 与摘要的失败在 S4 已作为&quot;最怕被谁比下去&quot;登记，方向一致）。全阶段负结果累计占比约 56%，高于 40% 下限。
+【后见之明自检】至暗一至至暗四的时间跨度、心理活动均为重构并以标签声明；未把论文的成功结果当作&quot;我们早就知道会成&quot;的证据；三条可避失误的判定只用&quot;做功课与否&quot;这一外部标准——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-06】</strong> 至暗一写作"§2.3 里那三刀<strong>就是</strong>对这个症状的处方"，并称第三刀"尤其对症状"。<strong>这个对应关系的锚点强度被写高了。</strong> 逐条核：论文 §2.3 中唯一可作描述性锚点的只有 <code>account for the accumulation on the residual path with model depth</code> 这半句，<strong>它只对应初始化缩放这一条</strong>；归一化前移与末端追加 LayerNorm 两处<strong>零锚点</strong>（连描述性文字都没有，只有做法）。故正确表述应为：<strong>三刀中只有一条有描述性半锚点，另两条为零锚点重构。</strong> 该重构是本轮仿真风险最高的一处，S8 已将其列入幻觉清单第 1 条。<strong>严重度 P1。</strong>
+附带更正：《已知事实》第 1 条把"无动机句与引用"并列表述，其中"无引用"对归一化前移一处不成立，详见 S2.md 与 S3.md 的同源修订注。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S6 · 成文 —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：还原叙事策略——同一堆材料，怎么讲才卖得出去。放大了什么、藏起了什么。
+- 现状：《档案 · S1》至《档案 · S5》+ 论文全文。
+- 限制：本阶段允许看论文全文；但外交辞令必须标注为外交辞令，不许当成事实陈述。</p>
+</blockquote>
+<h3>1. 标题与 abstract 的取舍</h3>
+<h4>标题：<code>Language Models are Unsupervised Multitask Learners</code></h4>
+<p>三个决策：</p>
+<ol>
+<li><strong>主语是"语言模型"，不是"我们的模型"。</strong> 换成 <code>Our Model Learns Tasks Without Supervision</code> 会立刻把一个现象级发现降级成一次产品发布。用复数主语，claim 的层级从"我们做出来了"升到"这件事本来就成立，我们只是第一个说清楚的人"——<strong>这也顺手降低了被指"夸大自研方法"的攻击面：我们没有自研方法，我们只是把规模推到位。</strong></li>
+<li><strong>动词用 <code>are</code>，不用 <code>can be</code>。</strong> 前者是断言，后者是可行性陈述。</li>
+<li><strong><code>Unsupervised</code> 而不是 <code>Zero-Shot</code>。</strong> 这是本文最关键的一次用词。全过程其实有一个不零样本的地方——<strong>我们给每个任务都写了上下文格式</strong>（<code>TL;DR:</code>、<code>A:</code>、<code>english sentence = french sentence</code>，见 S3 v2）。用 <code>unsupervised</code> 描述的是<strong>没有监督信号</strong>，这一条完全站得住；用 <code>zero-shot</code> 会被追问"你写的那几个前缀算不算 prompt 工程"。<strong>选词的动机是防守，不是形容。</strong></li>
+</ol>
+<h4>Abstract：放大了三样，藏起了四样</h4>
+<p><strong>放大：</strong>
+- 开门见山给一个体感强的数字：CoQA <strong>55 F1</strong>，并且紧跟着"不用那 127,000+ 条训练样本"【可查证：Abstract 原句】——<strong>这句是全篇最强的一句，因为它把"标了多少数据"这个变量直接扣掉了。</strong>
+- 一句可被引用的机制断言：容量对零样本任务迁移<strong>必不可少</strong>，且性能随规模呈<strong>对数线性</strong>改善【可查证：Abstract 原句】。
+- 一个可数的事实：<strong>8 个语言建模数据集中的 7 个</strong>刷新记录【可查证：Abstract 原句】。</p>
+<p><strong>藏起：</strong>
+1. <strong>藏起 63.24 的真实口径。</strong> 摘要一个字都没提 LAMBADA 的 63.24% 是靠停用词过滤器拿到的，也没提<strong>不加过滤器只有 52.66%</strong>（那个数字在 §3.3 正文里，而且是以"从 19% 提升到 52.66%"的叙述方式出现的——<strong>基线选的是 Dehghani 2018 的 19%，不是 Table 3 自己列的 59.23%</strong>）。
+2. <strong>藏起 1BW 的失败。</strong> 摘要把 7/8 说出来，那个 1 是什么，要翻到 §3.1 第三段才知道。
+3. <strong>藏起摘要与翻译的真实水位。</strong> 摘要只比随机抽三句高 0.42 个平均分、En→Fr 只有 5 BLEU——摘要里一个字都没有。
+4. <strong>藏起"这是我们自己的口径"。</strong> 非英语是我们主动删的（§3.7），但 Fr→En 的 11.5 BLEU 被拿出来当正面结果；这一层因果关系在摘要里不可能看到。</p>
+<h3>2. 哪个结果放主图、哪个塞进 appendix</h3>
+<p><strong>主图给了 Figure 1：多任务零样本性能随模型规模变化。</strong> 这张图的选型逻辑很清楚：</p>
+<ul>
+<li>它同时承载三件事——<strong>曲线向上（容量假设）、任务横跨阅读理解/翻译/摘要/问答（广度）、而每个子图里还有一些在低位几乎平的曲线</strong>；</li>
+<li><strong>它把"我们做的不是刷榜"这个信息用图像说完了</strong>：有些任务的绝对水平很难看，但趋势线是正的。</li>
+<li>反过来说：<strong>Figure 1 是唯一一张能让"表现很差的任务"为论文加分的图。</strong> 如果那个任务单独出现在正文里，它就是失败；放进这张网格里，它变成"容量是自变量"的证据。<strong>这是本文最聪明的一处排版决策。</strong></li>
+</ul>
+<p><strong>Table 3 放在主文</strong>，十列。<strong>列数本身就是一层遮蔽</strong>：1BW 在最右边一列，与 7 个成功列并排时被视觉稀释。如果 1BW 单独成表，它就是这篇论文的一个洞。</p>
+<p><strong>Table 4（摘要 ROUGE）留在主文，但只用了它的差值。</strong> 正文引用的是"去掉提示后掉 6.4 分"这个差值，而不是 <code>21.40</code> 这个绝对值——<strong>差值证明了"任务提示能召唤任务行为"，绝对值只会告诉读者我们打不过 Seq2Seq。</strong></p>
+<p><strong>Table 5（Natural Questions 的 30 条最自信答案）放在主文</strong>——因为它的视觉效果是干净的问答对，读感极佳。</p>
+<p><strong>塞进 appendix 的是：</strong>
+- <strong>Table 7–11（小模型与 GPT-2 在同一段上下文上的并排补全）</strong>——这是唯一能直观展示"容量带来什么"的材料，但占位太大，只能进附录；
+- <strong>Table 12（同上下文的多样补全）、Table 13（会说话的独角兽新闻）</strong>——质量高，但它们是"有趣"而不是"有证据"，放正文会强化"这只是个会写文章的模型"的印象；
+- <strong>Figure 5（生成样本与测试集的 8-gram 重叠 CDF）</strong>——这张图直接回应"是不是背下来的"，是<strong>本文最硬的一张自证清白图</strong>，却被放进了 appendix。<strong>理由我当时没写下来，但逻辑是清楚的：把它放正文，等于把"我们可能是在背"这个问题提到台面上讨论；放附录，它就在，但不引导读者去想。</strong> 这是一次有意的降噪。</p>
+<h3>3. related work 里的外交辞令（逐句拆）</h3>
+<h4>辞令一：把 Hestness 2017 拉进来当护墙</h4>
+<blockquote>
+<p>原句：「Our experiments, while much noisier across tasks, suggest similar trends hold for sub-tasks of an objective and continue into the 1B+ parameter regime.」【可查证：§5】</p>
+</blockquote>
+<p><strong>这句在防什么</strong>：审稿人的第一句话——"这不就是把模型做大吗？"。
+<strong>怎么防的</strong>：先把 Hestness et al. 2017 那篇"深度学习 scaling 是可预测的"经验分析摆进来，然后把自己定位成"该趋势在任务子集上与 10 亿参数以上的延续"。<strong>这样"做大"就不再是我们的方法，而是一条已被确立的经验规律，我们的贡献变成了"这条规律的适用范围比想象中广"。</strong>
+<strong>"while much noisier across tasks"这半句是主动认怂的部分</strong>，作用是把"我们的曲线不干净"这件事提前说掉——<strong>审稿人提出来的第一遍是攻击，作者自己先说的就是坦诚。</strong></p>
+<h4>辞令二：把微调留作期货，封住"没跟 BERT 比"的口子</h4>
+<blockquote>
+<p>原句：「Given the prior success of fine-tuning GPT, we plan to investigate fine-tuning on benchmarks such as decaNLP and GLUE, especially since it is unclear whether the additional training data and capacity of GPT-2 is sufficient to overcome the inefficiencies of uni-directional representations demonstrated by BERT.」【可查证：§6 末段】</p>
+</blockquote>
+<p><strong>两个动作叠在一句里</strong>：
+1. "we plan to investigate"——<strong>把缺席的实验写成计划中的实验。</strong> 这是 S1.5 分歧二的最终产物；
+2. "especially since it is unclear whether..."——<strong>主动把最不利的可能性说出口</strong>：我们的单向表征可能补不上。<strong>这句话说完之后，审稿人再提"你们没和 BERT 比"就显得是在复述我们自己的话。</strong></p>
+<h4>辞令三：抢在审稿人之前认怂两处</h4>
+<blockquote>
+<p>原句 A：「in terms of practical applications, the zero-shot performance of GPT-2 is still far from use-able.」【可查证：§6】
+原句 B：「some inspection of its answers and errors suggests GPT-2 often uses simple retrieval based heuristics such as answer with a name from the document in response to a who question.」【可查证：§3.5】</p>
+</blockquote>
+<p><strong>A 是全局降调</strong>：把摘要里那个"promising path"立刻压回"远不可用"。<strong>这一句的作用是让所有"你们这个不行"的批评在提出时都失去杀伤力——我们已经说了。</strong>
+<strong>B 是针对 CoQA 结果的拆台自认</strong>：我们自己的 55 F1 有一部分是靠"问 who 就从文档里挑个人名"这种检索式启发式拿到的。<strong>在答辩里主动交出这一点，比被人查出来代价小得多。</strong></p>
+<h4>辞令四：把"我们的语料更好"说成方法论要求</h4>
+<blockquote>
+<p>原句：「While this is a pragmatic approach to improve performance on a specific task, we want to avoid making assumptions about the tasks to be performed ahead of time.」【可查证：§2.1】</p>
+</blockquote>
+<p>这是对 Trinh &amp; Le 的处理：<strong>没有一句批评。</strong> 把对方的做法称作 "pragmatic"，然后只说"我们想避免预先假设任务"——<strong>把一次分界说成一次取向差异，把"你的语料带任务偏好"这句话留给读者自己补。</strong> 这是 S2 那个惊魂时刻留下的最直接影响。</p>
+<h3>4. 藏起来最大的一样：整篇没有消融表</h3>
+<p>前面三条都是可控的措辞。<strong>真正被藏起来最大的一样东西，是这篇论文从头到尾没有一张消融表。</strong></p>
+<ul>
+<li>§2.3 的四条改动（归一化位置、末端归一化、初始化尺度、context 与 batch）没有逐组件对照；</li>
+<li>§2.2 的字节级 BPE 与那条例外合并规则没有消融；</li>
+<li>最接近的两处对照只有：去分词器（只给"2.5 到 5 困惑度"这个区间，<strong>没有表</strong>）和 Table 4 的 <code>no hint</code> 行。</li>
+</ul>
+<p><strong>结果是什么？</strong> 读者会自然假定每一个写出来的设计都是必要的——<strong>因为论文的体例本身就是一种暗示。</strong> 而实际上，这四条改动里哪些真的起了作用、哪一条是顺带加的，<strong>这篇论文永远没有回答。</strong></p>
+<p><strong>这是我在 S4 第 7 条把它写成"结构性缺口"而不是"我们的疏忽"的原因</strong>：把它说成疏忽，就是在暗示"我们本来能做而没做"；真实情况是，<strong>在做这篇论文的时候，我们并不认为这些设计需要单独证明——我们赌的是四档规模曲线本身，而不是任何单点消融。</strong> 赌注下在曲线上，是这篇论文的方法论特征。</p>
+<hr />
+<h3>《档案 · S6》</h3>
+<pre><code>【阶段】S6 成文
+【已知事实】
+1. 标题为 Language Models are Unsupervised Multitask Learners【可查证：论文首页】
+2. 摘要含三处放大：CoQA 55 F1 且不使用 127000 以上训练样本、容量对零样本任务迁移必不可少且性能随规模对数线性改善、8 个语言建模数据集中 7 个刷新记录【可查证：Abstract 三句原文】
+3. §5 把 Hestness et al. 2017 的容量与数据规模分析纳入讨论，并自陈&quot;while much noisier across tasks&quot;【可查证：§5 原文】
+4. §6 末段承诺后续研究 decaNLP 与 GLUE 的微调，并自陈单向表征的劣势能否被数据量与容量补上尚不清楚【可查证：§6 原文】
+5. §6 自陈零样本性能距离可用还很远【可查证：§6 原文】；§3.5 自陈 CoQA 的答案与错误显示 GPT-2 常用检索式启发式（如 who 类问题从文档里取人名）【可查证：§3.5 原文】
+6. §2.1 对 Trinh &amp; Le 的处理用 pragmatic 一词定性，随后只声明本方要避免预先假设任务【可查证：§2.1 原文】
+7. Table 7 至 Table 11 为小模型与 GPT-2 的并排补全样本，位于 Appendix A；Table 12 为多样补全；Table 13 为会说话的独角兽新闻补全【可查证：Appendix A 各表 caption】
+8. Figure 5 为生成样本与测试集的 8-gram 重叠 CDF，位于 Appendix A【可查证：Figure 5 caption 与所在节】
+9. Table 4 的正文引用重点是&quot;去掉任务提示后平均下降 6.4 点&quot;这一差值【可查证：§3.6 原文】
+10. 论文全文无消融表【可查证：与 S0 第 6 条同源】
+【合理重构】
+a. 标题主语用&quot;语言模型&quot;而非&quot;我们的模型&quot;的动机是降低攻击面；动词用 are 不用 can be——依据：全文反复以复数主语陈述一般性结论（Abstract、§7）（重构）
+b. 选 unsupervised 而非 zero-shot 是出于防守（过程本身有任务上下文格式）——依据：§3.5 至 §3.8 的四处格式均需人工书写（重构）
+c. Figure 1 的网格排版使低分任务转化为容量假设的证据；Table 3 的十列并排稀释了 1BW 的失败——依据：两图表的结构与 1BW 所在列位置（重构）
+d. Figure 5 放进附录是为了不主动引导读者想到记忆问题——依据：图的存在性与所在位置（重构）
+e. §6 末段那句微调承诺是 S1.5 分歧二的产物——依据：与 S1.5 已记录的决议同向（重构）
+【负结果】
+1. 在成文阶段被舍弃的备选标题（以&quot;我们的模型&quot;为主语、以 zero-shot 为核心词）各一条，死因是抬高攻击面与自证负担
+2. 备选方案&quot;把 1BW 单独成表并在摘要点名&quot;被否，死因是与 7/8 的主叙事冲突
+3. 备选方案&quot;把去分词器增益补成一张消融表&quot;被否，死因是工期（这条被否得很可惜，它是本论文唯一本可以低成本补上的消融）
+4. 备选方案&quot;把停用词过滤器的两个数字都写进摘要&quot;被否，死因是摘要承载不了口径解释
+5. 全文无消融表这一形态被保留，其后果由 S8 结算
+（本阶段负结果占比约 42%，主要来自被否的成文备选方案）
+【未决问题】
+1. 摘要放大三处、藏起四样的取舍清单，S8 如何逐条核对是否越界？（交 S8）
+2. LAMBADA 的两个口径在正文里的写法（19% 起步 vs Table 3 的 59.23 起步行）是否构成自相矛盾？（交 S8）
+3. 无消融表这一形态在覆盖度缺口里应定位为结构性缺口还是省略？（交 S8）
+【一致性自检】与《档案 · S5》无冲突：S5 第 6 条记录&quot;审稿人可指只是把规模推到极限&quot;这一预判无法解决只能改写，本阶段辞令一即该改写的落点，处理方向一致；S5 未决问题 2、3 在本阶段分别给出了答案（LAMBADA 的过滤器以正则过滤器形式进入 §3.3 而非摘要；1BW 的前提条件留在 §3.1 第三段而非标题），两处均属保守处理，不回退到更夸张的写法。
+【后见之明自检】本阶段允许看全文，故所引均为论文实测表述；但所有&quot;当时的排版/选词动机&quot;一律标为重构，未把事后解读写成作者自陈——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-G2-07】</strong> 第 2 节写 Figure 1"每个子图里还有一些在低位几乎平的曲线"。<strong>该细节无法核验</strong>：Figure 1 在论文中是图像，文本提取只得到 caption，图内曲线形态不可读【可查证：gpt2.txt 第 94–96 行为 Figure 1 caption，无坐标数值】。该判断的真实依据是 §3.7（En→Fr 仅 5 BLEU）与 §3.8（QA 4.1%，远低于 30–50% 区间）两处正文水平，<strong>不是图内观察</strong>。现改为按正文水平推断并注明论据来源。<strong>严重度 P2（论据来源错位）。</strong>
+<strong>顺带记一条提取限制</strong>：本论文的 Figure 1–5 全部无法从纯文本核验，S8 对图相关的断言一律只能回溯到 caption 或正文旁证。</p>
+<p><strong>【修订注 · S8 核查 · H-G2-08】</strong> 第 2 节两处"唯一"过强：（a）"Figure 1 是唯一一张能让表现很差的任务为论文加分的图"——<strong>Figure 4 同样具备该性质</strong>（训练集与测试集性能一起上升，用来回应"是不是背下来的"）【可查证：§4 与 Figure 4 caption】；（b）"Table 7 至 Table 11 是唯一能直观展示容量带来什么的材料"——<strong>Figure 2 与 Figure 3 也各自展示容量与性能的关系</strong>【可查证：两图 caption】。现分别改为"最有效地""体量最大的"表述。<strong>严重度 P2。</strong></p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S7 · 审稿 + rebuttal —— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 目标：用隔离视角攻击这篇论文，再由作者回应。
+- 现状：《档案 · S1》至《档案 · S6》+ 论文全文。
+- 限制（本论文专属，见《档案 · S0》风险 2）：<strong>GPT-2 从未经过正式同行评审。</strong> 真实的把关发生在两处——四位草稿读者的内部反馈【可查证：Acknowledgements】，以及发布前的误用风险评估【可查证·论文外：2019 年分阶段发布安排；论文脚注 5 只承诺公开小模型】。故本阶段的"审稿人"设定为<strong>投稿前内部/同行草案评审 + 发布风险评审</strong>，不虚构某个会议的评审流程。</p>
+</blockquote>
+<h3>0. 隔离实现说明（可核验）</h3>
+<p>审稿由<strong>隔离子代理</strong>完成：子代理<strong>只拿到论文纯文本文件路径</strong>（<code>paper-sim/GPT-2/gpt2.txt</code>），提示词中不含任何《档案》内容、不含 S1–S6 的任何叙事、不含本文档的存在。子代理输出在下面第 1 节<strong>原样保留</strong>，未做删改。</p>
+<h3>1. 审稿意见（隔离会话原始输出，原样保留）</h3>
+<blockquote>
+<p><strong>论文</strong>：<em>Language Models are Unsupervised Multitask Learners</em>（按普通投稿评审）</p>
+<p><strong>主要缺陷（Major Weaknesses）</strong></p>
+<p><strong>MW1 — LAMBADA 的 SOTA 声明依赖任务特定后处理，与"零样本、不改参数/结构"的核心卖点自相矛盾。</strong> §3.3 报告 LAMBADA 准确率时给出两个数字：无 stop-word 过滤为 52.66%，加过滤后为 63.24%。而 Table 3 的 SOTA 行 LAMBADA(ACC) = 59.23（Hoang et al. 2018 的受限预测设定）。复算：52.66 &lt; 59.23 &lt; 63.24，且 63.24 − 59.23 = 4.01 ≈ 文中"by 4%"。即<strong>零样本、不加任何后处理的 GPT-2 并未超过 prior SOTA</strong>；其 SOTA 声明完全由仅用于 LAMBADA 的人工启发式（stop-word filter）支撑。这与摘要与 §1 反复强调的 "without any parameter or architecture modification" 直接冲突。</p>
+<p><strong>MW2 — 摘要称"competitive"的摘要任务，定量上仅略优于随机抽句基线。</strong> Table 4 中 GPT-2 TL;DR 的 R-AVG = 21.40，Random-3 = 20.98，差 <strong>0.42</strong>；对比 SOTA（Bottom-Up Sum）32.75，差 <strong>−11.35</strong>。R-1 单指标：29.34 vs 28.78 差 0.56，vs SOTA 41.22 差 <strong>−11.88</strong>。§3.6 自己承认 "just barely outperforms selecting 3 random sentences"，但摘要与 §1 仍以 "competitive, and state of the art results depending on the task" 将摘要与真正 SOTA 的零样本语言建模任务并列呈现，易误导。</p>
+<p><strong>MW3 — §3.8 的"5.3 倍"与文中 1.0% 基线无法对账。</strong> §3.8：GPT-2 EM = 4.1%，简单基线 = 1.0%，正文却称 "GPT-2 answers 5.3 times more questions correctly"。复算 4.1 / 1.0 = <strong>4.1</strong>，而非 5.3；要在文中数字下得到 5.3× 需基线 = 4.1/5.3 = 0.77%，与明示的 1.0% 不符，且论文未说明 5.3× 的相对基准。此外，"model capacity has been a major factor" 仅由两点支撑；Table 3 已给出 4 档容量在 10 个指标上的完整曲线，NQ 却只给两端，345M/762M 的 NQ 准确率缺失。</p>
+<p><strong>次要意见（Minor Comments）</strong></p>
+<p><strong>MC1</strong> — §4 / Table 6 称测试集与 WebText 的 8-gram 重叠 "between 1–6% ... average 3.2%"。但 Table 6 的 WebText-train 列含 0.88%（PTB）与 6.31%（enwik8），均落在 [1,6] 之外；平均 3.2%/5.9% 复核无误，但区间下界表述与表内不符。</p>
+<p><strong>MC2</strong> — §3.1 称 de-tokenizer 带来 "gains of 2.5 to 5 perplexity for GPT-2"，但 Table 3 仅报告已去分词后的 perplexity，未给去分词前原始值，读者无从核验该增益区间。</p>
+<p><strong>Overall Recommendation：Weak Reject（borderline）。</strong></p>
+<p><strong>附：自算校验（子代理独立复算，节选）</strong> — Table 3 十列 × 五行的完整矩阵已重建；"7 out of 8" 复核成立（以数据集为单位共 8 个，仅 1BW 未超，42.16 &gt; 21.8）；Table 4 六行的 R-AVG 全部等于 (R-1+R-2+R-L)/3，无误差；Table 6 两个平均值 3.2% 与 5.9% 复核无误；§3.6 的 6.4 点下降复核为 21.40 − 15.03 = 6.37 ✓；LAMBADA 的 8.6 与 63.2% 与 Table 3 的 8.63 与 63.24 自洽 ✓；Winograd 的 +7%（无表可核）、CoQA 的 55 F1 与 3/4 baseline（无表可核）、翻译的 5/11.5/33.5 BLEU（无表可核）均列为"正文声称、无表支撑"。</p>
+</blockquote>
+<h3>2. rebuttal（作者视角，2019 年 1 月）</h3>
+<p><strong>总纲一句</strong>：我们接受其中三条的表述问题，接受两条的口径澄清，但对其中一条的核心指控提出反对——<strong>反对的理由不是我们没错，而是审稿人对 claim 的界定比论文本身更宽。</strong></p>
+<h4>对 MW1：部分接受，但反对"自相矛盾"的定性</h4>
+<p><strong>据理力争的部分</strong>：论文 §1 的原句是"without any parameter or architecture modification"——<strong>它限定的是参数与架构，不是解码过程。</strong> 停用词过滤器不训练任何东西、不动任何权重、不引入新结构（§3.3 明写它是 "an approximation"）。说它与"零样本"矛盾，等于要求零样本也必须使用最朴素的解码方式——<strong>这个要求本文从未承诺过，而且它会把所有基于解码策略的工作一并否掉。</strong></p>
+<p><strong>接受的部分</strong>：审稿人指出的<strong>呈现顺序问题</strong>是对的。正文是"19% → 52.66% → 加过滤器 → 63.24%"这个顺序，读者沿路读下来会以为 59.23 这个对照不存在，而它明明就写在 Table 3 的 SOTA 行上。<strong>我们接受把 52.66% 与 59.23% 的对照提到 §3.3 第一句。</strong></p>
+<p><strong>反驳一个字都不改的部分</strong>：撤掉 63.24%。Table 3 是零样本结果表，63.24% 是在同一套零样本权重上得到的，放进去是<strong>口径一致</strong>的；撤掉才是口径不一致。</p>
+<h4>对 MW2：接受，但要求审稿人读完整段</h4>
+<p><strong>接受</strong>：摘要里"competitive"这个词承载不了 Table 4 的实际水位，我们接受在摘要中不把摘要任务与语言建模的 SOTA 并列。</p>
+<p><strong>据理力争</strong>：审稿人引用的 "competitive, and state of the art results depending on the task" 出自 §1 而非摘要，且<strong>这句话本身就是分层的</strong>——三个形容词对应三个层级（promising / competitive / state of the art），"depending on the task" 是明确的限定语。§6 也已经自陈摘要"rudimentary"、整体"far from use-able"。</p>
+<p><strong>新实验回应</strong>：不补实验。理由是——<strong>我们已经知道补不出好结果</strong>：摘要任务的瓶颈是解码目标（ROUGE 是词重叠指标）与生成式输出之间的错配，不是容量。§3.6 里我们已经诊断了它的具体失误形态（只关注文章近处内容、混淆具体细节，例如车撞了几辆、logo 在帽子上还是衬衫上）。<strong>补一个更大的模型不会改变诊断，只会烧钱。</strong> 我们的处理是把错误案例放进 Table 14，让读者自己看瓶颈在哪。</p>
+<h4>对 MW3：完全接受，这是我们的错</h4>
+<p><strong>认怂</strong>：4.1% 与 1.0% 直接相除得 4.1 倍，而正文写 5.3 倍，<strong>这是表述缺陷，不是口径差异</strong>。5.3 倍的分母是最小模型自身的准确率，而这个数字正文根本没给出来，读者只能拿 1.0% 去算，算出 4.1 与文中不符。
+<strong>修改</strong>：正文补上最小模型的准确率，并明确 5.3 倍的比较对象是"最小模型"而非"简单基线"。</p>
+<p><strong>关于受控消融</strong>：审稿人问得很准——NQ 只给了最小模型与 GPT-2 两端。<strong>接受这条批评，但不补实验。</strong>理由：NQ 的参考数字（4.1%）本身低于随机猜测量级（开放域问答系统的区间是 30–50%），在这个量级上再花四份算力画一条曲线，得到的是一条从 0.77% 到 4.1% 的线——<strong>它证明的仍然是同一件事（容量是因素），而成本是四份最大模型的完整评测。</strong> 我们把结论保留为单点陈述，并在 §6 明确写"模型只有在容量足够时才开始超过平凡基线"这一前提。</p>
+<h4>对 MC1：接受，改数字</h4>
+<p>把 "between 1-6%" 改为实际区间。<strong>这是一次纯粹的数字表述失误：求平均的时候是对的，写区间的时候把 0.88 和 6.31 四舍五入成了 1 和 6。</strong></p>
+<h4>对 MC2：接受形式批评，但拒绝补表</h4>
+<p>"2.5 到 5 困惑度"这个区间来自同一批权重在去分词前后的内部对比，<strong>它是对的但不可核</strong>。审稿人说得对：不可核就等于没有。<strong>我们的处理是保留这半句并明确它是内部测量值</strong>——补一张表的成本不高，但它会引出"为什么去分词器的效果在不同数据集上差异这么大"这个问题，而那个问题会把 §3.1 从一节变成三节。<strong>我们选择承认不可核，而不是补一张会引发连锁追问的表。这是一次有意选择的不完整。</strong></p>
+<hr />
+<h3>3. rebuttal 落地情况对照（诚实性要求：承诺与最终稿必须分开记）</h3>
+<p>⚠️ 本节是 S7 的关键交付：<strong>rebuttal 是"当时写的"，落地与否必须另立一节核对，不许混着读。</strong></p>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>rebuttal 承诺</th>
+<th>最终稿实际</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MW1</td>
+<td>把 52.66% 与 59.23% 的对照提到 §3.3 第一句</td>
+<td>§3.3 首句仍是"从 99.8 到 8.6 困惑度"，随后才出现 19% → 52.66%；<strong>59.23 只在 Table 3 里，正文未点出对照</strong></td>
+<td><strong>未落地</strong></td>
+</tr>
+<tr>
+<td>MW2</td>
+<td>摘要不把摘要任务与语言建模 SOTA 并列</td>
+<td>§1 原句保留；§6 已有 "rudimentary"、"far from use-able" 的降调</td>
+<td><strong>部分已落地（降调在 §6 而非摘要，且这可能是先有的）</strong></td>
+</tr>
+<tr>
+<td>MW3</td>
+<td>补上最小模型准确率，明确 5.3 倍的分母</td>
+<td>正文仍只有 4.1%、1.0%、5.3 倍三个数字，<strong>最小模型的准确率始终未出现</strong></td>
+<td><strong>未落地</strong></td>
+</tr>
+<tr>
+<td>MW3 附加</td>
+<td>不补 NQ 的受控曲线</td>
+<td>未补</td>
+<td>与承诺一致</td>
+</tr>
+<tr>
+<td>MC1</td>
+<td>把 1–6% 改为实际区间</td>
+<td>仍为 "between 1-6%"</td>
+<td><strong>未落地</strong></td>
+</tr>
+<tr>
+<td>MC2</td>
+<td>保留区间并标明为内部测量值</td>
+<td>仍为 "We observe gains of 2.5 to 5 perplexity"</td>
+<td><strong>未落地</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>统计：5 条可落地的修改承诺中，0 条完全落地，1 条部分落地（且可能不是本 rebuttal 的产物）。</strong></p>
+<p>这条统计本身是 S7 最有价值的产出。它说明一件很反直觉的事：<strong>在这一篇论文上，rebuttal 不是修改流程的一环，而是一次"说完就完了"的表述。</strong> 原因不外三个：这是一份技术报告，没有 AC 会来催 camera-ready；论文的核心叙事不依赖任何被质疑的那几条；以及——<strong>最诚实的一条</strong>——上面五条里有四条是"补一个数字"，而作者当时更想赶在发布窗口前把 6.4 万亿字节级别的实验收尾。</p>
+<p><strong>留给 S8 的核查任务：S8 必须把本节这 6 行逐条复验，并判断"未落地"是否已在 S6 的叙事取舍清单里被预告过。</strong></p>
+<hr />
+<h3>《档案 · S7》</h3>
+<pre><code>【阶段】S7 审稿与 rebuttal
+【已知事实】
+1. 审稿人由隔离子代理扮演，输入仅含论文纯文本路径，不含任何档案内容，输出原样保留于本文件第 1 节【可核验】
+2. 审稿人给出三条 major weakness 与两条 minor comments，总评 Weak Reject【可查证：本文件第 1 节】
+3. 审稿人独立复算确认无误的项目包括：Table 3 的 7/8 判定、Table 4 全部 R-AVG 的自洽、Table 6 两个平均值（3.2% 与 5.9%）、§3.6 的 6.4 点下降、LAMBADA 的 8.6 与 63.2% 自洽【可查证：第 1 节附节】
+4. 审稿人指出的问题中，论文原文可核实的硬冲突为两条：§3.8 的 5.3 倍与 1.0% 基线无法对账；§4 的 1-6% 区间与本表 0.88% 与 6.31% 不符【可查证：§3.8 与 §4 原文】
+5. 论文从未经过正式同行评审；真实把关为草稿读者反馈与发布风险评估【可查证：Acknowledgements 与脚注 5，另见论文外公开的分阶段发布安排】
+6. rebuttal 的 5 条可落地修改承诺在最终稿中 0 条完全落地、1 条部分落地；MW3 与 MC1 两处硬冲突在最终稿中未修【可查证：本文件第 3 节逐行对照，对照物为论文原文】
+【合理重构】
+a. 审稿人被设定为投稿前内部同行草案评审加发布风险评审——依据：S0 已确认的非投稿形态与脚注 5 的 small 一词（重构）
+b. rebuttal 中&quot;不补 NQ 受控曲线&quot;&quot;不补去分词器表&quot;两处拒绝的真实动机被写为成本与连锁追问——依据：论文正文对这两处均无补充材料的痕迹（重构）
+c. rebuttal 承诺普遍未落地归因于技术报告的流程性质与发布窗口——依据：三条候选原因中，前两条可由论文形态查证，第三条为重构（重构）
+【负结果】
+1. 三条 major weakness 中，一条被完全接受（5.3 倍表述）、一条部分接受（摘要任务的水位呈现）、一条被部分力争（LAMBADA 的零样本界定）
+2. 两条 minor comments 形式接受但均未落地
+3. 五条修改承诺最终 0 条完全落地，本阶段因此不产生任何对论文的实质修改
+4. 本阶段的&quot;评审&quot;不是真实同行评审的替代物，其结论不可用于论证论文的学术质量，只能作为叙事审计材料
+（本阶段负结果占比约 50%，主要来自承诺未落地这一整体性失败）
+【未决问题】
+1. 第 3 节的 6 行落地对照必须由 S8 逐条复验；此外 S8 还需判断审稿人是否漏掉了某些硬冲突（本阶段无法自证）【交 S8】
+2. 5.3 倍与 1-6% 两处硬冲突在最终稿中存活，S8 需给它们定级【交 S8】
+【一致性自检】与《档案 · S6》无冲突：S6 第 4 条记录&quot;摘要放大三处、藏起四样&quot;，本阶段 MW1 与 MW2 正是对该取舍的攻击，两处指向同一批文字，方向一致；S6 未决问题 2（LAMBADA 两个口径是否自相矛盾）在本阶段获得审稿人的独立判定与作者的回应，处理一致。
+【后见之明自检】审稿人未获得任何档案信息，其结论由独立复算得出；rebuttal 的&quot;据理力争&quot;部分改写了立场但均引论文原句为据，未使用 S8 将产出的核查结论——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S8 · 对照复盘（幻觉总检查）—— GPT-2 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 角色：第三方核查员，不再是作者。本阶段不写第一人称。
+- 目标：把前七个阶段的叙事与论文真实内容逐项对照，产出三张表 + S7 专项核查 + 误差报告。
+- 输入：全部《档案》+ 论文全文。
+- 限制：<strong>第 0 步必须在读 S1–S7 叙事之前完成</strong>，否则会被自己的叙事锚定（GPT-1 首跑验证过这一点）。</p>
+</blockquote>
+<h3>0. 第 0 步：先重算论文自己的趋势表（在读叙事之前）</h3>
+<h4>0.1 隔离实现</h4>
+<p>本步由<strong>独立子代理</strong>完成：只给论文纯文本路径（<code>paper-sim/GPT-2/gpt2.txt</code>），提示词要求"摘出所有概括句 → 找到支撑它的表 → 逐行做差值 → 报告反例"，<strong>不给任何档案、不给本项目的任何叙事</strong>。子代理输出与本节结论一致，原始清单已归档在 <code>paper-sim/GPT-2/_s8_step0_auditor.txt</code>。</p>
+<h4>0.2 重算出的三张核心表</h4>
+<p><strong>Table 3（零样本，10 列 × 5 行）</strong></p>
+<table>
+<thead>
+<tr>
+<th>行</th>
+<th>LAMBADA PPL</th>
+<th>LAMBADA ACC</th>
+<th>CBT-CN</th>
+<th>CBT-NE</th>
+<th>WikiText2</th>
+<th>PTB</th>
+<th>enwik8</th>
+<th>text8</th>
+<th>WikiText103</th>
+<th>1BW</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SOTA</td>
+<td>99.8</td>
+<td>59.23</td>
+<td>85.7</td>
+<td>82.3</td>
+<td>39.14</td>
+<td>46.54</td>
+<td>0.99</td>
+<td>1.08</td>
+<td>18.3</td>
+<td>21.8</td>
+</tr>
+<tr>
+<td>117M</td>
+<td>35.13</td>
+<td>45.99</td>
+<td>87.65</td>
+<td>83.4</td>
+<td>29.41</td>
+<td>65.85</td>
+<td>1.16</td>
+<td>1.17</td>
+<td>37.50</td>
+<td>75.20</td>
+</tr>
+<tr>
+<td>345M</td>
+<td>15.60</td>
+<td>55.48</td>
+<td>92.35</td>
+<td>87.1</td>
+<td>22.76</td>
+<td>47.33</td>
+<td>1.01</td>
+<td>1.06</td>
+<td>26.37</td>
+<td>55.72</td>
+</tr>
+<tr>
+<td>762M</td>
+<td>10.87</td>
+<td>60.12</td>
+<td><strong>93.45</strong></td>
+<td>88.0</td>
+<td>19.93</td>
+<td>40.31</td>
+<td>0.97</td>
+<td>1.02</td>
+<td>22.05</td>
+<td>44.575</td>
+</tr>
+<tr>
+<td>1542M</td>
+<td>8.63</td>
+<td>63.24</td>
+<td><strong>93.30</strong></td>
+<td>89.05</td>
+<td>18.34</td>
+<td>35.76</td>
+<td>0.93</td>
+<td>0.98</td>
+<td>17.48</td>
+<td>42.16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 4（摘要 ROUGE F1）</strong>：Bottom-Up 32.75 / Lede-3 31.55 / Seq2Seq+Attn 23.99 / GPT-2 TL;DR 21.40 / Random-3 20.98 / GPT-2 no hint 15.03。<strong>六行 R-AVG 全部等于 (R-1+R-2+R-L)/3，逐行验算无误差。</strong></p>
+<p><strong>Table 6（8-gram 重叠率 %）</strong></p>
+<table>
+<thead>
+<tr>
+<th>数据集</th>
+<th>自身训练集</th>
+<th>WebText 训练集</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PTB</td>
+<td>2.67</td>
+<td><strong>0.88</strong></td>
+</tr>
+<tr>
+<td>WikiText-2</td>
+<td><strong>0.66</strong></td>
+<td>1.63</td>
+</tr>
+<tr>
+<td>enwik8</td>
+<td>7.50</td>
+<td><strong>6.31</strong></td>
+</tr>
+<tr>
+<td>text8</td>
+<td><strong>2.34</strong></td>
+<td>3.94</td>
+</tr>
+<tr>
+<td>WikiText-103</td>
+<td>9.09</td>
+<td>2.42</td>
+</tr>
+<tr>
+<td>1BW</td>
+<td>13.19</td>
+<td>3.75</td>
+</tr>
+</tbody>
+</table>
+<h4>0.3 反例清单（论文概括句 vs 论文自己的表）</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>论文的概括句</th>
+<th>位置</th>
+<th>逐行差值算出的反例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>R-1</strong></td>
+<td>"performance steadily improves as model size is increased"</td>
+<td>§3.2</td>
+<td><strong>CBT-CN 列在 762M→1542M 不升反降：93.45 → 93.30（−0.15）</strong>。同一节的"new state of the art 93.3%"实际上低于同表 762M 的 93.45。</td>
+</tr>
+<tr>
+<td>R-2</td>
+<td>"between 1-6% overlap with WebText train"</td>
+<td>§4</td>
+<td>WebText-train 列实际区间 <strong>0.88%（PTB）到 6.31%（enwik8）</strong>；平均值 3.2% 复核无误（18.93/6=3.155）。</td>
+</tr>
+<tr>
+<td>R-3</td>
+<td>"many datasets have larger overlaps with their own training splits"</td>
+<td>§4</td>
+<td>逐列比较有 <strong>2 个反例</strong>：WikiText-2 自身 0.66% &lt; WebText 1.63%；text8 自身 2.34% &lt; WebText 3.94%。平均值 5.9% 复核无误（35.45/6=5.908）。</td>
+</tr>
+<tr>
+<td>R-4</td>
+<td>"just barely outperforms selecting 3 random sentences"</td>
+<td>§3.6</td>
+<td>聚合 R-AVG 成立（21.40 &gt; 20.98，差 0.42），但 <strong>R-2 单指标反例：GPT-2 TL;DR 8.27 &lt; Random-3 8.63</strong>。</td>
+</tr>
+<tr>
+<td>R-5</td>
+<td>"Large improvements are noticed on small datasets such as Penn Treebank"</td>
+<td>§3.1</td>
+<td>特指大模型成立；<strong>117M 在 PTB 上 65.85 &gt; SOTA 46.54，反而更差</strong>。</td>
+</tr>
+<tr>
+<td><strong>R-6</strong></td>
+<td>"consists of documents from 7 different domains"（§3.5） vs "the average performance over 5 different domains"（§4）</td>
+<td>§3.5 / §4</td>
+<td><strong>论文内部两处域数不一致（7 vs 5），至少一处表述不严。本轮两个隔离视角与我方叙事三方均漏检，由本阶段补上。</strong></td>
+</tr>
+</tbody>
+</table>
+<h4>0.4 复核通过的（供信心校准）</h4>
+<p>7/8 的判定成立（以数据集为单位的 8 个中仅 1BW 未超，42.16 &gt; 21.8）；LAMBADA 99.8 → 8.63 与摘要"8.6"一致；63.24 − 59.23 = 4.01 ≈ "by 4%"；§3.6 的 6.4 点下降 = 21.40 − 15.03 = 6.37；1BW 自身重叠 13.19% ≈ "nearly 13.2%"；WikiText-103 的 1/60 = 1.67% ≈ "at least 1.6%"；1542M/117M = 13.18 倍 &gt; "over an order of magnitude"；LAMBADA 8.6 → 8.7 与 63.2% → 62.9% 与 Table 3 的 8.63 / 63.24 自洽。</p>
+<h4>0.5 一项机器核查（Table 5 的对错计数）</h4>
+<p>S7 的隔离审稿人数出 Table 5"22 ✓ / 8 ✗ = 73.3%"，S8 第 0 步的审计子代理数出"21 ✓ / 9 ✗ = 70%"。<strong>本阶段用脚本直接数符号码位判定</strong>：<code>\x13</code> 出现 <strong>22</strong> 次、<code>\x17</code> 出现 <strong>8</strong> 次，共 30 条【可核验：<code>paper-sim/GPT-2/_verify_s8.txt</code>】。独立佐证：末条（45.2%，"Who played john connor in the original terminator? → Arnold Schwarzenegger"）为 <code>\x17</code>，该答案确实错误，故 <code>\x17</code> = ✗、<code>\x13</code> = ✓。<strong>采信 22/8。</strong>（另注：更早的文本读取中有 4 行出现 <code>\u2713</code> 字形，经查是题干里 <code>ﬁ</code>、<code>ﬀ</code> 连字造成的假象，与对错标记无关——这是本论文 PDF 文本提取的一个陷阱，记录备查。）
+另：<code>ablation</code> / <code>ablations</code> / <code>Ablate</code> 在全文出现 <strong>0</strong> 次，S0 与 S6 的"无消融表"判断成立。</p>
+<hr />
+<h3>1. 【对上了】叙事与论文一致的点（24 组）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>叙事中的判断</th>
+<th>阶段</th>
+<th>论文依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>核心 claim 的三处同源表述</td>
+<td>S0</td>
+<td>Abstract / §1 / §7</td>
+</tr>
+<tr>
+<td>2</td>
+<td>论文是技术报告而非会议投稿</td>
+<td>S0 / S7</td>
+<td>无 venue 字段；Acknowledgements 只列草稿反馈人</td>
+</tr>
+<tr>
+<td>3</td>
+<td>全文无消融表</td>
+<td>S0 / S6</td>
+<td><code>ablation</code> 出现 0 次（机器核查）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>监督目标与无监督目标同式、全局最小点重合</td>
+<td>S1 / S3</td>
+<td>§2 原句</td>
+</tr>
+<tr>
+<td>5</td>
+<td>预备实验：能做但比显式监督慢得多</td>
+<td>S1 / S3</td>
+<td>§2 原句</td>
+</tr>
+<tr>
+<td>6</td>
+<td>多任务最激进的两项只训 10 与 17 个 (dataset, objective) 对</td>
+<td>S1 / S2</td>
+<td>§1 原句</td>
+</tr>
+<tr>
+<td>7</td>
+<td>语言可把任务、输入、输出表示为符号序列</td>
+<td>S1 / S3</td>
+<td>§2 原句（含 translate to french 样例）</td>
+</tr>
+<tr>
+<td>8</td>
+<td>互联网信息被动可得、不需交互</td>
+<td>S1</td>
+<td>§2 对 Weston 2016 的定位</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Common Crawl 被否、改用 Reddit 3-karma 策展</td>
+<td>S1.5 / S4</td>
+<td>§2.1 原句（含 unintelligible 的引用）</td>
+</tr>
+<tr>
+<td>10</td>
+<td>人工筛选整份爬取"异常昂贵"</td>
+<td>S1.5 / S4</td>
+<td>§2.1 原句</td>
+</tr>
+<tr>
+<td>11</td>
+<td>拒绝"对任务做预先假设"是与 Trinh &amp; Le 的分界</td>
+<td>S2 / S6</td>
+<td>§2.1 原句</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Liu 2018 的跨语言译名发现是更具启发性的前例</td>
+<td>S2</td>
+<td>§5 原句</td>
+</tr>
+<tr>
+<td>13</td>
+<td>字节级 BPE：基础词表 256、禁跨类合并、空格例外</td>
+<td>S3</td>
+<td>§2.2 原句（含 dog 的四种形态）</td>
+</tr>
+<tr>
+<td>14</td>
+<td>码点 BPE 需 13 万以上基础词表；当时常用 32k–64k</td>
+<td>S3</td>
+<td>§2.2 原句</td>
+</tr>
+<tr>
+<td>15</td>
+<td>纯字节级 LM 在 1BW 上不及词级，作者自验亦然</td>
+<td>S3</td>
+<td>§2.2 原句</td>
+</tr>
+<tr>
+<td>16</td>
+<td>词表扩至 50257</td>
+<td>S3</td>
+<td>§2.3 原句</td>
+</tr>
+<tr>
+<td>17</td>
+<td>四处任务接口约定（<code>A:</code> / <code>TL;DR:</code> / <code>english sentence =</code> / 问答样例做种）</td>
+<td>S3</td>
+<td>§3.5、§3.6、§3.7、§3.8 逐句</td>
+</tr>
+<tr>
+<td>18</td>
+<td>LAMBADA 的误差是"合法续写非合法末词"</td>
+<td>S3 / S5</td>
+<td>§3.3 原句</td>
+</tr>
+<tr>
+<td>19</td>
+<td>WebText：4500 万链接 → 800 万文档 / 40GB；截止 2017-12</td>
+<td>S4</td>
+<td>§2.1 原句</td>
+</tr>
+<tr>
+<td>20</td>
+<td>抽取器 Dragnet + Newspaper</td>
+<td>S4</td>
+<td>§2.1 原句</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>&lt;UNK&gt;</code> 在 40 亿字节里只出现 26 次；去分词器被定位为简单域适配</td>
+<td>S4</td>
+<td>§3.1 原句</td>
+</tr>
+<tr>
+<td>22</td>
+<td>《丛林之书》在 WebText 中，故 CBT 改报验证集</td>
+<td>S4 / S5</td>
+<td>§3.2 原句</td>
+</tr>
+<tr>
+<td>23</td>
+<td>非英语被主动移除但残留约 10MB 法语</td>
+<td>S4 / S5</td>
+<td>§3.7 原句</td>
+</tr>
+<tr>
+<td>24</td>
+<td>所有模型仍欠拟合 WebText</td>
+<td>S4</td>
+<td>§3 原句 + §4 的 Figure 4 论述</td>
+</tr>
+</tbody>
+</table>
+<h3>2. 【编圆了但论文没这回事】幻觉清单（10 条）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>出自</th>
+<th>叙事断言</th>
+<th>实况</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H-G2-02</strong></td>
+<td>S2 已知事实 7、S3 正文、S5 已知事实 1</td>
+<td>"§2.3 的架构改动<strong>没有任何引用</strong>"</td>
+<td>§2.3 对归一化前移明确引用 <code>Ba et al., 2016</code> 与 <code>He et al., 2016</code></td>
+<td><strong>P0</strong></td>
+</tr>
+<tr>
+<td><strong>H-G2-06</strong></td>
+<td>S5 至暗一</td>
+<td>"§2.3 里那三刀<strong>就是</strong>对这个症状的处方"</td>
+<td>三刀中仅"1/√N 缩放"有描述性半锚点（<code>account for the accumulation on the residual path</code>），另两刀<strong>零锚点</strong></td>
+<td><strong>P1</strong></td>
+</tr>
+<tr>
+<td><strong>H-G2-09</strong></td>
+<td>S3 v0 第 3 层死因</td>
+<td>"这一层……<strong>后来它变成了整整一节（§4）</strong>"</td>
+<td>在一个明令"不许有后见之明"的阶段内泄漏了未来产物</td>
+<td><strong>P1（后见之明泄漏）</strong></td>
+</tr>
+<tr>
+<td><strong>H-G2-07</strong></td>
+<td>S6 §2</td>
+<td>Figure 1"每个子图里还有一些<strong>在低位几乎平的曲线</strong>"</td>
+<td>Figure 1 是图像，纯文本只提取到 caption；该判断的真实依据是 §3.7 与 §3.8 的正文水平</td>
+<td>P1（论据错位）</td>
+</tr>
+<tr>
+<td>H-G2-01</td>
+<td>S1 合理重构 a</td>
+<td>"BERT 是<strong>唯一</strong>被当作对标对象引用的同期工作"</td>
+<td>Universal Transformer 在 §3.3 被引为对照；Transformer-XL 是 Table 3 若干列的 SOTA 来源</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>H-G2-03</td>
+<td>S3 合理重构 b</td>
+<td>v1 死路顺序"<strong>接近论文叙述序的还原</strong>"</td>
+<td>§2.2 实际叙述序为"字节级→BPE→码点问题→禁跨类合并"，与所写相反</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>H-G2-04</td>
+<td>S4 §9(c)</td>
+<td>区间"1–6%"</td>
+<td>Table 6 实际 0.88%–6.31%（照抄论文口径，未加注）</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>H-G2-05</td>
+<td>S4 §9(b)</td>
+<td>"5.3 倍<strong>于最小模型</strong>"</td>
+<td>论文未写明分母；与 1.0% 相除只能得 4.1 倍</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>H-G2-08</td>
+<td>S6 §2</td>
+<td>两处"<strong>唯一</strong>"</td>
+<td>Figure 4 与 Figure 2/3 同样具备所声称的性质</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>H-G2-10</td>
+<td>S4 崩溃三</td>
+<td>"目标数据集被<strong>前人净化过</strong>"</td>
+<td>论文归因于数据集自身的激进标准化，未归因于"前人"的行为</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>严重度复核说明</strong>：H-G2-02 在 S2/S3 的修订注中初判为 P1，本节复核后<strong>上调为 P0</strong>——"论文没有任何引用"这一断言被论文原文直接否证，与 GPT-1 首跑的 H1（"全文未提 GLUE"而实际四处出现）属<strong>同一形态</strong>：都是把"某信息不存在于我的注意范围"写成了"不存在于论文"。该升级已由 H-G2-02b 修订注在 S2.md 中同步。</p>
+<p><strong>分布</strong>：P0 共 1 条（1.8%）、P1 共 3 条（5.5%）、P2 共 6 条（10.9%），合计 10 条 / 约 55 条带标签的实质断言 = <strong>18.2%</strong>。</p>
+<p><strong>与 GPT-1 首跑的对照</strong>（这是本系统自己的误差报告）：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>GPT-1 首跑</th>
+<th>GPT-2 本轮</th>
+<th>变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>带标签实质断言</td>
+<td>约 60 条</td>
+<td>约 55 条</td>
+<td>—</td>
+</tr>
+<tr>
+<td>P0–P2 合计占比</td>
+<td>17%</td>
+<td><strong>18.2%</strong></td>
+<td>持平略升</td>
+</tr>
+<tr>
+<td>其中 P0（与论文事实直接矛盾）</td>
+<td>2 条（3.3%）</td>
+<td><strong>1 条（1.8%）</strong></td>
+<td><strong>≈ 减半</strong></td>
+</tr>
+<tr>
+<td>形态</td>
+<td>"全文未提 GLUE"</td>
+<td>"改动没有任何引用"</td>
+<td><strong>同一形态，均属"缺席断言"</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论（诚实版）</strong>：模板修订压住了<strong>事实性错误的绝对数量</strong>（P0 减半），但<strong>压不住"加了标签之后话说太满"</strong>这一层——6 条 P2 全部是同一个毛病：标签贴对了（确实标了【合理重构】或照抄了论文），但正文的语气是断言式的。<strong>这说明纪律条款的作用边界在"是否标注"，不在"标注之后的措辞强度"。</strong> 建议的模板改动见本节末。</p>
+<h3>3. 【论文有而叙事漏了】覆盖度缺口</h3>
+<h4>3.1 硬数字覆盖：S4 第 9 节的清单执行程度</h4>
+<table>
+<thead>
+<tr>
+<th>S4 清单项</th>
+<th>是否被 S5–S9 之外引用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7/8 数据集 SOTA</td>
+<td>✅ 被 S6 摘要分析引用</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Table 3 的十列 × 四档完整矩阵</strong></td>
+<td>❌ <strong>从未被任何阶段完整吸收</strong></td>
+<td><strong>本轮最大缺口</strong>：全流程只零散用了 8.63、93.3、89.1 三个数</td>
+</tr>
+<tr>
+<td>LAMBADA 52.66 / 63.24 / +4%</td>
+<td>✅ S5、S6、S7、S8</td>
+<td>—</td>
+</tr>
+<tr>
+<td>WSC 70.70 / +7%</td>
+<td>✅ S4、S6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CoQA 55 F1 / 3 of 4 / 127k</td>
+<td>✅ S4、S6、S7</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1BW 42.16 与"最差一列"</td>
+<td>✅ S5 至暗四、S6 §2</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Table 4 六行全部 + 6.4 点下降</td>
+<td>✅ S4、S6、S7</td>
+<td>—</td>
+</tr>
+<tr>
+<td>翻译 5 / 11.5 / 33.5 BLEU</td>
+<td>✅ S4、S6、S7</td>
+<td>—</td>
+</tr>
+<tr>
+<td>问答 4.1% / 1.0% / 5.3 倍 / 63.1%</td>
+<td>✅ S4、S7、S8</td>
+<td>5.3 倍的分母问题见 H-G2-05</td>
+</tr>
+<tr>
+<td><strong>Table 5（30 条最自信答案）</strong></td>
+<td>❌ 仅用了 63.1% 一个数，Table 5 本体从未被使用</td>
+<td>中方</td>
+</tr>
+<tr>
+<td>重叠 3.2% / 5.9% / 13.19% / 0.88–6.31%</td>
+<td>✅ S4、S7、S8</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Figure 5（生成样本重叠 CDF：中位数 2.6%，超 30% 样本零重叠）</strong></td>
+<td>❌ <strong>从未被吸收</strong></td>
+<td><strong>这张图是全篇最硬的"自证不是背"材料，三个阶段都没用它</strong></td>
+</tr>
+<tr>
+<td><strong>Table 12–17（多样补全 / 独角兽新闻 / 摘要错误案例 / 翻译样例 / CoQA 实例）</strong></td>
+<td>❌ 从未被吸收</td>
+<td>尤其 <strong>Table 14</strong>：§3.6 用它作为"摘要为何失败"的诊断案例，而 S4/S5/S6 只用了 ROUGE 数字、没用诊断</td>
+</tr>
+<tr>
+<td>§3.2 "closes the majority of the gap to human performance"</td>
+<td>❌</td>
+<td>人类性能基线（Bajgar et al.）未被叙事使用</td>
+</tr>
+<tr>
+<td>§4 的 Winograd 重叠细节（10 个 schema / 2 个假匹配 / 1 个泄露）</td>
+<td>⚠️ 仅在 S4 §9 登记，未进叙事</td>
+<td>这条是回应"是否背答案"的关键细节</td>
+</tr>
+</tbody>
+</table>
+<h4>3.2 图类缺口（非叙事责任，属提取限制）</h4>
+<p>Figure 1–5 <strong>全部无法从纯文本核验</strong>（提取只有 caption）。叙事中任何涉及图内形态的断言都只能回溯到 caption 或正文旁证——H-G2-07 即由此产生。<strong>这不是叙事的疏漏，是数据源的物理限制，但必须记在案，因为它决定了"哪些判断在本流程里根本得不到核验"。</strong></p>
+<h4>3.3 一处"漏得正确"的例子</h4>
+<p>论文 §3.2 的概括句 <code>performance steadily improves as model size is increased</code> 被第 0 步重算证伪（CBT-CN 93.45 → 93.30，见 R-1）。<strong>叙事从未复述这句概括</strong>——S4 第 9 节只登记了 CBT 的 93.3 与 89.1 两个绝对值，S5、S6 均未写任何 CBT 的单调性判断。<strong>结果是：叙事漏掉了论文的一个错误，反而避免了把论文的错误抄进来。</strong> 这条说明"覆盖度缺口"不等于"必须补"——<strong>缺失与错误是两码事，S8 的职责是分清它们。</strong></p>
+<h3>4. 核 S7（专项）</h3>
+<h4>4.1 审稿人三条 weakness 的数字逐条复验</h4>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>审稿人给的数字</th>
+<th>复验结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MW1：52.66 / 63.24 / 59.23 / 4.01</td>
+<td>全部可在 §3.3 与 Table 3 找到</td>
+<td><strong>全部成立</strong></td>
+</tr>
+<tr>
+<td>MW2：29.34 / 28.78 / 0.56 / 21.40 / 20.98 / 0.42 / 32.75 / −11.35 / 41.22 / −11.88</td>
+<td>全部可在 Table 4 找到</td>
+<td><strong>全部成立</strong></td>
+</tr>
+<tr>
+<td>MW3：4.1 / 1.0 / 5.3 / 反推 0.77 / 345M 与 762M 的 NQ 缺失</td>
+<td>全部可在 §3.8 找到</td>
+<td><strong>全部成立</strong></td>
+</tr>
+<tr>
+<td>MC1：0.88 / 6.31 落在 1–6% 之外</td>
+<td>Table 6</td>
+<td><strong>成立</strong></td>
+</tr>
+<tr>
+<td>MC2：Table 3 无去分词前的原始值</td>
+<td>Table 3</td>
+<td><strong>成立</strong></td>
+</tr>
+<tr>
+<td>附表：Table 3 矩阵、"7 out of 8"、Table 4 六行 R-AVG、Table 6 两个平均值、6.4 点下降、LAMBADA 自洽</td>
+<td>全部复算</td>
+<td><strong>全部成立</strong></td>
+</tr>
+<tr>
+<td><strong>Table 5 计数 22 ✓ / 8 ✗</strong></td>
+<td>与第 0 步审计子代理的 21/9 冲突</td>
+<td><strong>机器核查采信 22/8</strong>（见 0.5）；审稿人正确</td>
+</tr>
+</tbody>
+</table>
+<p><strong>审稿人自身的一处失准</strong>：MW1 写"摘要与 §1 反复强调 <code>without any parameter or architecture modification</code>"。<strong>摘要里没有这句话</strong>——摘要的对应表述是 <code>without any explicit supervision</code>，而 <code>without any parameter or architecture modification</code> 只出现在 §1【可查证：两处原文】。审稿人的批评方向成立，但"摘要与 §1"这个并列不准确。<strong>严重度 P2（对隔离方的审计也须有）。</strong></p>
+<p><strong>审稿人未发现的</strong>：R-1（CBT-CN 非单调）、R-4（R-2 单指标反例）、R-6（CoQA 的 7 域 vs 5 域）。见下节。</p>
+<h4>4.2 rebuttal 引文逐条复验</h4>
+<p>S7 的 rebuttal 共引用 5 处论文原文作为立论依据，另在落地对照表里引用 5 处最终稿表述。逐条核对：</p>
+<table>
+<thead>
+<tr>
+<th>引用</th>
+<th>出处</th>
+<th>复验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>without any parameter or architecture modification</code></td>
+<td>§1</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>an approximation</code>（停用词过滤器）</td>
+<td>§3.3</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>rudimentary</code> / <code>far from use-able</code></td>
+<td>§6</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>摘要失误形态"车撞了几辆、logo 在帽子还是衬衫上"</td>
+<td>§3.6</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>We observe gains of 2.5 to 5 perplexity</code></td>
+<td>§3.1</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>§3.3 首句实际写的是"从 99.8 到 8.6 困惑度"（承诺前移对照但未落地）</td>
+<td>§3.3</td>
+<td>✅ 复验一致</td>
+</tr>
+<tr>
+<td><code>competitive, and state of the art results depending on the task</code> 出自 §1 而非摘要</td>
+<td>§1</td>
+<td>✅ 审稿人错引、作者纠正正确</td>
+</tr>
+<tr>
+<td>§3.8 最终稿仍只有 4.1% / 1.0% / 5.3 倍三个数字</td>
+<td>§3.8</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>§4 最终稿仍为 <code>between 1-6%</code></td>
+<td>§4</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>§3.1 最终稿仍无去分词器对照表</td>
+<td>§3.1</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：rebuttal 的引文零悬空，落地对照表的 6 行判定全部成立。S7 第 3 节的"5 条修改承诺 0 条完全落地、1 条部分落地"这一统计经复核无误。</strong> 这是本轮仿真里可核验性最强的一节。</p>
+<h4>4.3 隔离是否真合规</h4>
+<ul>
+<li>S7 第 0 节声明子代理只拿到 <code>gpt2.txt</code> 路径。<strong>核对其输出中不含任何本项目的内部术语</strong>（"档案""v0/v1/v2""负结果占比""待验猜想""S3""S6"等）→ <strong>合规</strong>。</li>
+<li>唯一需要排除的边界：审稿人写出的"反推 0.77%"。核查其推导链（4.1% ÷ 5.3）→ <strong>纯自主推导，不是档案泄漏</strong>。合规。</li>
+<li>第 0 步审计子代理同理：其输出只含论文行号与算式，无内部术语 → <strong>合规</strong>。</li>
+</ul>
+<h3>5. 两个隔离视角的发现集合不重合（本轮新增发现）</h3>
+<table>
+<thead>
+<tr>
+<th>发现</th>
+<th>审稿人（框架=「我会怎么攻」）</th>
+<th>审计员（框架=「逐行重算趋势」）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.3 倍与 1.0% 无法对账</td>
+<td>✅ MW3</td>
+<td>✅ I-2</td>
+</tr>
+<tr>
+<td>1–6% 区间与表不符</td>
+<td>✅ MC1</td>
+<td>✅ J-1</td>
+</tr>
+<tr>
+<td>LAMBADA 的 SOTA 依赖后处理</td>
+<td>✅ MW1</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>摘要任务水位被"competitive"掩盖</td>
+<td>✅ MW2</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>NQ 缺 345M/762M 的受控曲线</td>
+<td>✅ MW3 附加</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>CBT-CN 非单调（93.45 → 93.30）</strong></td>
+<td>❌</td>
+<td>✅ <strong>R-1</strong></td>
+</tr>
+<tr>
+<td>Table 6 逐列反例（WikiText-2、text8）</td>
+<td>❌</td>
+<td>✅ J-2</td>
+</tr>
+<tr>
+<td>R-2 单指标反例</td>
+<td>❌</td>
+<td>✅ G-1</td>
+</tr>
+<tr>
+<td>117M 在 PTB 上劣于 SOTA</td>
+<td>❌</td>
+<td>✅ B-3</td>
+</tr>
+<tr>
+<td>Table 5 计数</td>
+<td>✅ 22/8</td>
+<td>❌ 21/9（错）</td>
+</tr>
+<tr>
+<td><strong>CoQA 的 7 域 vs 5 域内部不一致</strong></td>
+<td>❌</td>
+<td>❌（<strong>本阶段补上</strong>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>共 11 类发现，两者交集只有 2 类；两者各自独有 4 类与 5 类；两类都漏 1 类。</strong></p>
+<p><strong>结论（对本流程最有价值的一条）</strong>：<strong>"隔离审稿人"与"重算趋势"不是同一件事的两种做法，而是两个互补且各自不完备的审计视角。</strong> 审稿人的注意力被"claim 可不可攻"牵引，因此对<strong>框架性夸大</strong>敏感（LAMBADA 的界定、摘要的水位），对<strong>表内单调性</strong>迟钝；审计员的注意力被"逐行差值"牵引，因此对<strong>表格算术</strong>极度敏感，却完全不会去问"这个 claim 的措辞是否过度"。
+→ <strong>模板修订建议</strong>：把 S7 的审稿人提示词与 S8 第 0 步的审计提示词固化为两份<strong>互不引用</strong>、<strong>观察框架明确不同</strong>的提示词；并明确规定 S8 第 0 步的审计员<strong>不得</strong>评价方法好坏，只做算术与文本对照（本轮已如此执行，效果显著）。</p>
+<h3>6. 这套仿真教会我的东西里，哪些是读论文原文绝对学不到的？</h3>
+<p>分三层，并声明每层的性质。</p>
+<h4>第一层：论文里只有"痕迹"、没有"理由"的决策——读原文只会读到做法</h4>
+<table>
+<thead>
+<tr>
+<th>学到的东西</th>
+<th>性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reddit 的 3-karma 门槛，本质是<strong>用一个免费的人类投票信号，替换掉买不起的人工筛选工序</strong>——它不是"数据源选择"，是"工序替代"</td>
+<td><strong>史实</strong>（做法见 §2.1），但"工序替代"这层理解读原文得不到</td>
+</tr>
+<tr>
+<td>四档 log-uniform 尺寸矩阵，是"容量作为自变量"这一 claim 的<strong>必要代价</strong>，而不是"顺手多训了几个"</td>
+<td>重构（代价关系可由 claim 结构推出）</td>
+</tr>
+<tr>
+<td>§6 末段的微调承诺，位置上处于全文末尾、形式上只有一句——<strong>它的功能是防御而不是计划</strong></td>
+<td>重构（但位置与篇幅是可查证事实）</td>
+</tr>
+<tr>
+<td>摘要里选 <code>unsupervised</code> 而不选 <code>zero-shot</code>，是因为过程本身给了任务上下文格式</td>
+<td>重构</td>
+</tr>
+</tbody>
+</table>
+<h4>第二层：过程里真实存在的判断与挫败——读原文完全无从得知</h4>
+<ul>
+<li>三条 naive 想法各自的死因与次序（尤其"数据来源可以是自然文本"这一读法是从 decaNLP 的论证里<strong>反向</strong>读出来的）</li>
+<li>至暗三：零样本首版产出"合理续写非合法末词"，一度判定可能致命、一度考虑退回微调；靠"这是约束缺失不是能力缺失"这一判据救回</li>
+<li>1BW 的失败曾按 bug 排查，最终以"规模与预处理捆绑"重新解释</li>
+<li>rebuttal 的 5 条承诺在最终稿里 0 条落地，以及这一现象归因于技术报告的流程性质与发布窗口</li>
+</ul>
+<p><strong>性质声明：以上全部为【合理重构】，其依据已逐条记在各阶段《档案》中，不可当作史实引用。</strong></p>
+<h4>第三层：本流程独有的产物——关于"审计本身"的知识</h4>
+<p>这一层是读论文<strong>和</strong>读任何一份研究复盘都得不到的：</p>
+<ol>
+<li><strong>本轮自身的误差基线</strong>：约 55 条断言 / P0–P2 占 18.2% / P0 1 条（1.8%）。与 GPT-1 首跑（17% / 2 条 / 3.3%）相比，<strong>P0 减半而 P0–P2 总量未降</strong>，且唯一那条 P0 与 GPT-1 的 P0 同属"缺席断言"形态。→ <strong>模板能压住事实性错误，压不住措辞层面的过度自信。</strong></li>
+<li><strong>两个隔离视角的发现集合几乎不重合</strong>（交集 2/11），且各自都有独有盲区。</li>
+<li><strong>论文自身的六处问题</strong>（R-1 至 R-6），其中 <strong>R-1（CBT-CN 非单调）与 R-6（CoQA 的 7/5 域）在论文文本层面是硬冲突</strong>，R-6 连两个隔离视角都漏了。<strong>这一条最出乎意料：一篇被引用数万次的论文，它的摘要级数字（7/8）是对的，但它的趋势句和自己的表打架。</strong></li>
+<li><strong>"漏检"不等于"失分"</strong>：叙事漏掉了论文那句被证伪的 CBT 单调性概括，反而避免了把论文的错误抄进自己的稿子。</li>
+</ol>
+<p><strong>性质声明：第 1、2、4 条是本流程的实验结果（可复现）；第 3 条是论文文本层面的可查证事实。</strong></p>
+<h4>待办的模板改动（下一轮生效，本轮不改）</h4>
+<ol>
+<li>S1–S6 的纪律条款里，"每个判断打标签"之外<strong>追加一条措辞强度条款</strong>：<strong>凡标【合理重构】的段落，正文不得使用"就是""正是""唯一"这类断言级副词</strong>；否则降级为"可能是""大概率"。→ 直指本轮 6 条 P2 与 3 条 P1 的共同病根。</li>
+<li>S2/S3 的"必须引出论文的动机原句"这条纪律，<strong>要把"引用"与"动机"显式分开</strong>：有引用 ≠ 有动机。本轮 P0 正是把"没有动机句"写成了"没有任何引用"。</li>
+<li>S8 第 0 步的审计提示词独立固化（见第 5 节结论）。</li>
+</ol>
+<hr />
+<h3>《档案 · S8》</h3>
+<pre><code>【阶段】S8 对照复盘（幻觉总检查）
+【已知事实】
+1. Table 3 的十列五行完整矩阵已重建；7/8 判定成立；1BW 是唯一未超既有结果的一列（42.16 对 21.8）【可查证：Table 3】
+2. Table 4 六行的 R-AVG 全部等于 R-1、R-2、R-L 的算术平均，逐行无误差【可查证：Table 4】
+3. Table 6 两个平均值复核无误（3.2% 与 5.9%）；但区间陈述 1 至 6% 与表内 0.88% 至 6.31% 不符；自身重叠列有两个反例【可查证：Table 6 与 §4 原文】
+4. 论文 §3.2 的概括句 performance steadily improves as model size is increased 被自己的表格证伪：CBT-CN 在 762M 到 1542M 由 93.45 降为 93.30【可查证：§3.2 与 Table 3】
+5. 论文内部两处域数不一致：§3.5 称 CoQA 含 7 个域，§4 称开发集指标在 5 个域上取平均【可查证：两处原文】
+6. 论文 §3.6 的 just barely outperforms selecting 3 random sentences 在聚合指标上成立，但 R-2 单指标反例（8.27 小于 8.63）【可查证：Table 4】
+7. Table 5 的对错计数经符号码位机器核查为 22 正确、8 错误（共 30 条）；论文未给出这 30 条的准确率，正文只给最有信心 1% 上的 63.1%【可核验：_verify_s8.txt】
+8. ablation 及其变体在全文出现 0 次，确认无消融表【可核验：机器检索】
+9. 审稿人三条 weakness 的全部数字复验成立；其唯一失准处是把 §1 的表述归到了摘要【可查证：§1 与 Abstract 原文】
+10. rebuttal 的 5 处论文引文与落地对照表的 5 处最终稿引文全部零悬空；5 条修改承诺 0 条完全落地、1 条部分落地这一统计成立【可查证：逐条对照】
+11. 两个隔离子代理的输出中均不含本项目内部术语，隔离合规【可核验：S7 第 1 节与本文件第 0 节】
+12. Figure 1 至 Figure 5 无法从纯文本核验，只能借 caption 与正文旁证【可核验：gpt2.txt 中图区只余 caption】
+【合理重构】
+a. 至暗一至至暗四的场景、时长与心理活动——依据：各阶段已声明的锚点（重型重构，本轮风险最高处）
+b. rebuttal 承诺未落地的三条归因——依据：论文形态与发布进程（重构）
+c. 将 S7 审稿人与 S8 审计员的注意力差异解释为&quot;观察框架不同&quot;——依据：两个子代理输出中独有发现的重合度统计（重构）
+【负结果】
+1. 本轮自产幻觉 10 条（P0 一条、P1 三条、P2 六条），占带标签实质断言约 18.2%
+2. P0 的绝对数量由 GPT-1 的 2 条降至 1 条，但 P0 至 P2 总量未降；模板对措辞层面的过度自信无效
+3. 覆盖度缺口四类：Table 3 完整矩阵从未被完整吸收；Table 5 本体未用；Figure 5 未用；Table 12 至 17 未用（含 §3.6 的摘要失败诊断案例）
+4. 立项时（S0）提出的三条风险中，风险 1（无消融表）与风险 3（文献边界）已按预案处理，风险 2（非投稿形态）在 S7 出现轻度越界但已自查纠正
+5. 三条模板改动建议本轮不生效，留待下一轮
+（本阶段负结果占比约 45%）
+【未决问题】
+1. 三条模板改动需要在下一轮（或下一片论文）验证有效性，尤其&quot;措辞强度条款&quot;能否压住 P2
+2. R-1 与 R-6 两处论文自身问题要不要写进 S9 的附录《勘误与对照》？按 S9 模板第 1 条，附录要保留 S8 三张表，故应当写入【交 S9】
+3. Figure 1 至 5 不可核验这一限制要在 S9 里如何处理（是声明还是回避）【交 S9】
+【一致性自检】本阶段与全部前序档案无冲突，且已反向修正三处：H-G2-02 把 S2 与 S3 的&quot;无引用&quot;断言改为&quot;有引用无动机&quot;；H-G2-03 把 S3 的 v1 死序标注由轻改为中重度重构；H-G2-06 把 S5 的&quot;三刀就是处方&quot;改为&quot;一刀半锚点、两刀零锚点&quot;。三处修正均以修订注形式留在原文件，未静默覆盖。唯三处实质性冲突（S2 与 S3 对同一事实的重复误述、S4 对论文口径的照抄、S6 对图内细节的断言）已全部定位到具体的已知事实条目。
+【后见之明自检】本阶段本应有一次后见之明核查——反过来查前序阶段有无泄漏。结果查出 S3 有一处泄漏（H-G2-09：在 v0 死因里写出&quot;后来它变成了整整一节（§4）&quot;），已记录并加注。其余阶段未发现同类问题。
+</code></pre>
+</section>
+<section class="stage">
+<h2>语言模型自己会做任务，这件事我用了半年才敢说出口</h2>
+<p><strong>——GPT-2 的第一人称复盘：一个被反向读出来的想法、三次亲手杀死自己的方案，和我一年后才敢承认的四件事</strong></p>
+<blockquote>
+<p>仿真声明：本文是基于公开材料的第一人称合理重构，不代表论文作者本人或其机构的真实经历、观点或言论。凡"我记得""我当时猜""这一点论文里没写"的段落属重构；凡带数字的事实均可在论文原文核对，依据见全文末的<strong>章末注</strong>。本文的对照核查结论（含我自己写错的十条）压缩在<strong>附录</strong>里。</p>
+</blockquote>
+<hr />
+<h3>第一幕 · 问题：我发现自己答不出"为什么赢"</h3>
+<p><strong>本章论点：卡住我的不是模型不够大，是我做赢了一件事却说不清它为什么赢——而说不清的胜利，对理解没有任何贡献。</strong></p>
+<p>起点不在 2019 年，在 2017 年。</p>
+<p>那一年我做了一个实验，很久以后我才知道它其实是我后来所有判断的源头：一个 byte 级的 LSTM，训练目标朴素到不能再朴素——猜下一个字节。训完以后，它的内部长出了一个专门管情感的神经元：我把它拧一下，生成的文本情感就跟着翻面（这一点可以在当年的那篇论文里查到）。<strong>没有人教过它"情感"这个概念，它自己长出来了。</strong></p>
+<p>这件事在我脑子里留下一个执念，后来我把它压缩成一句自问：</p>
+<p><strong>如果语言模型在预训练里已经学会了怎么读句子，那为什么每个下游任务还要从零学一遍怎么用它？</strong></p>
+<p>这句话听着像口号，但它其实是一个能拿来砍方案的标准——它砍掉的第一个方案，就是我自己的。</p>
+<h4>我们确实做成了一个</h4>
+<p>2018 年我们做了那篇后来被叫做 GPT-1 的东西：一个 Transformer 语言模型，预训练完以后，把判别式任务全部拍平成一条序列，只在最后加一个线性层微调。架构零改动，预训练里学的每一层都参与下游任务。结果不难看。</p>
+<p><strong>但我心里有个疙瘩一直没解开：我还是得给每个任务准备标注数据。</strong></p>
+<p>GLUE 的数据是人一条条标出来的，问答的数据是人一条条标出来的。模型越好，就越像是在把人的标注吃得更干净，而不是自己学会了。这跟我 2017 年那个执念是拧着的。</p>
+<h4>那年十月，有人把答案摊在了桌上</h4>
+<p>BERT 出来的时候我正在做别的事。他们用双向的目标加上微调，在 GLUE 上把我们一起架到了火上。</p>
+<p><strong>刺到我的不是输赢，是那条路的天花板。</strong> 如果继续在"预训练加微调"这根轴上比，比的是谁的标注数据用得更狠、谁的目标函数更巧——而这根轴的上限是<strong>人类愿意标多少数据</strong>。人手是有价格的，所以这条路往上走，会撞墙。</p>
+<p>我当时的第一个想法特别没出息：<strong>把 GPT-1 继续做大，去 GLUE 上把他们掀翻。</strong> 四层变八层，十亿变五十亿。</p>
+<p>它死了三次，我每次都想救。</p>
+<p><strong>第一次死，是因为它不回答任何新问题。</strong> 打赢只证明我们的工程量更大，不证明"语言模型学会了任务"。哪怕赢了我也说不出为什么赢。</p>
+<p><strong>第二次死，是因为算术。</strong> 当时的共识是：机器学习系统要<strong>泛化</strong>（学会的东西能用到没见过的例子上），需要成百上千个训练样本。多任务训练里，一个"数据集加一个目标函数"就算一个样本——照这个数，要兑现多任务的承诺，大概也需要成百上千个这样的"对"。而那些年最激进的两项工作分别只做到 10 个和 17 个。<strong>这不是方向选错了，是规模指标选错了：继续堆，就是拿人手去填一个指数级的坑。</strong></p>
+<p><strong>第三次死，是因为它和"泛化"这两个字背道而驰。</strong> 再做一个单任务、单域的模型，就是往我们诊断出的那个毛病里，再添一笔。</p>
+<h4>一个把整件事翻过来的说法</h4>
+<p>我那时候反复盯 GPT-1 的目标函数看，看到的是一件当时让我愣了一下的东西。</p>
+<p><strong>先说直觉</strong>：监督学习和语言建模，用的其实是<strong>同一本教材</strong>，区别只在批改的范围。语言建模要模型把整段话的每一个位置都猜对；监督学习只把其中一小段圈出来批改。</p>
+<p><strong>再说机制</strong>：语言建模的目标是最大化一段序列的联合概率，也就是每个位置上"下一个符号"的条件概率的连乘；监督学习的目标是最大化"给定输入时输出的条件概率"。后者是把前者的求和范围<strong>限制在一个子集上</strong>。范围缩小，不会改变函数本身，只会改变我们考察它的位置。</p>
+<p><strong>写成式子是这样</strong>（这一段论文里是有的，而且它是全篇最要紧的一步）：</p>
+<pre><code>语言建模：  max  Σ_t  log p(s_t | s_1 ... s_{t-1})        对所有位置 t
+监督学习：  max  Σ_{t∈输出区}  log p(s_t | s_1 ... s_{t-1})  只对答案那几个位置
+</code></pre>
+<p>两式是同一条式子，后者的求和是前者求和的一部分。<strong>于是有一件事在数学上是通的：让整段概率最高的那组参数，也一定让答案区间的概率最高——语言建模的全局最优解，就是监督学习的全局最优解。</strong></p>
+<p>结论听上去很香：那我们不需要为每个任务设计目标，只需要一个足够好的密度估计。</p>
+<p><strong>它哪里不像</strong>：这条结论只保证"<strong>存在</strong>一个既会说话又会答题的解"，完全不保证"<strong>我们优化得到</strong>"。而这两件事的距离，就是这个项目后来全部的痛苦所在——我说过一句很重的话留在论文里：这条路走得通，但比显式监督慢得多。</p>
+<hr />
+<h3>第二幕 · 直觉：如果任务本身就是文本</h3>
+<p><strong>本章论点：把"教模型做任务"这件事从流程里删掉，前提是把任务说明看成文本的一部分——这句话我起初读反了方向，读对之后整条路才通。</strong></p>
+<p>那句让我通的话，是别人写的，而且写出来的时候不是给我用的。</p>
+<p>decaNLP 那篇工作里有一句：<strong>语言提供了一种灵活的方式，把任务、输入、输出都表示为符号序列</strong>。他们举的例子是 <code>(translate to french, english text, french text)</code>。</p>
+<p>他们用这句话论证"可以做一个多任务模型"——<strong>我读成了另一件事：任务说明本身就是一段文本，那它就可以是训练语料的自然成分。</strong></p>
+<p>差别看似很小，性质完全不同：<strong>他们要多标十个数据集，我连标都不用标——只要网上有人写过"英语句子 = 法语句子"。</strong></p>
+<h4>先把这张地图画出来：我在哪儿，谁站在旁边</h4>
+<p>我不敢凭印象说"没人做过"。动手之前我把这块方向的队伍数了一遍，分成四派：</p>
+<ul>
+<li><strong>A 派，表征迁移</strong>——word2vec、GloVe、CoVe、ELMo 这一串。做法是把无监督学到的表示搬给下游任务。<strong>这一派的死穴是：搬过去的只有表示。</strong> ELMo 到了下游还得自己叠一层 BiLSTM 和注意力——也就是说无监督学到的东西只负责输入层，真正做判断的仍然是标注数据现场学。我把它归为"更好的初始化"，不是"自己会做任务"。</li>
+<li><strong>B 派，预训练加微调</strong>——我的出生地。Dai &amp; Le 2015、ULMFiT、GPT-1，还有 BERT。我的架构、优化器、训练配方几乎全是继承来的，这一点我不否认。<strong>但这一派每一篇的进展都可以被读成"如何更省地用标注数据"，而不是"可以不标注"。</strong> 论文里我把这句写得很直白：这些方法仍然需要监督训练才能执行任务。</li>
+<li><strong>C 派，显式多任务</strong>——decaNLP、One Model To Learn Them All。半个亲生：它给了我"语言可以描述任务"这把刀，但它的任务描述是人为发明的控制码，我的任务描述是语料里本来就有的自然文本。<strong>差这一步，性质完全不同：它造数据，我找数据。</strong></li>
+<li><strong>D 派，单点突破</strong>——Weston 2016 的对话学习、Schwartz 2017 的常识推理、Karpathy 2015 从 RNN 里读出来的可解释单元，还有我自己 2017 年那个情感神经元。<strong>血最亲的一派。</strong> 但这派全是单任务、单数据集的定性观察，没有一篇做过系统评测——所以谁也说不清"这是普遍现象"还是"这是运气好"。</li>
+</ul>
+<p>四派摆在一起，那个空位就清楚了：<strong>没有人把"不用微调、不预设任务"这件事，放到一个足够大的语料和足够大的模型上系统测过。</strong> 我要占的就是那个空位。</p>
+<h4>一个让我在屏幕前坐了一会儿的发现</h4>
+<p>我本来准备在论文里写一句"零样本任务迁移是空白"（零样本：不给这个任务的任何训练样例，直接让它做）。写之前我去查了 Winograd Schema Challenge 的榜。</p>
+<p><strong>Trinh &amp; Le 2018 已经用语言模型做过了，而且没在 WSC 上训练过。</strong> 他们的做法是比较两种消解里哪个概率更高——<strong>这就是零样本任务执行</strong>，跟我打算做的事在性质上是同一件。</p>
+<p>如果这件事已经有人做过，我那篇文章的第一句话就不成立了。</p>
+<p><strong>最后是两处细节救了我。</strong></p>
+<p>第一处是他们的语料。他们的最好结果建立在一个"小样本的 Common Crawl 子集"上，而这个子集的筛法是<strong>"只保留与目标数据集最相似的文档"</strong>。我盯着这句看了很久——<strong>这说明他们已经把任务知识预先注进语料里了</strong>，那是一个为 WSC 量身定制的语料。要是我能把语料做得完全不带任务偏好、还能赢，性质就完全不同。论文里我写下的那句话是：我们要避免预先对任务做假设。<strong>这句话表面上是方法论，实际上是我被抢先之后画的那条界线。</strong></p>
+<p>第二处是<strong>他们只做了一个任务</strong>。一个任务分不清"语言模型普遍会做任务"和"语言模型的某条路径恰好撞对了这一个"。要证明前者，就得换很多任务、换很多数据集——而这一点恰好是我唯一有优势的地方：<strong>我有容量，也有语料。</strong> 于是"广度"成了我的护城河。后来论文里那七个任务探针，根子就在这个下午。</p>
+<h4>我为什么敢赌网上真的有这种东西</h4>
+<p>我不能只靠"网上什么都有"这种印象。当时我找到的依据是 Weston 那篇对话工作：他证明了不给奖励信号、直接靠"预测老师会说什么"也能学会一个问答任务。但他被"对话"这个设定框住了——需要有人陪你聊。</p>
+<p><strong>我的判断是：互联网上的信息是被动可得的，不需要交互。</strong> 有人在网页里写"她是法国人，她说 Je ne suis pas un imbécile"，这条网页本身就同时包含任务说明、输入和输出。</p>
+<p><strong>它哪里不像</strong>：网页里的人是主动在理解和表达，模型只是在拟合条件分布。<strong>它可能学会的只是"翻译这件事的表层模式"</strong>，而不是翻译。这个疑问后来变成论文里整整一节（第四幕细说），而且它没有被彻底消掉——只能被压缩到一个很小的比例里。</p>
+<h4>顺手先把"字怎么进模型"这件事定了</h4>
+<p>这一路最容易被忽略、但工作量最实的是输入表示。我在这里死了两次。</p>
+<p><strong>第一次死：按码点做 BPE。</strong>（码点就是每个字符在电脑里的编号。）要覆盖全部 Unicode，基础词表就得超过 13 万——而当时 BPE 常用词表是 3.2 万到 6.4 万。<strong>代价不是钱，是分配</strong>：多出来的七万多个槽位本来可以装词。</p>
+<p><strong>先说直觉</strong>：BPE 就是<strong>把频繁一起出现的小单位粘成更大的积木</strong>——先有字母，粘成常见片段，再粘成词。词表就那么大的话，粘什么、不粘什么，决定了模型的"容量预算"花在哪里。</p>
+<p><strong>再说机制</strong>：它从最小单位出发，反复找出现频率最高的一对邻居，把它们合并成一个新单位，记进词表；重复到词表满为止。之后任何文本都按同一本词表切成块。<strong>"常用"在这里的定义就是出现次数多。</strong></p>
+<p><strong>它哪里不像</strong>：频率高 ≠ 语义重要。按纯频率走，"的""the"这类会先被粘成整块，而"熵""不可约"这种信息量高的词反而被切成碎片。BPE 选择的是<strong>压缩效率</strong>，不是语义单元——它本来的目的就是把文本压短。</p>
+<p><strong>第二次死：干脆全部按字节来。</strong> 字节级天然满足"任何字符串都能算概率"这个要求（别人 2015 年就做过），但字节级语言模型在大规模数据集上<strong>打不过词级模型</strong>——文献这么说，我自己在语料上重跑也看到了同样的差距。这是"文献说不行、我也验证了不行"的双重死刑。</p>
+<p><strong>活下来的版本是字节级 BPE</strong>：基础词表只有 256 个字节，然后在字节序列上做合并。但直接合并不行——我实测发现 <code>dog</code>、<code>dog.</code>、<code>dog!</code>、<code>dog?</code> 各自占了一个槽位。原因是 BPE 只看频率，不看它在什么位置出现。</p>
+<p><strong>修法是禁止跨字符类别合并</strong>：字母归字母、数字归数字、标点归标点，不许粘到一起。<strong>例外是空格</strong>——给空格开这个例外以后，压缩效率显著提升，而带来的词碎片化极小。<strong>这一条是全文少数给了"代价—收益"对比的设计，所以它是我记得最清楚的一条。</strong></p>
+<p><strong>它哪里不像</strong>：这条"不许跨类"的规则自己就带着例外，说明它是一条工程妥协，不是一条原理。词表最后定在 50257 个。</p>
+<p>到这里，输入修好了。<strong>但"答案在哪"这个最要命的问题，一点没动。</strong></p>
+<hr />
+<h3>第三幕 · 试错：这一阶段真正的工作量在删东西</h3>
+<p><strong>本章论点：从第一版到最后一版，我删掉的东西比留下的多；而每一个被删掉的版本，死因都比活着的版本更值得记。</strong></p>
+<h4>这张桌子上不止我一个人</h4>
+<p>论文首页有六位作者，前两位标星号、末两位标双星号，脚注写的是"同等贡献"。<strong>也就是说四个人被标为同等贡献，中间两位没有标记。</strong> 这个结构本身就说明：这不是一个人写的故事，四条线都有话语权。</p>
+<p>我把当时的账本摆一下：<strong>我这一本记的是"做出一个别人没做过的东西"</strong>，愿意为一句说不清能不能成的话烧掉几个月；<strong>资深作者那一本记的是"故事线站得住、发布不翻车"</strong>，他管我叙事的一致性；<strong>其余几位的账最杂</strong>——除了工程和算力，还多出一本"这东西放出去会不会被滥用"的账。<strong>他们的天然动作是砍 scope。</strong></p>
+<p>所以下面被砍掉的东西，都不是因为它们错，是因为<strong>没人手、没算力，或者怕风险</strong>。</p>
+<h4>被砍掉的两样（不是因为它们错）</h4>
+<p><strong>第一样是多语言。</strong> 这刀砍得最疼。我原来的想法很直白："语料越杂越好，那多语言当然更杂。" 被砍的理由不是学术，是<strong>分析成本</strong>：语料里一旦混进多语言，所有单语评测集的重叠分析和困惑度（困惑度衡量模型对下一个词的把握有多差，越低越好）口径都得重做一遍。最后一刀切，<strong>主动移除全部非英语网页</strong>。</p>
+<p><strong>这个砍法后来以一种很讽刺的方式回到了论文里</strong>（第四幕细说）：那台语言检测器发现，法语只残留了 10MB。而正是这 10MB，成了"完全没教过翻译、却冒出 11.5 BLEU（BLEU 是翻译质量的打分，越高越好）法译英"这一结果的解释材料。<strong>被砍掉的方向没有消失，它以证据的形式回来了。</strong></p>
+<p><strong>第二样是把整套权重和语料直接开放。</strong> 一开始的默认计划是全开——上一代就是这么做的，代码和数据都放出去了。这次被砍的理由不是工期也不是算力，是<strong>误用风险</strong>。最后的形态是分阶段的：先放小模型，最大的那个压着。论文里唯一那句关于开放的承诺，用的词是"小模型"——<strong>它是全文唯一一处模型开放承诺，而那个"小"字本身就是这次决议留下的痕迹。</strong></p>
+<p>我想强调这条的性质：<strong>它不是实验做得不够，是一次主动的、不可逆的自我限制。</strong></p>
+<h4>v0：把微调那一刀砍掉</h4>
+<p>第一版的做法朴素到没什么可说：GPT-1 的流程是「预训练 → 拍平成序列 → 加线性层 → 微调」，我把最后两步直接删掉，只留「预训练 → 拍平成序列 → 采样」。任务是文本，就写一段，让模型接着写，从写出来的东西里取答案。</p>
+<p><strong>它有三个毛病，一个我当时就看得见，两个是后来才看清的。</strong></p>
+<p><strong>看得见的那个是效率</strong>：预备实验里已经显示，足够大的语言模型确实能做这种玩具式的多任务学习，但<strong>比显式监督慢得多</strong>。慢意味着必须用规模和时间去换——这一条后来决定了整个项目的形态（第四幕）。</p>
+<p><strong>后来才看清的第一个是接口</strong>：模型续写的是<strong>网页文本的分布</strong>，不是<strong>答案的分布</strong>。它给的东西可能完全合法、完全通顺，但<strong>不在我要的位置上</strong>。这个道理，我是几个月后在 LAMBADA 上（一个要求猜出段落最后一个词的测试）才彻底看明白的：模型给出的<strong>大多是句子的合法续写，而不是合法的最后一个词</strong>。</p>
+<p>这句话我后来写进了论文，因为它说明的不是"模型不会"，而是<strong>模型没有被告知"这里要的是那个词"</strong>。</p>
+<p><strong>后来才看清的第二个是防线</strong>：如果模型只是把语料里见过的问答原样背出来，那我做出来的东西叫<strong>检索</strong>，不叫零样本任务学习。这一层在 v0 阶段我甚至没有检验手段，只能把它挂成一根刺——<strong>结果它后来长成了一整节</strong>，而且成了这篇论文里我最自豪的一节。</p>
+<h4>至暗时刻：深层的模型训不起来</h4>
+<p>这一段持续了大概六周，是我在这个项目里最没底的时候。</p>
+<p>模型往上堆层数，浅的几档还能出曲线，深的一上来就发散；学习率压得很小能稳住，但损失降得比浅模型还慢。<strong>换句话说，加参数没换来收益，只换来了不稳定。</strong></p>
+<p>我当时判断"该救还是该弃"的标准只有一条：<strong>这是超参问题还是结构问题？</strong> 判它是结构问题，理由很直接——学习率调小能稳住，说明不是数据问题也不是目标问题，<strong>是尺度问题</strong>：信息在残差通路上逐层累积，深层拿到的量级和浅层根本不是一个数量级。</p>
+<p>对症状开的药方是三处改动：把 LayerNorm 挪到每个子块的输入（类似 pre-activation 残差网络）、在最后一个自注意力块之后再加一层 LayerNorm、把残差层的初始化权重按 1 除以根号 N 缩放。</p>
+<p><strong>这里是这篇文章我要说的一句实话：这三处改动，论文里只写了做法，一句动机都没给。</strong> 而三处里只有第三处能对上一句描述——"为了照顾残差通路上的累积"——另外两处，一直到今天<strong>我也不知道它们当初是为了解决什么才加的</strong>。我在复盘里把它们写成"对症状开的药方"，那是我的重构，不是记录。<strong>这是整轮复盘里风险最高的一处说法，我在附录里把它列为我自己写错的第 2 条。</strong></p>
+<h4>v1：第二条腿是"把任务写进上下文"</h4>
+<p>输入修好了，效率问题靠规模换，但"答案取不出来"这件事一直卡着。我试过用后处理去解——<strong>被我否了</strong>，理由不是技术，是立场：<strong>只要加一层任务专用的后处理，我这条路的性质就从"语言模型自己会做任务"塌成"我教语言模型做任务"。</strong> 那条腿一旦装上，整篇文章就没有了。</p>
+<p>真正的转折不是某个模块，是我换了个念头：<strong>别让模型自己知道要干什么，我来告诉它——用文本告诉它。</strong></p>
+<p>既然任务是文本，那我就在推理的时候把任务写进上下文。论文里所有任务都是用同一个约定做的：</p>
+<ul>
+<li>阅读理解：把文档、对话历史、最后一个 <code>A:</code> 一起喂进去；</li>
+<li>摘要：文章后面加 <code>TL;DR:</code>，然后生成 100 个 token；</li>
+<li>翻译：上下文给若干 <code>english sentence = french sentence</code> 的样例对，最后以英文句子加等号收尾；</li>
+<li>问答：用问答样例对做种，帮它推断这个数据集要的是短答风格。</li>
+</ul>
+<p><strong>这就是最后一块拼图，我把它命名为：零样本不等于零格式。</strong></p>
+<p><strong>先说直觉</strong>：<strong>考试允许你带一张写着题型的纸条，但不许带答案。</strong> 纸条不算作弊，因为它不含答案；但纸条确实帮了你。</p>
+<p><strong>再说机制</strong>：模型没有为任何任务更新过权重——这一点严格成立，因为推理时一个梯度都没算。我改的只是喂进去的那段文本。而条件概率的定义本身允许条件任意长：<code>p(答案 | 文档, 历史, "A:")</code> 和 <code>p(答案 | 文档)</code> 是同一个函数在两个不同输入上的取值，函数没变。</p>
+<p><strong>它哪里不像</strong>：纸条是我写的。写什么、写多长、用什么格式，都影响成绩——<strong>而"写什么"这件事本身是很强的先验注入。</strong> 所以"零样本"这个词我用得很小心：论文标题里我用的是 <code>unsupervised</code>（指没有监督信号），不是 <code>zero-shot</code>。这不是措辞讲究，这是<strong>防守</strong>。</p>
+<h4>语料：从"多就是好"到"多且被人筛过"</h4>
+<p>最后一件事是数据，也是这个项目里唯一一次我自己的立场被自己的实验打回来。</p>
+<p>一开始要的是 Common Crawl：免费、大到近乎无限。<strong>但第一批样本拉下来，满屏是不可读的文档。</strong> 更要命的是，早就有别人公开抱怨过这件事，还写明了他们的解法：只保留与目标数据集最相似的文档。</p>
+<p><strong>这句话把我的路堵死了一半。</strong> 如果连他们都认为"语料的域匹配"比"语料的量"重要，那我"靠量硬吃"这条腿就断了。</p>
+<p>转折不是技术突破，是一次立场转换：<strong>从"多即是好"改成"多且被筛过才是好"。</strong> 而筛的办法不能花钱——人工筛选整份网页爬取的成本是异常昂贵的——所以只能找现成的人类信号。</p>
+<p><strong>当时想到的是 Reddit：只抓取至少拿到 3 个 karma 的出站链接。</strong> 那 3 个 karma 就是"其他用户觉得这个链接有意思、有用或者只是好笑"的替代信号。</p>
+<p><strong>现在回头看，这一条是整条数据轨的支点。</strong> 它用一个免费的人类投票，替换掉了一道买不起的人工工序。<strong>它不是一个数据源选择，是一次工序替代</strong>——而论文里只写了做法，没有写这一层。</p>
+<p>最后语料定下来是：4500 万条链接，去重加启发式清洗之后，略多于 800 万篇文档，40GB 文本，只保留 2017 年 12 月之前创建的链接。抽取用两个开源内容提取器组合。</p>
+<p><strong>这个 40GB 不是上限，是这一次的余量。</strong> 两处独立的内证：论文里写了所有模型<strong>都还在语料上欠拟合</strong>，给更多训练时间困惑度仍在改善；而训练集和测试集的性能是一条线一起往上走的。<strong>规模没有到顶，是工期和算力到顶了。</strong></p>
+<h4>一次"规避偏差，反而换个方向撞上去"的返工</h4>
+<p>我们赌的是"字节级输入，所以不需要任何有损预处理"。这句话当时我觉得很漂亮。</p>
+<p><strong>然后评测集从另一个方向咬了我们一口。</strong> 那些下游数据集大多经过激进标准化，带着"断开标点与缩写、打乱句子"这类分词痕迹，甚至出现 <code>&lt;UNK&gt;</code> 这个字符串——而它在我的语料里极端罕见，<strong>四十亿字节里只出现了 26 次</strong>。</p>
+<p>结果是我得反向造工具：一个<strong>可逆的去分词器</strong>，把尽可能多的预处理痕迹还原回去。"可逆"这两个字是硬要求，不然数据集的对数概率就算不出来。论文里我把它称作"一种简单的域适配"。</p>
+<p><strong>这条的教训很硬：我为"不引入分词偏差"而放弃了分词，最后不得不为别人的分词偏差写一个逆向器。规避一个偏差不会消除它，只是换了个方向撞上去。</strong></p>
+<p>顺带说一个被我们主动删掉的候选：<strong>Wikipedia</strong>。删它的理由我当时觉得挺反直觉——不是因为它脏，是因为它<strong>太干净、太大众</strong>：它是许多数据集的共同来源，与测试任务重叠会让后面所有的分析变复杂。<strong>为了少一份分析上的麻烦，我们删掉了一个质量最好的数据源。</strong></p>
+<h4>一根刺长成了一节：怎么证明它不是背出来的</h4>
+<p>这是我前面挂的那根刺。做法是：</p>
+<p><strong>先说直觉</strong>：<strong>把整座图书馆的每一本书拆成七个字的片段，全部倒进一个大筛子；之后拿一段新的话来筛，筛得到就说明它见过。</strong></p>
+<p><strong>再说机制</strong>：这个筛子叫 Bloom 过滤器——它用一组哈希函数把每个片段映射到一串位上，只要一个片段的所有哈希位都是 1，就认为"见过"。它的特点是<strong>只可能误报"见过"，不可能漏报</strong>。我把误报率的上界压到一亿分之一，并生成 100 万个字符串做验证，<strong>命中数为零</strong>。</p>
+<p><strong>它哪里不像</strong>：它不能给你"零"，只能给你"小于一亿分之一"。而且判定单位是 8-gram，也就是八个词的连续片段——<strong>八个词相同不代表意思相同，也不代表模型是"背"的</strong>，它只是说明这段文字在训练语料里出现过类似的片段。所以这个工具能反驳"整段照抄"，但反驳不了"在语义层面记住"。这个界限，我在论文里是用"小但一致的收益"这种说法绕过去的。</p>
+<p>筛完的结论分三层。</p>
+<p><strong>第一层，常用语言建模数据集的测试集，与我的训练语料的重叠大概在百分之三这个量级</strong>；而<strong>它们与各自训练集的平均重叠还更高一些</strong>（这条后来被核查抓住了两个反例，见附录）。</p>
+<p><strong>第二层，也是我最想让人看到的一层：我自己的模型生成的文本，与训练语料的重叠比那更低——中位数只有 2.6%，超过三成的生成样本重叠为零。</strong> 换句话说，模型给出的东西，大多不是从语料里搬来的。</p>
+<p><strong>第三层是三个很小的、但我认为最漂亮的数字。</strong> 我把重叠检查反过来用在最难的那个任务上：Winograd 的 273 个样例里只有 <strong>10 个</strong>与训练语料有 8-gram 重叠，其中 <strong>2 个还是假匹配</strong>，剩下 8 个里只有 <strong>1 个</strong>出现在"会泄露答案"的语境中。而 LAMBADA 上，把任何有重叠的样本剔掉之后，困惑度从 8.6 只变成 8.7、准确率从 63.2% 只降到 62.9%。<strong>这不是漂亮的数字，是很小的数字——而这正是我要的那种数字。</strong> 它说的是：那些分数不是从语料里翻出来的。</p>
+<p><strong>这张重叠分布图是全篇最硬的"自证不是背"材料，但我把它放进了附录。这一点我在第五幕里要交代。</strong></p>
+<hr />
+<h3>第四幕 · 定型与打脸：四档曲线，和三道墙</h3>
+<p><strong>本章论点：我们赌的是"四档规模的完整曲线"，不是任何单个设计的作用——这个赌注决定了我后来挨的每一顿打，而且我认了。</strong></p>
+<h4>那个把我从"报一个数"逼到"报四个数"的争辩</h4>
+<p>关于模型尺寸，团队里有过一次我至今记得的争辩。管算力的一方的账很简单：训一个 15 亿参数的模型已经很贵，训四个就是四份钱；而且如果 claim 是"零样本能做任务"，那报一个数、做出来就行。</p>
+<p><strong>我的理由不是学术，是逻辑</strong>：我的 claim 不是"能做任务"，是<strong>"容量是这件事的关键"</strong>。这个 claim 里"容量"是自变量，<strong>一个点画不出因果关系。</strong> 只报最大的那一个，我说的每一句关于容量的话都变成不可验证的断言。</p>
+<p>最后是条件性让步：报四档，尺寸近似对数均匀铺开，但<strong>不能再加第五个</strong>。这四个点后来撑起了全文三张主图，也撑起了摘要里那句"性能随规模对数线性改善"。</p>
+<h4>先说这个赌注的核心：容量是自变量</h4>
+<p><strong>直觉</strong>：<strong>水深不到一百米，有些鱼就是不会出现。</strong> 不是这些鱼笨，是环境没到位。</p>
+<p><strong>机制</strong>：语言建模的损失是"平均每单位文本的负对数概率"。当模型的参数容量相对于语料的复杂度不够时，它只能先把高频、简单的结构学好——语法、常见搭配。要它同时把"翻译"、"问答"这些低频结构学好，就必须先有足够的容量把这些结构<strong>分开存放</strong>。容量不够的时候，这些结构是互相冲突的，模型只能记住平均。所以这项能力看起来是"突然出现"的——<strong>它不是突然学会的，是容量跨过某条线之后，那些结构才第一次有地方放。</strong></p>
+<p><strong>它哪里不像</strong>：水的临界点是常数，一百度永远是开水；<strong>模型的能力阈值不是常数，它随任务变化</strong>，而且有些任务越给容量越没用——这一点很快就被打脸了（见下面那道拆不掉的墙）。</p>
+<h4>打脸一：赢了 8 个里的 7 个，那个 1 是最大的数据集</h4>
+<p>结果出来是：刷新了 8 个语言建模数据集里 7 个的记录。LAMBADA 的困惑度从 99.8 干到 8.63，儿童读物测试拿到 93.3%（常用名词）和 89.1%（命名实体），Winograd 拿到 70.70%，比之前的最好结果高 7 个百分点。阅读理解上更漂亮：在不使用那 12.7 万条人工问答对的前提下，CoQA 上（一个对话式阅读理解测试）拿到 55 F1（问答类任务的打分，越高越好），追平或超过了四个 baseline 里的三个。</p>
+<p><strong>但那个 1，是最大的那个数据集。</strong></p>
+<p>One Billion Word Benchmark，我拿到的数是 42.16，而之前的最好结果是 21.8。<strong>不是我略输，是差了一个量级。</strong> 而这件事最难受的地方在于它的方向：<strong>我全篇的主轴是"数据越多、模型越大越好"，结果最大的数据集反而最差。</strong></p>
+<p>这个反常我们按 bug 排查了很久。最后落到的解释是：这个数据集同时是最大的、也是预处理破坏性最强的——<strong>它做了句级打乱，而句级打乱移除了全部长程结构。</strong></p>
+<p><strong>我们的长处恰好是长程依赖，这个数据集把我们的长处切掉了。</strong></p>
+<p>这不是一次被挽救的失败，是一次被理解了的失败。代价是我必须承认：<strong>"规模越大越好"这句话有前提，而那个前提写在正文第三段，不在标题里。</strong></p>
+<h4>打脸二：LAMBADA 的那两个数</h4>
+<p>这一段我打算讲得比论文里更直接，因为论文里我把它写得偏靠后。</p>
+<p>LAMBADA 上我有两个数：<strong>不加任何后处理，准确率 52.66%；加一个停用词过滤器（把最常见的那些功能词排除掉），63.24%。</strong> 而既有最好结果的记录是 59.23%。</p>
+<p><strong>也就是说：不加那个过滤器的我，没有超过前人。</strong></p>
+<p>那个过滤器在干什么？它只是把"答案必须不是虚词"这条约束近似了一下——因为模型给出的错误大多是"这是一句合法的续写，只是不是合法的最后一个词"。<strong>它不训练任何东西、不动任何权重</strong>，论文里我用的是"一种近似"这个词。</p>
+<p>我到现在仍然坚持：这不矛盾。论文里那句"不改任何参数与架构"，限定的是参数和架构，不是解码过程——否则所有基于解码策略的工作都会被一并否掉。</p>
+<p><strong>但我承认审稿人指出的呈现顺序问题</strong>：我在正文里的写法是"从 19% 提升到 52.66%，再加过滤器到 63.24%"，读者沿路读下来会以为 59.23 这个对照不存在——<strong>可它明明就印在我自己的表里。这是编排上的回避，不是学术上的错误，而它同样不该发生。</strong></p>
+<h4>打脸三：摘要只赢了随机抽句 0.42 分</h4>
+<p>摘要这个任务我从一开始就知道会难看。结果确实难看：</p>
+<p>平均 ROUGE 是 21.40，而"从文章里随机抽三句"是 20.98。<strong>差了 0.42。</strong> 而且只在加上 <code>TL;DR:</code> 提示的时候才勉强赢——去掉提示掉到 15.03，<strong>一次掉 6.4 分</strong>。对照组的 SOTA 是 32.75。</p>
+<p>还有一处细节是在核查阶段才被挖出来的：<strong>在 R-2 这个单项上，随机抽三句（8.63）是赢我的（8.27）的。</strong></p>
+<p><strong>它的失败形态不是"写不出摘要"，是"写出来的摘要关注错了地方"。</strong> 论文里我留了几个具体的错误案例：模型会去纠结"车撞了几辆""logo 是在帽子上还是衬衫上"这类细节，而把真正的主干丢了。<strong>这个诊断其实比分数重要，因为它指向的瓶颈不是容量，是目标错配</strong>——摘要的评分指标（ROUGE）数的是词重叠，跟"生成一段像人写的摘要"本来就不是同一件事。<strong>再加一个大模型不会改变这个诊断，只会多烧一次钱。</strong></p>
+<p>翻译更惨：英译法 5 BLEU，比用双语词典逐词替换还略差；法译英好一些，11.5 BLEU，比几个无监督基线强，但当前最好的是 33.5 BLEU。</p>
+<p><strong>而法译英这个 11.5 的来由，是整篇论文里我最喜欢的一个讽刺。</strong></p>
+<p>我们在内部争过要不要多语言，最后的决定是<strong>主动移除全部非英语网页</strong>——理由是分析成本。后来我跑了一个字节级的语言检测器，想确认一下滤干净了没有。<strong>答案是没滤干净：还残留大约 10MB 法语。</strong></p>
+<p>当时这是一条坏消息。写论文的时候它变成了证据：<strong>我们主动删掉了非语言数据，只因为没删干净那 10MB，模型就冒出了 11.5 BLEU。</strong> 被砍掉的那个方向没有消失，它以证据的形式回来了。</p>
+<h4>打脸四：一个我一年后才发现的分母问题</h4>
+<p>问答任务上，我的模型在 Natural Questions 上答对 4.1%，而一个"不管问什么都答最常见答案"的极简基线是 1.0%。我在正文里写了一句："GPT-2 多答对了 5.3 倍的题。"</p>
+<p><strong>一年后做核查的时候我才发现：4.1 除以 1.0 等于 4.1，不等 5.3。</strong></p>
+<p>5.3 倍的分母其实是最小那档模型自身的准确率，大约是 0.77%——<strong>而这个数字我根本没写出来。</strong> 读者的眼前只有 4.1% 和 1.0%，只能拿它们相除。<strong>这是我的表述缺陷，不是口径差异。</strong> 审稿人指出了它，我在回应里认了，<strong>然后在最终稿里没有改。</strong></p>
+<h4>还有一道拆不掉的墙，和一道我自己撞出来的</h4>
+<p><strong>拆不掉的那道是评测协议。</strong> LAMBADA 的前人最好结果是在"受限预测"下取得的：模型的输出被约束成只能从上下文里出现过的词里选。我照抄了这个设定——<strong>结果它在我身上起的是反作用：19% 的答案根本不在上下文里。</strong></p>
+<p>这个坑的性质很值得记：<strong>不是我的方法有问题，是"继承别人的评测协议"这个动作本身有风险。</strong> 协议里可能藏着一条只在别人模型上成立的隐含假设。<strong>这个反例后来救了我</strong>——它把一件事从"我们不行"改判成了"口径不同"。</p>
+<p><strong>自己撞出来的那道是《丛林之书》。</strong> 做儿童读物测试的数据重叠分析时发现，测试集里有一本书就在我的训练语料里。处理方式是放弃测试集、改报验证集。</p>
+<p><strong>这一条完全是我们没做功课。</strong> 评测集清单一确定，跑一次 n-gram 重叠检查只需要几小时。而这件事的后果是：<strong>它催生了整篇论文里我最自豪的那一节</strong>（记忆与泛化的对照分析）。用一场事故换来一节方法论，净赚还是净亏，取决于有没有别人先替你付过学费。</p>
+<h4>一个我至今仍觉得很难看的数：CBT 那句"持续改善"</h4>
+<p>最后一处，是核查阶段从论文自己的表里挖出来的，而且<strong>是我自己论文里的错</strong>。</p>
+<p>我在儿童读物测试一节里写了"性能随模型规模增大<strong>持续</strong>改善"。</p>
+<p><strong>但我的表里不是这样。</strong> 常用名词这一列：87.65 → 92.35 → 93.45 → <strong>93.30</strong>。最后一步是往下的。也就是说，我宣称的那个"93.3% 的新记录"，<strong>低于我自己 7.62 亿参数那档的 93.45</strong>。</p>
+<p>对外它仍然是新记录（压过了 85.7），<strong>对内它和我自己的话打架。</strong> 这句话我写的时候是顺手的，表格里的数字是对的，<strong>中间那一步没人对。</strong></p>
+<hr />
+<h3>第五幕 · 讲法：同一堆材料，怎么讲才卖得出去</h3>
+<p><strong>本章论点：到这一步数据已经不会变了，能改的只有说法——而我在说法上做的每一个决定，都是在防守。</strong></p>
+<h4>标题里那三个词，我改了很久</h4>
+<p>论文的标题是 <code>Language Models are Unsupervised Multitask Learners</code>。这个标题里有三个决定，每一个都是为了防守。</p>
+<p><strong>第一，主语是"语言模型"，不是"我们的模型"。</strong> 换成"我们的模型不用监督就能学会任务"，一个现象级的发现立刻降级成一次产品发布。用复数主语，claim 的层级就从"我们做出来了"升到"这件事本来就成立，我们只是第一个把它说清楚的人"——<strong>顺手也降低了被指"夸大自研方法"的攻击面：我们没有自研方法，我们只是把规模推到位了。</strong></p>
+<p><strong>第二，动词用 <code>are</code>，不用 <code>can be</code>。</strong> 前者是断言，后者只是可行性陈述。</p>
+<p><strong>第三，我用的是 <code>unsupervised</code>，不是 <code>zero-shot</code>。</strong> 三个决定里最关键的一个。<strong>因为整篇流程里明明有一个地方不零样本：我给每个任务都写了上下文格式。</strong> 用"无监督"，描述的是"没有监督信号"，这一条完全站得住；用"零样本"，会被追问"你那几个前缀算不算提示工程"。<strong>选这个词的动机是防守，不是形容。</strong></p>
+<h4>摘要放大了三样，藏了四样</h4>
+<p><strong>放大的是三样。</strong></p>
+<p>一是开场那个体感最强的数字：CoQA 拿到 <strong>55 F1</strong>，而且紧跟着"不使用那 127,000 多条训练样本"。<strong>这是全文最强的一句，因为它把"标了多少数据"这个变量直接扣掉了。</strong></p>
+<p>二是一句能被反复引用的机制断言：容量对零样本任务迁移<strong>必不可少</strong>，性能随规模呈<strong>对数线性</strong>改善。</p>
+<p>三是一个可数的事实：<strong>8 个语言建模数据集里的 7 个</strong>刷新了记录。</p>
+<p><strong>藏起来的是四样。</strong></p>
+<p><strong>藏起 LAMBADA 的真实口径。</strong> 摘要一个字都没提那个 63.24% 是靠停用词过滤器拿到的，也没提<strong>不加过滤器只有 52.66%</strong>。</p>
+<p><strong>藏起那个失败列。</strong> 摘要把 7/8 说出来了，那个 1 是什么，要翻到后面才知道。</p>
+<p><strong>藏起摘要和翻译的真实水位。</strong> 摘要只比随机抽三句高 0.42 分、英译法只有 5 BLEU——摘要里一个字都没有。</p>
+<p><strong>藏起"这是我们自己的口径"。</strong> 非英语是我们主动删的，但法译英那 11.5 BLEU 被拿出来当正面结果；<strong>这层因果在摘要里不可能看到。</strong></p>
+<h4>三句外交辞令，后来被人逐句拆过</h4>
+<p><strong>第一句，把规模那篇经验分析拉来当护墙。</strong> 审稿人的第一句话一定是"这不就是把模型做大吗"。我的做法是先把 Hestness 2017 那篇"深度学习里规模是可预测的"分析摆进来，再把自己定位成"该趋势在任务子集上与十亿参数以上的延续"。<strong>这样"做大"就不再是我的方法，而是一条已被确立的经验规律——我的贡献变成"这条规律的适用范围比想象中广"。</strong> 同一句里我还主动认了个怂："while much noisier across tasks"，把"我们的曲线不干净"提前说掉。<strong>审稿人提出来的第一遍是攻击，作者自己先说的就是坦诚。</strong></p>
+<p><strong>第二句，把缺席的实验写成计划中的实验。</strong> 论文最后一段有一句"我们计划研究 decaNLP 与 GLUE 上的微调"。这句话在博弈上的作用是双份的：对内部，它是"我们没忘，只是下一篇"；对外部，它是一道提前封口的胶带。<strong>而且我在这句里主动把最不利的可能性说了出来——我们的单向表征可能补不上——这样别人再提"你们没和 BERT 比"，就显得是在复述我自己的话。</strong></p>
+<p><strong>第三句，抢在别人之前认怂两处。</strong> 一处是把摘要里那个"前景可观"立刻压回"离可用还很远"；另一处更狠，是我自己拆自己的台：前面那个 55 F1 里，有一部分是靠"问谁就从文档里挑个人名"这种检索式启发式拿到的——<strong>这一句我写进了正文。在公开场合主动交出这一点，比被人查出来代价小得多。</strong></p>
+<p><strong>还有一句我处理得很轻：对那篇抢先的工作，我一句批评都没写。</strong> 我只把他们的做法称为"务实"，然后声明我们想避免预先假设任务。<strong>把一次分界说成一次取向差异，把他们语料里带任务偏好这件事留给读者自己补。</strong></p>
+<h4>哪张图放主文，哪张塞进附录</h4>
+<p><strong>主图给了"多任务零样本性能随模型规模变化"那张网格图。</strong> 它的选型逻辑很清楚：它同时承载三件事——曲线向上（容量假设）、任务横跨阅读理解翻译摘要问答（广度）、以及<strong>有些任务的绝对水平很难看，但趋势线是正的</strong>。反过来说：<strong>它是最有效的一张能让"我们表现很差的任务"为论文加分的图。</strong> 那个任务单独出现在正文里就是失败；放进这张网格里，它变成"容量是自变量"的证据。<strong>这是整篇排版上最聪明的一处。</strong></p>
+<p><strong>主表十列并排放。</strong> 列数本身就是一层遮蔽：那个失败的数据集被放在最右边一列，与七个成功列并排时被视觉稀释。<strong>如果它单独成表，它就是这篇论文的一个洞。</strong></p>
+<p><strong>摘要那张表留在主文，但只用它的差值。</strong> 正文引用的是"去掉提示后掉 6.4 分"，不是那个 21.40 的绝对值——<strong>差值证明了"任务提示能召唤任务行为"，绝对值只会告诉读者我们打不过专门的摘要模型。</strong></p>
+<p><strong>而那张最硬的自证图，被我放进了附录。</strong> 就是第三幕那张重叠分布曲线。<strong>理由我当时没写下来，但逻辑是清楚的：把它放正文，等于把"我们可能是在背"这个问题提到台面上讨论；放附录，它就在那儿，但不引导读者去想。</strong> 这是一次有意的降噪。</p>
+<hr />
+<h3>第六幕 · 反思：我留在这篇论文里的最大问题</h3>
+<p><strong>本章论点：一年后回头看，这篇论文最大的问题不是我算错了什么，是</strong>我有一整套设计，从一开始就没打算证明它们各自有用<strong>。</strong></p>
+<h4>整篇没有一张消融表</h4>
+<p>上一代那篇（GPT-1）里，我有一张逐任务的微调消融表，所以每个"某组件救了我"的说法都能对着差值行被验一遍。</p>
+<p><strong>这一篇一张都没有。</strong></p>
+<p>改动列了四处：归一化位置、末端再加一层归一化、残差层初始化按 1 除以根号 N 缩放、上下文从 512 提到 1024 并把 batch 提到 512。<strong>这四处里，哪些真的起了作用、哪一条是顺带加的，这篇论文永远没有回答。</strong></p>
+<p>最接近消融的只有两处，而且都不算消融：去分词器只给了"2.5 到 5 的困惑度增益"这个区间、没有对照表；摘要那节的"去掉提示"是全文唯一一处能做逐格差值的单变量对照。</p>
+<p><strong>为什么不做？诚实的原因是：我赌的是那四档曲线本身，不是任何单点消融。</strong> 我认为"容量是自变量"这件事一旦被曲线画出来，单个设计有没有用就不重要了。</p>
+<p><strong>这个赌注让我付出了代价。</strong> 如果审稿人问"那三个 LayerNorm 相关的改动到底哪个有用"，我至今答不出来——我在第四幕说的"药方",有一半是我事后把日志和改对起来的，见附录。</p>
+<p><strong>我把它写成"结构性缺口"而不是"我们的疏忽"，不是美化：把它说成疏忽就等于承认"我们本来能补"。真实情况是，做这篇论文的时候我根本不认为这些设计需要单独证明。</strong></p>
+<h4>我们确实被人往死里审过——只不过不是在会场里</h4>
+<p><strong>这一篇从来没有经过正式的同行评审。</strong> 它是一份技术报告，真实的把关发生在两个地方：投稿前的内部草案反馈（致谢里列了四位给过意见的人），以及发布前的误用风险评估。</p>
+<p>我让一个完全没有看过我任何内部记录的人，只拿着论文本身审了一遍。他给了三条 major weakness 和两条 minor，总评是<strong>弱拒</strong>。三条里：</p>
+<ul>
+<li><strong>LAMBADA 那条</strong>（依赖任务特定后处理）我部分力争——零样本界定的是权重，不是解码；但我接受把 52.66% 和 59.23% 的对照提到前面。</li>
+<li><strong>摘要那条</strong>（把定量上只比随机抽句好 0.42 的任务和真正的 SOTA 并列）我接受。</li>
+<li><strong>5.3 倍那条</strong>我完全认错。</li>
+</ul>
+<p>然后我写了回应。核查阶段把我那份回应逐条对到最终稿上，结论是：<strong>五条可以落地的修改承诺，零条完全落地，一条部分落地。</strong></p>
+<p><strong>这个统计我觉得比论文里任何一个数字都更能说明问题</strong>：在一份技术报告里，回应意见不是修改流程的一环，它是一次"说完就完了"的表述。原因有三条，前两条查得到（没有程序委员会来催终稿；论文的核心叙事不依赖任何一条被质疑的地方），第三条是我更愿意承认的——<strong>那五条里四条都只是"补一个数字"，而我当时更想赶在发布窗口前把实验收尾。</strong></p>
+<h4>核查阶段挖出来的一件事，比我自己写的错更值得记</h4>
+<p>我让两个互不相通的人做核查。<strong>一个的角色是"我会怎么攻这篇论文"，另一个的角色是"把每张表逐行做差值"。</strong></p>
+<p>结果是：一共 11 类发现，<strong>两者的交集只有 2 类。</strong> 攻击型的那个人找到了 LAMBADA 的界定问题、摘要的水位问题，但完全没发现儿童读物那列的单调性断裂；差值的那个找到了单调性断裂、重叠表的两个逐列反例，但完全不会去问"这个词用得是否过头"。</p>
+<p><strong>两类都漏了一处：论文里 CoQA 的域数，在第三节说 7 个、第四节说 5 个。</strong></p>
+<p><strong>这条经验我打算一直用下去：核查不是一件可以委托给一个人的事，因为注意力框架本身就决定了你会看见什么。</strong></p>
+<h4>我自己写错的十条</h4>
+<p>核查阶段把我这份复盘里的实质判断逐条拿去对论文，查出十条有问题的：一条是<strong>与论文事实直接矛盾</strong>（我把"论文没给动机"写成了"论文没有任何引用"——<strong>论文对其中一处是给了引用的</strong>，这跟我当年犯的另一类错一模一样：把"我没注意到"写成"论文里没有"）；三条是程度过头或论据来源错位（包括我在第四幕说的那三处"药方"、以及我凭印象描述的一张图的曲线形态）；六条是"标签贴对了、话却说太满"。</p>
+<p><strong>和上一轮相比，最硬的错从 2 条降到 1 条，但"话说过头"这一类的绝对数量没有下降。</strong> 这句话是我对自己这套工作方法最诚实的一次评价：<strong>标注能挡住"编事实"，挡不住"加着标注把话说满"。</strong></p>
+<h4>最后：哪些是读论文原文绝对学不到的</h4>
+<p>分三层，我把性质标清楚。</p>
+<p><strong>第一层是论文里只留了痕迹、没留理由的决策。</strong> 3 个 karma 不是"选了个数据源"，是<strong>用免费的人类投票替换掉买不起的人工工序</strong>；四档尺寸不是"顺手多训了几个"，是<strong>"容量作为自变量"这个 claim 的必要代价</strong>；末尾那句微调承诺不是研究计划，是<strong>防御性安排</strong>（它的位置在全文最后一段、形式上只有一句）。<strong>这一层的做法是史实，理解是重构。</strong></p>
+<p><strong>第二层是过程里真实的判断和失败。</strong> 第一版"答案是合法续写但不是合法末词"、一度让我考虑退回微调；1BW 失败曾按 bug 排查；回应意见五条零落地。<strong>这一层全部是重构，依据逐条记在文末章末注里，不能当史实引用。</strong></p>
+<p><strong>第三层是这次复盘独有的产物。</strong> 我自己的误差基线（约 55 条断言里 18.2% 有问题）、两个核查视角发现集合几乎不重合、以及<strong>论文自身的六处问题</strong>——其中儿童读物那列的单调性断裂和 CoQA 的 7 域对 5 域是硬冲突。</p>
+<p><strong>而这里面最出乎我意料的一条是：这篇论文摘要级的数字（7 个里面的 7 个）是对的，但它用来概括自己表格的那句话是错的。</strong></p>
+<p>写论文最难的地方大概就在这儿——<strong>你最容易搞错的，从来不是你算出来的数，是你为了让别人好懂而顺口写下的那半句概括。</strong></p>
+<hr />
+<h4>章末注（重构点留痕，每条一行：哪个判断、依据是什么）</h4>
+<ol>
+<li>2017 年情感神经元作为动机主线——依据：作者公开研究轨迹的连续性；该文不在 GPT-2 参考文献表的闭环内核验，属论文外材料。</li>
+<li>时间点设为 2018 年 10 月、触发场景为 BERT 公开当周——依据：参考文献时间差与论文中 BERT 的对标位置。</li>
+<li>"标注数据的成本是这条路的天花板"这一第一动机——依据：论文把"采集数据集与设计目标的规模化困难"列为动机主轴，但未写成第一人称动机句。</li>
+<li>三条 naive 想法的次序与死因——依据：论文对多任务对数规模的算术批评、对"不预设任务"的定位。</li>
+<li>"先试字词级 BPE、再试纯字节级"的顺序——依据：按致命程度重排；论文实际叙述序与此相反（见附录第 3 条）。</li>
+<li>深层的三处改动对应"训不稳定"这一症状——依据：仅"残差通路上累积"一句可作半锚点，另两处零锚点；重度重构。</li>
+<li>在推理时把任务写进上下文是"最后一块拼图"——依据：四处任务格式在论文中承担了零样本 claim 的全部实现。</li>
+<li>语料来源之争的翻盘台词——依据：论文从"拒绝 Common Crawl"直接跳到"只用人类策展的链接"，中间取舍痕迹由此补出。</li>
+<li>"3 个 karma 是一次工序替代"——依据：论文同时写了"人工筛选异常昂贵"与"karma 是他人觉得有趣或有用的启发式指标"两处。</li>
+<li>40GB 是工期余量而非算出的上限——依据：两处独立的"仍欠拟合"表述。</li>
+<li>"把生成样本与训练语料的重叠图放进附录是有意降噪"——依据：该图的存在性与所在位置（附录）。</li>
+<li>摘要任务的失败"补实验也没用"——依据：论文把该任务的失误形态诊断到具体细节层面，瓶颈指向解码目标与生成式输出的错配。</li>
+<li>回应意见的承诺普遍未落地归因于技术报告的流程性质与发布窗口——依据：前两条原因可由论文形态查证，第三条为重构。</li>
+<li>两个核查视角的注意力差异解释为"观察框架不同"——依据：两者独有发现的重合度统计（交集 2 / 共 11 类）。</li>
+<li>至暗时刻的时间跨度与心理活动——依据：由三处改动的症状侧反推，属重型重构，不可当作史实。</li>
+<li>"改动的动机有一半是事后把日志和改对上的"——依据：论文对这些改动零动机句。</li>
+<li>四档尺寸之争的具体争点与让步形态——依据：论文"四个、近似对数均匀"的措辞与"尺寸不能再加"的隐含边界。</li>
+<li>团队账本的三分法与"天然动作是砍 scope"——依据：首页四位同等贡献标记的分布与致谢中的算力依赖；账本内容为重型重构，论文无任何第一人称立场记录。</li>
+<li>分阶段发布的动机是误用风险、"small"一词是决议痕迹——依据：论文脚注 5 只承诺公开小模型，以及论文外公开的分阶段发布事实。</li>
+<li>删 Wikipedia 的理由是"太干净太大众"——依据：§2.1 原句写明移除理由是它是许多数据集的共同来源、重叠会复杂化分析；把"太干净"读成痛感属重构。</li>
+<li>标题三个词各自的防守功能——依据：论文全文以复数主语陈述一般性结论、四处任务格式均需人工书写；作者动机为重构。</li>
+<li>摘要"放大三样、藏起四样"的取舍清单——依据：Abstract 三处表述与 §3.1、§3.3、§3.6、§3.7 之间的信息缺口对照；取舍动机为重构。</li>
+<li>三句外交辞令的功能定位（护墙、胶带、提前认怂）——依据：§5、§6、§3.5、§2.1 四处原句的措辞与位置；功能读法为重构。</li>
+<li>排版决策（网格图容纳低分任务、十列并排稀释失败列、只用摘要表差值、自证图进附录降噪）——依据：各图表的结构、位置与正文引用方式；动机无原文，属重构。</li>
+</ol>
+<hr />
+<h4>附录 · 勘误与对照（原核查报告压缩版）</h4>
+<h5>A. 我自己写错的十条（按严重度）</h5>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>错误断言</th>
+<th>实况</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>论文的架构改动"没有任何引用"</td>
+<td>其中一处明确引用两篇文献</td>
+<td><strong>P0（与论文事实直接矛盾）</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>"那三处改动就是对症状开的药方"</td>
+<td>三处中仅一处有半句描述性依据，另两处零依据</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>在第一版的死因里写出了"后来它长成了一整节"</td>
+<td>在明令不得预知论文形态的阶段里泄漏了未来章节</td>
+<td>P1（后见之明泄漏）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>凭印象描述了一张图的曲线形态</td>
+<td>该图无法从文本核验，真实依据是正文水平</td>
+<td>P1（论据错位）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>"BERT 是唯一被当作对标对象引用的同期工作"</td>
+<td>另有两篇同期工作被引用</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>宣称两条死路的顺序"接近论文叙述序"</td>
+<td>实际叙述序与此相反</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>原样照抄了论文的"1–6%"重叠区间</td>
+<td>表内实际区间是 0.88%–6.31%</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>把"5.3 倍"的分母擅自补全</td>
+<td>论文未写明分母</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>9</td>
+<td>两处"唯一"</td>
+<td>另有图表具备同样性质</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>10</td>
+<td>"数据集被前人净化过"</td>
+<td>论文归因于数据集自身的激进标准化</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>误差基线对照</strong>：约 55 条实质断言中，P0 + P1 + P2 合计 18.2%；其中 P0 仅 1 条（1.8%）。与上一轮相比，P0 从 2 条降到 1 条，但"话说过头"这一类没有下降。</p>
+<h5>B. 论文自身的六处问题（不是我写的，是核查算出来的）</h5>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>论文的概括句</th>
+<th>反例（精确数字）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-1</td>
+<td>"性能随模型规模增大持续改善"</td>
+<td>常用名词列 762M→1542M：<strong>93.45 → 93.30（下降 0.15）</strong>；且宣称的 93.3% 低于同表 762M 的 93.45</td>
+</tr>
+<tr>
+<td>R-2</td>
+<td>测试集与训练语料重叠"在 1% 到 6% 之间"</td>
+<td>实际 <strong>0.88%（PTB）到 6.31%（enwik8）</strong>（平均值 3.2% 无误）</td>
+</tr>
+<tr>
+<td>R-3</td>
+<td>"许多数据集与自身训练集的重叠更大"</td>
+<td>两个反例：WikiText-2（0.66% &lt; 1.63%）、text8（2.34% &lt; 3.94%）（平均值 5.9% 无误）</td>
+</tr>
+<tr>
+<td>R-4</td>
+<td>摘要"仅仅比随机抽三句好一点"</td>
+<td>聚合指标成立（21.40 &gt; 20.98，差 0.42），但 <strong>R-2 单项反例：8.27 &lt; 8.63</strong></td>
+</tr>
+<tr>
+<td>R-5</td>
+<td>"在 Penn Treebank 这类小数据集上有大幅提升"</td>
+<td>小模型 117M 在 PTB 上是 65.85，<strong>劣于既有最好结果 46.54</strong></td>
+</tr>
+<tr>
+<td>R-6</td>
+<td>第三节称 CoQA 含 <strong>7</strong> 个域，第四节称开发集指标在 <strong>5</strong> 个域上取平均</td>
+<td><strong>论文内部两处域数不一致</strong>，两个核查视角都漏了</td>
+</tr>
+</tbody>
+</table>
+<h5>C. 覆盖度缺口（论文有、阶段叙事没用上的）与成稿的补法</h5>
+<p>⚠️ 这一节的"缺口"指的是<strong>阶段叙事正文（S1–S8）</strong>的缺口。成稿（本文正文）允许跨阶段取材，故必须逐条声明是否补上，否则本节会与正文口径打架。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>阶段叙事的缺口</th>
+<th>成稿是否补上</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>主表的完整数值矩阵（十列乘四档）从未被完整吸收——<strong>本轮最大缺口</strong></td>
+<td>❌ 未补（成稿只用了 8.63、63.24、93.3、89.1、42.16 五个格）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>最自信那 30 条答案的表，除了"最有信心 1% 上 63.1%"这一个数之外从未被使用</td>
+<td>❌ 未补</td>
+</tr>
+<tr>
+<td>3</td>
+<td>生成样本与训练语料的重叠分布图（中位数 2.6%、超过三成样本零重叠）从未被吸收——<strong>它是全篇最硬的自证材料</strong></td>
+<td>✅ 第三幕已补（含 273 / 10 / 2 / 1 与 8.6→8.7、63.2%→62.9% 两组剔重叠复算）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>附录里的摘要失败案例、翻译样例、阅读理解实例从未被吸收；尤其摘要那一节，论文用具体错误案例做了诊断，而复盘全程只用了 ROUGE 数字</td>
+<td>⚠️ 部分补（第四幕补了摘要的错误形态，翻译样例与阅读理解实例仍未用）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>儿童读物一节"已追平人类表现的大半"这一说法未被使用（人类基线未被引入）</td>
+<td>❌ 未补</td>
+</tr>
+<tr>
+<td>6</td>
+<td>论文全部五张图无法从纯文本核验，只能借图注与正文旁证——<strong>这是数据源的物理限制，不是叙事的疏漏</strong></td>
+<td>⚠️ 成稿在章末注第 24 条与"论据来源"处一律声明，不假装看过图内形态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一处"漏得正确"的例子</strong>：阶段叙事与成稿都从未复述 R-1 那句被证伪的单调性概括。<strong>漏掉论文的一个错误，反而避免了把它抄进自己的稿子——缺失与错误是两码事。</strong></p>
+<p><strong>一处"补得对但越了界"的例子</strong>：第 3 条是阶段叙事漏掉、成稿单方面补上的。这属于跨阶段取材，性质上比"从 S1–S8 改写"多走了一步——<strong>它让成稿比它的素材更完整，但也意味着成稿里的这一节无法在阶段叙事中逐字回溯。</strong></p>
+<h5>D. 隔离审稿专项</h5>
+<ul>
+<li>三条 major weakness 的全部数字逐条复验<strong>成立</strong>；两条 minor <strong>成立</strong>。</li>
+<li>唯一失准处：把一句只在第一节出现的表述说成"摘要与第一节反复强调"。</li>
+<li>他自己数的那张表是 22 对 8 错（30 条），与另一位核查者的 21 对 9 冲突；机器按符号码位复核为 <strong>22 对 8 错</strong>。</li>
+<li>我那份回应的 5 处引文与落地对照表的 5 处引文<strong>全部零悬空</strong>；"5 条承诺 0 条完全落地、1 条部分落地"的统计<strong>成立</strong>。</li>
+<li>隔离合规：两位核查者的输出中都不含任何内部记录术语。</li>
+</ul>
+<hr />
+<h4>外行闸记录（模板第 6 条）</h4>
+<p><strong>做法</strong>：抽三段——第四幕·打脸二（LAMBADA 的那两个数）、第二幕·字节级 BPE 的直觉层、第五幕·摘要放大三样藏四样——交给一个<strong>隔离子代理</strong>：只喂这三段的原文，不喂论文、不喂任何《档案》、不喂本文其余部分。它的角色设定是"聪明但完全没有机器学习背景的外行"，并被告知：<strong>答错说明写作者写得不够外行友好，请如实说"我没看懂"，不要编一个听起来合理的答案。</strong></p>
+<p><strong>结果：三段的复述与两道理解题全部答对（3/3）。</strong> 包括三处最容易讲糊的地方——"什么时候算超过前人、什么时候不算"、"词表大小为什么是一种代价、代价花在哪儿"、"为什么扣掉'标了多少数据'会让结果显得更强"。</p>
+<p><strong>但它同时交出了一份很长的"只能靠上下文猜"的词表</strong>：LAMBADA、停用词与虚词、权重与参数、架构、解码过程、码点、Unicode、熵、语义单元、困惑度、F1、BLEU、零样本、对数线性、口径。<strong>也就是说：故事线与因果过关了，术语裸用没过关。</strong></p>
+<p><strong>处置</strong>：对八处首现术语补了括号内的一句话释义（泛化、零样本、码点、困惑度、BLEU、LAMBADA、F1、停用词）。<strong>没有补的是基准名（CoQA、Winograd、1BW）与"对数线性"这类只在语境里起修饰作用的词</strong>——给每一个专有名词都加释义，会把文章变成词典，得不偿失。</p>
+<p><strong>诚实结论</strong>：这一关只能证明"外行能跟上故事与因果"，<strong>证明不了"术语已经不构成门槛"</strong>。GPT-1 首跑的外行闸是 3/3 不合格，这一轮是 3/3 合格；<strong>但两次暴露的是同一个毛病，只是这次没有烂到影响理解。</strong></p>
+<hr />
+<h3>《档案 · S9》</h3>
+<pre><code>【阶段】S9 成稿（面向外行的第一人称长文）
+【已知事实】
+1. 本篇全部带数字的事实均可回溯到论文原文，依据见正文与章末注
+2. 全文按六幕故事弧重排（问题 → 直觉 → 试错 → 定型与打脸 → 讲法 → 反思），不按 S1 到 S8 的时间线
+3. 分支：本篇在正文中保留了全部负面硬数字（LAMBADA 无过滤器 52.66%、摘要只赢随机抽句 0.42、1BW 42.16、En→Fr 5 BLEU、CBT 那列 93.45→93.30），一个都没删
+4. 成稿含《档案 · S9》之前的三个附件：章末注、附录《勘误与对照》、外行闸记录；三者都不计入正文篇幅
+【合理重构】
+1. 二十四处重构点已在章末注逐条留痕（哪个判断、依据是什么）；其中第 6、15、16 条属重度重构，风险最高
+2. 行内标签已按模板转为语气承载（&quot;我记得&quot;&quot;我当时猜&quot;&quot;这一点论文里没写&quot;），可核验性由章末注承接
+3. 新增的七处重构（第 18–24 条：团队账本、分阶段发布的动机、删 Wikipedia 的痛感、标题三词、摘要取舍、外交辞令、排版决策）只有&quot;做法/位置/措辞&quot;这一层史实，动机层是重构，已在章末注逐条标注
+【负结果】
+1. 负结果占比：第三幕（试错与被砍 scope）、第四幕（打脸四连 + 一道拆不掉的墙）、第五幕（藏起来的四样）、第六幕前半（无消融表 + 零落地的回应）合计为全文主体，估算约 50%
+2. 篇幅比：正文汉字 13058，基线（S1 至 S8 叙事正文，含 S8）19497 汉字，比值 67.0%（模板要求 60–70%）；漏掉 S8 会把同一稿件算成 84.3%，按字符数算只有 40.2%
+3. 外行闸：抽三段由隔离子代理复述并答理解题，首轮 3/3 通过（GPT-1 首跑为 3/3 不合格）；但外行仍列出一长串只能靠上下文猜的术语，已对八处首现术语补释义，其余基准名不补——详见上方&quot;外行闸记录&quot;
+4. 本篇未写入论文自身六处问题之外的任何新指控；六处问题全部有精确数字支撑
+【未决问题】
+1. 三处类比（水温、筛子、题型纸条）中，&quot;题型纸条&quot;一条的边界最模糊，可能需要在下一轮重写为更强的限定
+2. 章末注第 6 条（三处改动与&quot;训不稳定&quot;这一症状的对应）在成稿中仍以叙事语气出现，虽已声明是重构，但语气强度高于证据强度——这是本篇留下的最大残余风险
+3. 跨阶段取材：附录 C 第 3 条（生成样本重叠分布）是阶段叙事漏掉、成稿单方面补上的。它让成稿比其素材更完整，但也意味着这一节无法在 S1–S8 中逐字回溯——本轮选择保留并显式声明，下一轮应改为&quot;先把缺口补进 S4/S8，再写 S9&quot;
+【一致性自检】本篇与 S8 的三张表无冲突：幻觉清单十条已压缩入附录 A，第 1 条 P0（&quot;没有任何引用&quot;）在正文与附录中只以改正/勘误形态出现（机器检索命中 2 次，均在改正语境）；论文自身六处问题在正文第四幕明写&quot;这是我自己的错&quot;，与附录 B 一致。迷你 S8 机器核查（口径：排除《档案》块自身，因为它会把关键词自己数进去）：S8 的 P0 指纹&quot;没有任何引用&quot;命中 2 次、两次都在改正/勘误语境（正文第六幕的自陈 + 附录 A 第 1 行）、未以断言形态复活；&quot;几乎平的曲线&quot;命中 0 次（论据错位的原句未复活）；新增内容里的每一个数字都已在 gpt2.txt 中核到原样出处（30% 零重叠与 2.6% 中位数、273/10/2/1、8.6→8.7 与 63.2%→62.9%、10MB 法语、26 次 `&lt;UNK&gt;`、6 位作者与四位同等贡献）。
+【后见之明自检】本篇按模板定位为&quot;项目结束一年后&quot;的回顾，允许引用结果；但重构与史实的边界已在章末注逐条声明，未把事后解读写成作者自陈；&quot;它后来长成了一整节&quot;一类表述均带&quot;后来&quot;这一显式时间标记，不冒充阶段内的判断。
+</code></pre>
+</section>
+</body>
+</html>
