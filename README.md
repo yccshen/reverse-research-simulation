@@ -1,5 +1,15 @@
 # 论文逆向科研仿真（Reverse Research Simulation）
 
+> **[English TL;DR]** — Papers are lossy compressions of research: the dead ends, the real motives and the negative results are deleted before publication. This repo rebuilds a paper's research process as a **first-person simulation**, then **audits its own hallucinations** with an isolated reviewer and a third-party checker.
+>
+> - **The pipeline**: 9 isolated stages (idea → internal debate → literature → modeling iterations → data & experiments → failures ≥40% → writing → isolated review → audit → polished narrative), joined by a strict archive contract with per-claim `[verifiable]` / `[reconstructed]` labels. Prompt templates: [prompts/stage-prompts.md](prompts/stage-prompts.md).
+> - **6 papers simulated**; self-hallucination rate 17% → 18.2% → 12.1% → 3.1% → 1.8% → 7.7%; fact-level errors (P0) down from 2 to 0 in the last three rounds.
+> - **Byproduct**: running the audit step surfaces problems *in the papers themselves* — **43 so far**, most of them a half-sentence of prose disagreeing with its own table or figure. See [findings.md](findings.md).
+>
+> Everything below is in Chinese.
+
+---
+
 > 用第一人称仿真重建一篇论文的完整研究过程，并用隔离审稿人 + 第三方核查审计自己的幻觉。
 
 **先看证据，再听方法**：在 [GPT-1 全流程实例](examples/gpt1/) 中，这套流程的核查阶段（S8）抓出了叙事自身的硬伤——正文声称"辅助语言建模目标在小数据集上帮助更大"，而论文消融表（Table 5）逐任务差值恰恰相反。审稿人（隔离会话）与作者（主线）各自只引用了对己有利的一半数据。[S8 审计报告](examples/gpt1/S8.md) 完整记录了这一切。
@@ -153,14 +163,14 @@ S0 选材闸（防御性检查：综述/大系统/无主实验的论文直接拒
 
 面向"快速读懂原理"读者的五幕叙事产品，与过程档案互为表里。状态：**已出稿**。
 
-- 结构：五幕（问题 → 直觉 → 试错 → 定型与打脸 → 反思），每幕开头一句本章论点
-- 篇幅：正文xx汉字；基线 = S1–S8 各阶段叙事正文（不含《档案》块）xx 汉字 → **xx%**（模板第 5 条 60–70% 区间内，同时落在产品规格 6000–9000 字内）；含章末注与附录共 xx汉字。
+- 结构：五幕（问题 → 直觉 → 试错 → 定型与反例 → 反思），每幕开头一句本章论点
+- 篇幅：正文 7,443 汉字；基线 = S1–S8 各阶段叙事正文（不含《档案》块）12,067 汉字 → **61.7%**（模板第 5 条 60–70% 区间内，同时落在产品规格 6000–9000 字内）；含章末注与附录共 8,711 汉字。
   ⚠️ 口径已写进 [prompts/stage-prompts.md](prompts/stage-prompts.md) 第 5 条：分母按**汉字数**且**必须含 S8**——漏掉 S8 会把 61.7% 算成 99.1%，改按字符数算只剩 37.6%
 - 可核验性：行内标签转为语气承载，20 余条重构点在每幕「章末注」逐条留痕；S8 三张表压入附录《勘误与对照》
 - 外行闸（模板第 6 条）：三轮。首轮 3 段抽检**全军覆没**（两段"没讲清"、一段"半讲清"，术语裸用），三段全部重写；第二轮打分 6 / 5 / 8，残留四处术语洞已补注但未做第三轮复检——这条残余风险记在《档案 · S9》里
-- GPT-2 轮（[examples/gpt2/S9.md](examples/gpt2/S9.md)）：结构扩为**六幕**（问题 → 直觉 → 试错 → 定型与打脸 → 讲法 → 反思）；正文 13,058 汉字 / 基线 19,497 → **67.0%**（同一稿件漏掉 S8 会算成 84.3%，按字符数算只有 40.2%——口径陷阱再次复现）。外行闸 3/3 通过，但外行仍列出一长串只能靠上下文猜的术语，已补八处首现释义
+- GPT-2 轮（[examples/gpt2/S9.md](examples/gpt2/S9.md)）：结构扩为**六幕**（问题 → 直觉 → 试错 → 定型与反例 → 讲法 → 反思）；正文 13,058 汉字 / 基线 19,497 → **67.0%**（同一稿件漏掉 S8 会算成 84.3%，按字符数算只有 40.2%——口径陷阱再次复现）。外行闸 3/3 通过，但外行仍列出一长串只能靠上下文猜的术语，已补八处首现释义
 
-## Roadmap
+## Roadmap（诚实版）
 
 - [ ] 真实最小复现（GPT-1 微调，验证仿真产出的风险判据）——补上它，本项目才从"学习工具"闭环为"小型研究"
 - [x] **换第二篇论文重跑（2026-09-15，[examples/gpt2/](examples/gpt2/)）——杀手级实验，已有结论**：P0 减半（3.3% → 1.8%），P0–P2 总量持平（17% → 18.2%）。模板能压住编事实，压不住把话说满
@@ -172,7 +182,7 @@ S0 选材闸（防御性检查：综述/大系统/无主实验的论文直接拒
 - [ ] S9 跨阶段取材的口径待定（GPT-2 轮越界一次，MI-1 与后续轮未越界，但"先把缺口补进 S4/S8 再写 S9"这条流程改造仍未执行）
 - [x] S9 成稿首跑（2026-09-15，见 [examples/gpt1/S9.md](examples/gpt1/S9.md)）；遗留：外行闸第二轮后的三处术语补注未复检
 
-## 已知局限
+## 已知局限（诚实声明）
 
 - **样本量 n=6，但学科极不平衡**：三篇语言模型论文（同一团队）、两篇工程器件／设计论文、一篇标度律论文。**生物医学、化学合成、临床研究完全没有数据**——而这三类的核验物（图像证据、统计设计、伦理）与前六轮差别最大。"分型"这套判据能否外推，未知。
 - **幻觉率的波动不能全部归因于模板**：六轮从 18.2% 降到 1.8%，但每篇的核验难度差异极大（15 页 3 表 vs 63 页 46 图；数字密集 vs 设计叙述）。**表里的下降里有多少是模板贡献、多少是论文变简单，本项目无法分离。**
