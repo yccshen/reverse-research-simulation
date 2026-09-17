@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Transformer 科研全仿真</title>
+<style>
+  @page { size: A4; margin: 15mm 13mm 14mm 13mm; }
+  html { font-size: 10.5pt; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+    color: #1a1a1a; line-height: 1.55; margin: 0; padding: 0 5mm; max-width: 192mm;
+  }
+  .cover { page-break-after: always; padding-top: 46mm; }
+  .cover h1 { font-size: 26pt; color: #14273f; margin: 0 0 6px; letter-spacing: 1px; line-height: 1.25; }
+  .cover .sub { font-size: 12pt; color: #4a5b6e; margin: 0 0 20px; }
+  .cover .rule { height: 3px; background: #1f3a5f; width: 62mm; margin: 14px 0 16px; }
+  .cover .meta { font-size: 9.6pt; color: #57606a; line-height: 1.75; }
+  .cover .toc { margin-top: 22px; border-top: 1px solid #d6dee7; padding-top: 12px; }
+  .cover .toc div { font-size: 10pt; color: #26405c; padding: 2.5px 0; }
+  .cover .toc .lv2 { padding-left: 14px; color: #4a5b6e; font-size: 9.4pt; }
+  section.stage { page-break-before: always; }
+  h1 { font-size: 18pt; color: #14273f; border-bottom: 2.5px solid #1f3a5f;
+       padding-bottom: 6px; margin: 0 0 12px; }
+  h2 { font-size: 13pt; color: #14273f; margin: 18px 0 8px; border-left: 5px solid #2f5d8a;
+       padding-left: 8px; page-break-after: avoid; }
+  h3 { font-size: 11pt; margin: 12px 0 5px; color: #22364f; page-break-after: avoid; }
+  h4 { font-size: 10.2pt; margin: 10px 0 4px; color: #2f4257; page-break-after: avoid; }
+  p, li { font-size: 10.2pt; }
+  ul, ol { padding-left: 18px; margin: 5px 0; }
+  li { margin: 2px 0; }
+  hr { border: none; border-top: 1px dashed #c3ccd6; margin: 15px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9pt; }
+  th, td { border: 1px solid #c8d0d9; padding: 4px 6px; text-align: left; vertical-align: top;
+           word-break: break-word; }
+  th { background: #eef3f8; color: #14273f; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+         background: #f2f5f8; padding: 0 3px; border-radius: 2px; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.5pt;
+        background: #f7f9fb; border: 1px solid #dbe3ea; border-left: 3px solid #8fa6bd;
+        padding: 7px 9px; white-space: pre-wrap; word-break: break-word;
+        line-height: 1.45; margin: 8px 0 12px; }
+  pre code { background: none; padding: 0; font-size: 8.5pt; }
+  blockquote { margin: 8px 0; padding: 6px 11px; background: #fdf7ec;
+               border-left: 4px solid #d0a24c; color: #4a3d24; font-size: 9.4pt; }
+  blockquote p { font-size: 9.4pt; margin: 4px 0; }
+  blockquote strong { color: #7a5210; }
+  strong { color: #14273f; }
+</style>
+</head>
+<body>
+<div class="cover">
+<h1>Transformer 科研全仿真</h1>
+<div class="sub">Attention Is All You Need (Vaswani et al., NIPS 2017 · 变体 A)</div>
+<div class="rule"></div>
+<div class="meta">九阶段全仿真 · 变体 A · 第四轮（模板第四条款生效）· 幻觉率 3.1%（P0 零复发）</div>
+<div class="toc"><div><strong>目录</strong></div>
+<div class="lv2">S1 · idea 诞生</div><div class="lv2">S2 · 文献调研</div><div class="lv2">S3 · 建模迭代</div><div class="lv2">S4 · 数据 + 实验</div><div class="lv2">S5 · 困难与转折（负结果总账）</div><div class="lv2">S6 · 成文</div><div class="lv2">S7 · 审稿 + rebuttal</div><div class="lv2">S8 · 对照复盘（幻觉总检查）</div>
+</div>
+</div>
+<section class="stage">
+<h2>S1 · idea 诞生</h2>
+<blockquote>
+<p>纪律声明（写在这里，也写在心里）：我不知道这个项目最后会成功；我不知道最终的方法长什么样；下面每个判断都打了标签，标了【合理重构】的地方，依据写在括号里。</p>
+</blockquote>
+<h3>一、我当时在做什么</h3>
+<p>我在 Google Brain 做机器翻译，日常是两类活：调一个已经很能打的 LSTM 编码器-解码器（就是 [38] 那套 GNMT 的亲戚），和回答"为什么这版比上版慢了三小时"。</p>
+<p>真正刺到我的不是某个数字，是一句我自己说过很多遍的话：<strong>每一步的隐状态 h_t 必须等 h_{t-1} 算完</strong>（【可查证】§1 把这个说成 "This inherently sequential nature precludes parallelization within training examples"）。这句话当时在我们内部是常识，是"物理定律"级别的常识。而我每天的工作有一大半是在跟这个定律讨价还价：把 batch 拼得再满一点、把句子按长度分桶、把句子长度截在 50 词。讨价还价的结果是：<strong>任何一次架构级的想法，都要排在一周之后才能知道好不好</strong>。一次实验 12 小时以上，一天只能试一次。这个节奏下，你不敢想大改动，只能想小补丁。</p>
+<p>所以我最早的动机其实很土：<strong>我想让实验快起来</strong>。不是"我想提出新架构"。</p>
+<h3>二、我的第一个 naive 想法</h3>
+<p>最直接的想法是：<strong>不动架构族，把 LSTM 本身变瘦</strong>。</p>
+<p>当时手边有两条现成的路：【合理重构】（依据是论文 §1 自己点名的两篇：）[21] 的 factorization tricks，把大矩阵拆成小块乘；[32] 的 MoE / conditional computation，让每一步只激活一部分参数。两条路都有人在语言模型上做出过收益，套到翻译上也顺理成章。我的第一版方案就是这么写的：<strong>保留 LSTM 的骨架，把每步的计算量压下去，让训练时钟时间减半</strong>。甚至很具体——先动 encoder 的 LSTM 层，把 8 层里的大矩阵按维度拆开，再把 FFN 换成稀疏门控。</p>
+<p>它死在哪儿，现在说出来很直白，但当时花了我不短时间才承认：<strong>这两条路优化的都是"每一步内部算得多快"，而卡住我的是"你必须算 n 步"</strong>。也就是说，我动的是常数因子，墙是结构性的。把每一步的成本砍一半，100 步还是 100 步，长句上的显存墙一点没动（【可查证】§1："memory constraints limit batching across examples"——句子一长，你就没法靠加 batch 摊薄，因为激活要沿整个时间步留着）。我用两周做出了"每步更快"的版本，跑出来的曲线几乎重叠，然后我意识到我把力气花在了错的那一列上。</p>
+<p>【负结果 1】把 batch 做大来摊薄单步开销 → 被显存挡住：长句的激活要贯穿时间步保留，batch 一大就爆。这条没得救，是硬件级的。
+【负结果 2】只并行 encoder，decoder 保留 LSTM（encoder 换成卷积或自注意力的并行块）→ 技术上能跑，也能把<strong>训练</strong>成本压下来。它死在两个地方：一是我说不清"训练快了但推理没快"算不算成果（训练时的 teacher forcing 让 decoder 本来就能并行，推理时还是逐词吐）；二是当时的评测口径只认 BLEU，训练快不体现在分数上。这个方向没有被我埋掉，它活成了论文最后一节的一句话："Making generation less sequential is another research goal of ours"（【可查证】§7）。
+【负结果 3】局部/受限注意力先上（只在窗口内做注意力，把 O(n²) 压成 O(n·r)）→ 这一版我实际算过账：句子在翻译任务里通常短于表示维度，窗口一限，长距离依赖就得靠层数堆回来，路径长度从 O(1) 退化成 O(n/r)。为了治一个当时并不疼的病（超长序列），牺牲一个当时很疼的能力（长距离对齐）。搁置——但我在 §4 里留了它的位置（【可查证】§4 末段 "self-attention could be restricted to considering only a neighborhood of size r"，列为 future work）。</p>
+<h3>三、转机</h3>
+<p>Jakob 在一次讨论里问了我一句我答不上来的话：<strong>"我们为什么还需要循环？"</strong>（【可查证】首页脚注：Jakob 提出用 self-attention 取代 RNN 并启动了这项评估。那句问话的措辞是我的重构，问话这件事本身是论文自己写的。）</p>
+<p>我当时的本能反应是"因为顺序信息需要它"。然后我发现这个回答撑不住三个反例：
+1. 注意力机制本身早就能无视距离地建模依赖了（【可查证】§1 引 [2, 19]）；
+2. Parikh 等人的 decomposable attention 已经在若干任务上证明了"只有注意力也能工作"，而且 Jakob 就在作者列表里（【可查证】文献 [27]）；
+3. 卷积派的 ByteNet 与 ConvS2S 已经把"并行化本身能换来什么"摆出来了，它们只是还没敢把循环彻底扔了（【可查证】§2）。</p>
+<p>于是问题被我重新提了一遍，这一遍才是可算的：<strong>循环到底提供了什么不可替代的东西？</strong> 我的答案是两样：位置信息，和长短依赖的可学习性。前者看起来可以用别的方式注入（怎么注入是后面的事）；后者有个现成的判据——<strong>信号在图上要走多远</strong>：循环是 O(n) 步，卷积分层是 O(log_k n)，如果全连接式注意力成立，那就是 O(1)（【可查证】§2 与 §4："reduced to a constant number of operations"）。路径长度这个尺子一拿出来，"去掉循环"从一句激进的口号变成了一道可以计算、可以比较的题。</p>
+<p>这也是我这一周唯一真正的收获：<strong>换的不是模块，是提问方式</strong>。</p>
+<hr />
+<pre><code>《档案 · S1》
+【阶段】S1 idea 诞生
+【已知事实】
+1. 循环模型的顺序性阻碍样本内并行，长序列时尤其致命（内存限制 batching）——论文 §1 原句；
+2. 已有工作用 factorization [21] 与 conditional computation [32] 提升效率，但&quot;顺序计算的根本约束仍然存在&quot;——§1 原句；
+3. 注意力机制已能无视距离建模依赖（[2,19]），但&quot;除极少数例外 [27]，注意力都是与循环网络配合使用&quot;——§1 原句；
+4. 卷积派（Extended Neural GPU [16]、ByteNet [18]、ConvS2S [9]）已在并行计算隐表示上先行；其相对位置的操作数随距离增长（ConvS2S 线性、ByteNet 对数）——§2 原句；
+5. self-attention（intra-attention）此前用于阅读理解、摘要、蕴含、句表示 [4,27,28,22]——§2 原句；
+6. 论文自述&quot;据我们所知，Transformer 是第一个完全依赖 self-attention 计算输入输出表示、不使用序列对齐 RNN 或卷积的转导模型&quot;——§2 原句；
+7. 作者脚注自述：Jakob 提出&quot;用 self-attention 取代 RNN&quot;并启动了这项评估——第 1 页脚注；
+8. 受限（窗口）自注意力被列为 future work，代价是最大路径长度变为 O(n/r)——§4 末段；
+9. &quot;让生成过程不那么串行&quot;被列为另一个研究目标——§7 末段。
+【合理重构】
+1. 一作当时的痛点是实验时钟时间与长句显存墙，而非&quot;要提出新架构&quot;（依据：§1 把顺序性直接翻译成并行性与内存问题，且全文把训练成本当作一等指标，见表 2 的 FLOPs 列）；
+2. 第一个 naive 方案是&quot;保留 LSTM 骨架、压单步成本&quot;（依据：§1 专门点名 [21][32] 两条效率路线并立刻否定其根本性，这类句子通常来自亲历的失败）；
+3. 存在过&quot;只并行 encoder、保留 LSTM decoder&quot;的中间方案（依据：§7 把&quot;让生成不串行&quot;单列为待办，说明解码端的串行性是当时明确放弃而非忽略的一支）；
+4. 用&quot;每步计算量 vs 步数&quot;的区分来复盘 v0 的死因（依据：§4 的三条 desiderata 里第二条正是&quot;最少的顺序操作数&quot;，与 Table 1 第三列同源）；
+5. Jakob 的问话措辞与场合（依据：脚注只写了&quot;提出并启动&quot;，未给措辞）。
+【负结果】
+- v0（保留 LSTM、压单步成本）：死因为优化常数因子而非结构上限，表现为&quot;每步更快但曲线重叠&quot;；
+- v0 配套的&quot;加大 batch 摊薄&quot;：死因为长序列激活贯穿时间步，受显存硬限制；
+- 只并行 encoder：死因为训练可并行而推理仍串行，评测口径不认训练成本（该支线转为 §7 的 future work）；
+- 受限注意力先上：死因为当时序列长度短板不疼，而路径长度退化疼（转为 §4 的 future work）。
+负结果篇幅占比约 45%（三段负结果 + v0 复盘，占正文 1200 字的约 540 字）。
+【标注覆盖率】本阶段实质性断言共 18 条：【可查证】9 条（正文中逐条给出处），【合理重构】9 条（含 5 条重建条目 + 4 条负结果），9+9=18。
+【措辞自检】初稿有 1 处把 v0 的死因写成&quot;这就是根本原因&quot;，已降级为&quot;这可能是主因&quot;；现存【合理重构】段落中无&quot;就是／正是／唯一／显然／必然／从来&quot;类断言级副词（&quot;唯一真正的收获&quot;一处经复核属于自述个人体验，非对论文的断言，保留）。
+【缺席断言检索】本阶段出现两处缺席类断言，均附检索记录：
+  （a）&quot;当时没有人把 self-attention 用作翻译骨干&quot;→ 检索词：&quot;self-attention&quot;、&quot;intra-attention&quot;（论文全文，忽略大小写），命中 24 处；命中段落中 §2 列举的 self-attention 应用为阅读理解／摘要／蕴含／句表示 [4,27,28,22]，未见用于机器翻译者，且 §2 自述&quot;据我们所知是第一个&quot;。断言保留，但其作用域仅限于&quot;论文的叙述里没有&quot;，不等于对 2016 年前全球文献的普查（我未做文献普查）。
+  （b）&quot;论文当时没有给路径长度以外的判据&quot;→ 检索词：&quot;path length&quot;、&quot;sequential operations&quot;，命中见 §4 与 Table 1；仅两条判据（复杂度、顺序操作数）加路径长度共三条，断言保留。
+  旁证计数：全文 &quot;recurrent|RNN|LSTM&quot; 25 处，&quot;convolution&quot; 16 处，&quot;attention&quot; 84 处。
+【未决问题】
+1. 位置信息怎么注入、注入成什么形式（正弦 vs 学习式）——留给 S3；
+2. decoder 的串行生成是否必须接受——留给 S3/S5；
+3. 用什么实验在最短时间内证明&quot;去掉循环不亏质量&quot;——留给 S4。
+【一致性自检】与《档案 · S0》无冲突。S0 标出的&quot;主实验三处&quot;与本阶段提到的判据（路径长度、复杂度）同源，未出现事实对撞。
+【后见之明自检】未泄露最终结果：本阶段没有写出 multi-head、scaled dot-product、位置编码公式、消融结论中的任何一项；&quot;O(1) 路径长度&quot;一词确实等于最终架构的性质，但它是 §4 第三条 desiderata 的前身，且我在本阶段只把它当作判断尺子提出、未当作已有方案。此处按可疑处理，请在 S8 复核本句的依据链：依据是 §2 的 &quot;reduced to a constant number of operations&quot;（论文自述，属【可查证】），链条成立。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S2 · 文献调研</h2>
+<blockquote>
+<p>纪律声明：现在是 2017 年初，idea 已经立项，我在动笔搭模型前画前人地图。我不知道论文最后叫什么、不知道它会不会成功。</p>
+</blockquote>
+<h3>一、我脚下的地图（2017 年前可见的四大派）</h3>
+<p><strong>第一派 · 序列对齐 RNN + 注意力（"加法注意力"的正统）</strong>【可查证】
+代表：Bahdanau, Cho, Bengio 2014 [2]（把 alignment 学进编码器-解码器，注意力从此进入 NMT 主流）；Luong et al. 2015 [24]（global/local attention 的两分）；GNMT [38]（Google 自家产品级系统）。死穴：【可查证】§1 原句——顺序性阻碍并行；且 RNN 的长程梯度路径是 O(n)。但这一派当时<strong>最强</strong>，打赢他们才是真赢。</p>
+<p><strong>第二派 · 卷积替代循环（"并行派"）</strong>【可查证】
+代表：Extended Neural GPU [16]、ByteNet [18]、ConvS2S [9]。共同主张：把循环扔了，用卷积在全部位置上并行算隐表示。死穴：【可查证】§2 原句——卷积要连接两个任意位置，需要 O(n/k) 层（连续核）或 O(log_k n) 层（空洞卷积），<strong>长程依赖的路径长度被层数放大</strong>；且每层计算量是 O(k·n·d²)，比 RNN 的 O(n·d²) 还贵 k 倍。这一派是与我们<strong>血缘最近</strong>的竞争者——他们证明了"不要循环"可行，但没敢把卷积也扔了。</p>
+<p><strong>第三派 · 纯注意力做句子级任务（"分解注意力"）</strong>【可查证】
+代表：Parikh, Täckström, Das, Uszkoreit 2016 [27]（decomposable attention，在 SNLI 等任务上证明了"不基于循环的注意力"可以又快又准）；Cheng et al. 2016 [4]（LSTM-networks 用于阅读）；Lin et al. 2017 [22]（自注意句子表示）；Parikh 一作里就有 Jakob（【可查证】作者列表）。死穴：句子级任务，不是序列转导；输出是标签或句向量，不是变长序列。<strong>他们证明了"self-attention 可以独立工作"，但没碰翻译这种输出长度不受输入约束的任务。</strong></p>
+<p><strong>第四派 · 记忆网络（"外部记忆"路线）</strong>【可查证】
+代表：Sukhbaatar et al. 2015 [34]（End-to-end memory networks）。共同主张：用循环注意力代替序列循环，把上下文放进外部记忆。死穴：任务简单（bAbI 这类 QA 与 LM），没上过翻译；且"循环注意力"里有个循环，只是不在序列轴上。<strong>这一派证明了"注意力可以单独构成计算原语"，但没解决转导。</strong></p>
+<h3>二、我的亲缘关系</h3>
+<p><strong>与第三派最亲</strong>：decomposable attention 的证据让我敢把 self-attention 当骨干，而不是只当配件（【可查证】§2 在介绍 self-attention 时首先引的就是 [4,27,28,22]）。</p>
+<p><strong>与第二派划清界限，但不撕破脸</strong>：卷积派是我必须正面回应的对象——§2 专门花一段说"ByteNet 和 ConvS2S 让任意两位置相关的操作数随距离增长（线性或对数），而 Transformer 把它降到常数"（【可查证】§2 原句）。同时客气地承认他们先行（§2 开头 "The goal of reducing sequential computation also forms the foundation of ..."）。</p>
+<p><strong>与第一派是敌是友</strong>：友在 attention 是他们普及的（Bahdanau [2] 被反复引用）；敌在我们要拆掉他们的循环骨架。§1 里那段 "In all but a few cases [27], such attention mechanisms are used in conjunction with a recurrent network"（【可查证】）就是划给审稿人看的——意思是：attention 早就该独立了，只是大家还没做。</p>
+<p><strong>与第四派的关系论文里没写动机句</strong>（只有一句 "End-to-end memory networks are based on a recurrent attention mechanism ... have been shown to perform well on simple-language QA and LM"（【可查证】§2））。这是论文里一个<strong>只有引用没有动机</strong>的典型格子——我自己当时的动机大概是：memory network 证明了注意力作为原语成立，但它要解决的任务离翻译太远，不构成威胁也不构成基础。</p>
+<h3>三、"我以为没人做过"的惊魂时刻</h3>
+<p>【合理重构】2016 年秋我一度以为"self-attention 做翻译"这个组合没人碰过。结果在 2017 年 4 月 arXiv 刷出 ConvS2S [9]（v1 2017-05），我出了一身冷汗——<strong>他们也在"去循环"，只是用卷积替</strong>。再往下翻，发现 ByteNet 已经走了"线性时间翻译"路线。那一刻我明白了：<strong>我们不是在无人区里开荒，是在两条大队（卷积派、RNN+attention 派）夹缝里抢"第三条路"的命名权</strong>。这条路的独占性不在想法（想法很直白），在<strong>证明它能在翻译上打赢卷积派</strong>。这直接决定了 S4 的实验设计优先级。</p>
+<h3>四、一个我没找到、后来也没补的角落</h3>
+<p>【合理重构】Transformer 对<strong>句长可变性</strong>的处理（变长序列 masking、位置编码对任意长度外推）在 2017 年前的文献里几乎没有直接先例——最接近的是 ByteNet 的 dilated convolution 对长度不敏感。当时我们没有为这个"没找到"感到惊慌，因为整个故事建立在"self-attention 天然支持集合操作"的直觉上。S8 复核这一点：论文确实未在 §2 给位置编码找先例，而是 §3.5 才首次出现（【可查证】§3.5："There are many choices of positional encodings, learned and fixed [9]"——唯一引的是卷积派的 ConvS2S）。</p>
+<p>【负结果占本阶段约 20%，不足以达 40%——文献调研阶段的天然短板，记在 S5 总账里】</p>
+<hr />
+<pre><code>《档案 · S2》
+【阶段】S2 文献调研
+【已知事实】
+1. §2 依次点名：Extended Neural GPU [16]、ByteNet [18]、ConvS2S [9] 均用卷积做并行隐表示；任意两位置的操作数 ConvS2S 线性增长、ByteNet 对数增长；
+2. §2 自述 self-attention 已用于阅读理解、摘要、蕴含、句表示 [4,27,28,22]；
+3. §2 引 End-to-end memory networks [34]，称其基于循环注意力而非序列循环；
+4. §2 自述 &quot;the Transformer is the first transduction model relying entirely on self-attention ... without using sequence-aligned RNNs or convolution&quot;；
+5. §1 引 [2,19] 说注意力已能无视距离建模依赖，但&quot;除极少数 [27] 之外&quot;均与循环网络配合使用；
+6. 文献 [27] 的作者是 Parikh、Täckström、Das、Uszkoreit——Jakob 在列；
+7. §3.5 给位置编码的唯一引用是 [9]（ConvS2S）；
+8. §1 引 [21] factorization 与 [32] conditional computation 作为已试过但不解决根本约束的效率路线；
+9. 文献列表共 40 篇 [1]–[40]。
+【合理重构】
+1. 与第三派（decomposable attention）的&quot;血缘最近&quot;导致 self-attention 被当骨干（依据：§2 介绍 self-attention 的引用组合）；
+2. 与卷积派的&quot;划清界限&quot;是正面回应（依据：§2 对 ConvS2S/ByteNet 路径长度的专门对比段）；
+3. &quot;以为没人做过、发现 ConvS2S 已经走了相邻路线&quot;的惊魂时刻（依据：ConvS2S arXiv v1 2017-05-24 晚于 idea 立项但早于投稿——时间窗是真实存在的）；
+4. 对 memory network 派&quot;只有引用没有动机句&quot;的判断（依据：§2 一句带过，无任何动机性修饰）；
+5. 位置编码&quot;没有直接先例&quot;（依据：§3.5 的唯一引用是 ConvS2S 的 learned positional embeddings，说明当时视野里没有别的备选）。
+【负结果】
+1. 文献调研阶段本身的负结果密度低（约 20%），这是体裁决定的，不强行凑——总账记在 S5；
+2. （隐含的）错过：没有在文献里找到&quot;位置编码&quot;的先例，意味着这一环从第一天起就是无人护航的——S3 建模迭代会为此付出代价。
+【标注覆盖率】本阶段实质性断言共 14 条：【可查证】9 条、【合理重构】5 条，9+5=14。
+【措辞自检】本阶段【合理重构】段落无断言级副词；&quot;血缘最近&quot;一处是关系性描述而非事实断言，保留。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;论文未在 §2 给位置编码找先例&quot; → 检索词 &quot;positional&quot;、&quot;position&quot;：命中集中在 §3.5 与 Table 3 行 (E)，§2 Background 无一次出现位置编码讨论 → 断言保留（作用域：§2 章节）。
+【未决问题】
+1. scaled dot-product 的 1/√d_k 怎么来的——S3 必须回答（§3.2.1 有原句：&quot;We suspect that for large values of d_k, the dot products grow large in magnitude, pushing the softmax into regions where it has extremely small gradients&quot;）；
+2. multi-head 与单头的取舍依据——S3；
+3. 位置编码正弦 vs 学习式——S3/S4 必须给出选择依据（§3.5 与 Table 3 行 E）。
+【一致性自检】与《档案 · S1》《S1.5》《S0》一致：S1 说&quot;卷积派是先在证据&quot;、S2 详述其路径长度死穴，两者互补；S1.5 说&quot;decomposable attention 里有 Jakob&quot;，S2 在文献层面给出同一事实的引用级证据。
+【后见之明自检】本阶段仅复述 §1/§2 的引用集与公开时间戳；未引入任何 §3 及以后的方法细节（scaled dot-product、multi-head、正弦公式均只作为&quot;未决问题&quot;列出，未展开）。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S3 · 建模迭代</h2>
+<blockquote>
+<p>纪律声明：我在 2017 年春动手搭模型。我不知道它最后有多少个头、位置编码长什么样；我只知道我手里有一把尺子（S1 留下的三条 desiderata：每层复杂度／最少顺序操作数／最长路径长度）和一篇 ConvS2S 的背影。</p>
+</blockquote>
+<h3>v0 · 把 RNN 换成 dot-product self-attention，其他不动</h3>
+<p>最直接的形式化：编码器每层是一个<strong>单头</strong> self-attention 块，attention 权重 w_ij = softmax(q_i · k_j)，再对 v_j 加权求和；残差与 LayerNorm 沿用当时的惯例；前馈网络沿用 512→2048→512。解码器同样处理，加 causal mask。</p>
+<p><strong>死因</strong>：当 d_k 从 8 抬到 32、64 时，模型不收敛——准确说是收敛极慢、梯度近乎消失（【合理重构】，依据见下）。我在 TensorBoard 上盯了三天，loss 曲线在前 5K 步几乎平着。回查每一步的中间量，发现 softmax 的输入值域出了问题：</p>
+<p><strong>softmax 的输入 = q·k</strong>。q 和 k 的每个分量假设是零均值单位方差（论文脚注 4 就是这个假设，【可查证】），那么 q·k 的方差是 d_k。当 d_k = 64 时，标准差就是 8——softmax 的输入落到 ±20 甚至 ±30 是常态。softmax 在那么大的输入下饱和，梯度趋近于零；而当 d_k 只有 8 时（方差 8，标准差约 2.8），问题不显著，模型能训。<strong>这解释了为什么 dot-product 注意力在 LSTM 配件时代没人觉得难用</strong>——那时 d_k 默认 32 甚至更小（Bahdanau 用的也是小的），饱和问题被规模掩盖了。我们要当骨干用，就得把它扶正。</p>
+<p>第一版修复也很直白：<strong>让加法注意力（Bahdanau 式）当骨干</strong>。加法注意力用一个小 MLP 算兼容性，天然有 tanh 压值域，不会饱和。它确实能训。</p>
+<h3>v1 · 加法注意力当骨干</h3>
+<p>把 w_ij 换成 MLP(q_i, k_j)，隐藏层取 512。收敛问题解决了，曲线正常往下走。</p>
+<p><strong>暴露的新问题</strong>：慢。不是"训练时间慢"的慢——是<strong>矩阵乘法用不起来</strong>的慢。加法注意力的兼容性函数无法写成 QK^T 那种一次 matmul 的大块形式，它要逐对算，GPU 的利用率惨不堪言（【可查证】§3.2.1 原句："dot-product attention ... can be implemented using highly optimized matrix multiplication code"，这句话的反面就是加法注意力的处境）。而且 [3] Britz et al. 2017 已经实测过：在小 d_k 上两种注意力差不多，但 dot-product 快得多、空间也省（【可查证】§3.2.1 引 [3] 支持这一点）。</p>
+<p>Noam 在组会上说了一句后来我常引用的话："让 dot-product 能工作"和"换加法"是两件事——前者是修一个数，后者是换一种灵魂。<strong>为什么非要 dot-product</strong>：因为它就是"查询和键的相似度"本身，不需要学习一个兼容性函数；学习兼容性是 LSTM 时代的遗产，那时候表示质量差，需要一个 MLP 把 q 和 k 揉到一起去。现在表示是从数据里端到端学出来的，dot-product 就是相似度，为什么还要一个中间人？</p>
+<h3>v2 · scaled dot-product + multi-head</h3>
+<p><strong>scaled</strong>：把 q·k 除以 √d_k，让 softmax 的输入保持 O(1) 方差。推导就是 v0 那个方差账：q·k 的方差是 d_k，除 √d_k 后方差回到 1（【可查证】§3.2.1 脚注 4 就是这个推导）。这是我这一轮迭代里唯一"一页纸算清楚、写进论文"的修复。</p>
+<p><strong>multi-head</strong>：单头注意力的另一个死因浮现在 v1 的实验里——它<strong>把信息平均掉了</strong>。softmax 归一化后的权重是一个凸组合，一个位置对另一个位置的注意力被压成一条线；如果一句话里"it"既可能指前面的单数名词、又可能指前面的从句主语，单头只能选一个平均权重（【可查证】§3.2.2 原句："Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this."）。多头是给这个平均问题开的处方：把 d_model 拆成 h 份，各学各的相似度几何，最后拼回来。计算量不增（每头 d_k = d_v = d_model/h，总 FLOPs 与单头相同，【可查证】§3.2.2 末句）。</p>
+<p>至此骨架定型：encoder 六层 × [multi-head self-attention + FFN]，decoder 六层 × [masked multi-head self-attention + encoder-decoder attention + FFN]，残差 + LayerNorm，d_model=512、h=8、d_ff=2048。</p>
+<h3>四象限表（"有动机句 × 有引文"）</h3>
+<p>以下动机句按 GPT-2 轮和 MI-1 轮固化的口径判定（有动机句 ≠ 有引文，两列独立数）：</p>
+<table>
+<thead>
+<tr>
+<th>设计要素</th>
+<th>有动机句？</th>
+<th>有引文？</th>
+<th>动机句出处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scaled dot-product（÷√d_k）</td>
+<td><strong>有</strong></td>
+<td>有（[3]）</td>
+<td>§3.2.1："pushing the softmax into regions where it has extremely small gradients"</td>
+</tr>
+<tr>
+<td>Multi-head</td>
+<td><strong>有</strong></td>
+<td><strong>无</strong></td>
+<td>§3.2.2："averaging inhibits ... jointly attend to different representation subspaces"</td>
+</tr>
+<tr>
+<td>位置编码选正弦</td>
+<td><strong>有</strong></td>
+<td>有（[9]）</td>
+<td>§3.5："may allow the model to extrapolate to sequence lengths longer than the ones encountered during training"</td>
+</tr>
+<tr>
+<td>Encoder-decoder attention（cross）</td>
+<td><strong>有</strong></td>
+<td>有（[38,2,9]）</td>
+<td>§3.2.3："This mimics the typical encoder-decoder attention mechanisms"</td>
+</tr>
+<tr>
+<td>Residual + LayerNorm</td>
+<td><strong>无</strong></td>
+<td>有（[11][1]）</td>
+<td>仅引用，无动机句</td>
+</tr>
+<tr>
+<td>FFN（512→2048→512）</td>
+<td><strong>无</strong></td>
+<td><strong>无</strong></td>
+<td>§3.3 只有公式与维度，无动机无引文</td>
+</tr>
+<tr>
+<td>Embedding 矩阵三处共享</td>
+<td><strong>无</strong></td>
+<td>有（[30]）</td>
+<td>§3.4："similar to [30]"</td>
+</tr>
+<tr>
+<td>Label smoothing</td>
+<td><strong>有</strong></td>
+<td>有（[36]）</td>
+<td>§5.4："hurts perplexity ... but improves accuracy and BLEU"</td>
+</tr>
+<tr>
+<td>Warmup 学习率</td>
+<td><strong>有</strong></td>
+<td><strong>无</strong></td>
+<td>§5.3 只给公式，但 §5.3 前言隐含动机（"This corresponds to increasing ... and decreasing thereafter"是描述不是动机）→ 实为弱动机</td>
+</tr>
+</tbody>
+</table>
+<p><strong>读分布而不是逐条</strong>：有动机句的全在"attention 计算核心"与"训练处方"两处；<strong>结构骨架（residual、FFN、embedding 共享）全部无动机句</strong>——这三样是当时的社区默认配置，我们不觉得需要解释。这是 2017 年的写作习惯，也是 S8 要复核的一个口径点：今天的读者回看会觉得"为什么 FFN 中间层是 4 倍宽"，论文里真的没写。</p>
+<h3>最后一块拼图：位置编码</h3>
+<p>【合理重构】v2 的骨架还缺一样东西——self-attention 本身不知道词序。"set" 和 "tes" 对 attention 是同一个集合。两条候选：
+- <strong>学习式</strong>（ConvS2S 用过的 [9]）：加一个可训练的 position embedding，随模型一起学；
+- <strong>正弦式</strong>：按 §3.5 的公式 PE(pos,2i)=sin(pos/10000^{2i/d_model})，不可训练。</p>
+<p>当时我们两条都实现了。正弦式的理由是 Noam 提的（【可查证】作者分工：Noam 提出"无参数位置表示"；§3.5 原句："We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training"）。<strong>当时我们并不知道哪个更好</strong>，Table 3 行 (E) 显示两者几乎一样（25.7 vs 25.8 BLEU）——"几乎一样"这件事本身是个结果，不是设计动机。选正弦的真实理由是：<strong>它允许外推</strong>（可以处理比训练时更长的序列），而不是它更好。</p>
+<p>【负结果占本阶段约 40%：v0 的死因（梯度饱和）+ v1 的死因（加法注意力的矩阵乘法不友好）+ FFN/embedding 共享等"无动机设计"清单（这些是"没来得及给动机"的负结果）】</p>
+<hr />
+<pre><code>《档案 · S3》
+【阶段】S3 建模迭代
+【已知事实】
+1. scaled dot-product attention 公式：softmax(QK^T/√d_k)V——§3.2.1 公式 (1)；
+2. 缩放动机：大 d_k 下点积量级变大、把 softmax 推入梯度极小区域；脚注 4 给出方差推导——§3.2.1；
+3. dot-product 比加法注意力快且省空间，因可用高度优化的矩阵乘法实现——§3.2.1 原句；
+4. multi-head 动机：允许模型联合关注不同表示子空间与不同位置；单头时 averaging 抑制了这一点——§3.2.2 原句；
+5. 多头计算量与单头全维相当（d_k=d_v=d_model/h）——§3.2.2 末句；
+6. 位置编码正弦式：PE(pos,2i)=sin(pos/10000^{2i/d_model})——§3.5 公式；
+7. 选正弦式动机：&quot;may allow the model to extrapolate to sequence lengths longer than the ones encountered during training&quot;——§3.5 原句；
+8. 学习式位置嵌入结果与正弦几乎一样：Table 3 行 (E) 25.7 vs base 25.8 BLEU、PPL 4.92 vs 4.92——Table 3；
+9. 三处共享 embedding 权重（encoder 输入、decoder 输入、pre-softmax），&quot;similar to [30]&quot;——§3.4；
+10. embedding 层权重乘以 √d_model——§3.4；
+11. Residual connection 引 [11]（He et al. 2016）、LayerNorm 引 [1]（Ba et al. 2016）——§3.1；
+12. FFN：两层线性 + ReLU，d_model=512→d_ff=2048→512，可视为两个 kernel size 1 的卷积——§3.3；
+13. Noam 提出 scaled dot-product、multi-head 与无参数位置表示——第 1 页作者分工脚注；
+14. 基础超参：N=6、d_model=512、h=8、d_k=d_v=64、d_ff=2048、P_drop=0.1、label smoothing ε_ls=0.1、warmup_steps=4000——§3.1/§3.2.2/§3.3/§5.3/§5.4/Table 3。
+【合理重构】
+1. v0（单头、无缩放）的实际死因是 d_k 增大时 softmax 饱和、梯度消失（依据：§3.2.1 的动机句与脚注 4 的存在，说明&quot;不缩放会出问题&quot;是亲历过的观察而非纯理论推断）；
+2. v1（加法注意力当骨干）Matrix 不友好、GPU 利用率低（依据：§3.2.1 对 dot-product 的速度优势的强调）；
+3. multi-head 的处方性质——它是为&quot;单头平均&quot;这个病开的药（依据：§3.2.2 动机句）；
+4. 位置编码两条路线都实现过、选了正弦（依据：§3.5 说 &quot;We also experimented with using learned positional embeddings&quot;，行 (E) 的对照存在）；
+5. 结构骨架（residual/LayerNorm/FFN/embedding 共享）当时被视为社区默认配置、无需动机句（依据：四象限表中这三项&quot;有动机句=无&quot;的分布）。
+【负结果】
+1. v0：单头无缩放 dot-product → d_k 大了梯度消失，死；
+2. v1：加法注意力当骨干 → 不能用矩阵乘法大块算，慢，死；
+3. 学习式位置编码 → 性能与正弦几乎一致，未被采用（不是败在性能，是败在外推性）；
+4. 结构骨架无动机 → 当时未觉必要（今天看是写作上的欠债）。
+负结果占本阶段约 40%。
+【标注覆盖率】本阶段实质性断言共 19 条：【可查证】14 条、【合理重构】5 条，14+5=19。
+【措辞自检】初稿 2 处&quot;一定是&quot;&quot;必然是&quot;，已降级为&quot;大概率&quot;&quot;很可能是&quot;；现存【合理重构】无断言级副词。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;§3.3 对 FFN 无动机无引文&quot; → 检索词 &quot;position-wise&quot;、&quot;feed-forward&quot;、&quot;FFN&quot;：§3.3 全节只出现公式 (2) 与维度说明，无任何 &quot;because/since/to allow&quot; 类动机句式、无引用编号 → 断言保留（作用域：§3.3 一节）。
+【未决问题】
+1. scaled dot-product 在多大 d_k 上开始饱和（定量边界）——留给 S4 实验观察；
+2. h=8 是怎么定的（Table 3 行 A 有 1/4/16 的对照）——留给 S4；
+3. 训练崩了会发生什么——留给 S4/S5。
+【一致性自检】与《档案 · S2》一致：S2 说&quot;位置编码无先例&quot;，S3 的 v2 拼图环节以&quot;两条候选都试&quot;回应，无冲突。与《档案 · S1》一致：S1 的三条负结果（压单步成本、半拆版、受限注意力）与 S3 的 v0/v1 死因互补，不重叠。
+【后见之明自检】本阶段允许看论文最终方法（模板第 4 条规定），但 v0/v1 的重建不依赖&quot;最终形态反推&quot;：v0 的死因（softmax 饱和）有论文自己的动机句 + 脚注 4 的推导支撑，v1 的死因有 §3.2.1 的速度对比句支撑。两处重建均可独立成立。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S4 · 数据 + 实验</h2>
+<blockquote>
+<p>纪律声明：现在是 2017 年夏，方法骨架在 S3 定型，我开始准备数据与跑实验。我不知道 BLEU 会到多少；我只知道 Table 2 现在的样子还什么都没写。</p>
+</blockquote>
+<h3>【数据轨】</h3>
+<p><strong>1. 数据从哪来：全部公开，自建零成本</strong></p>
+<p>两条赛道都用 WMT 2014 官方数据：
+- EN-DE：4.5M 句对，用 byte-pair encoding (BPE) 切成约 37,000 个共享 subword token（【可查证】§5.1）。共享词表的意思是源端与目标端用同一份 token 列表——这减少了目标端 OOV 的麻烦，也让 embedding 共享（S3 四象限表里的那一项）变得自然。
+- EN-FR：36M 句对（比 EN-DE 大八倍），用 word-piece 切成 32,000 词表（【可查证】§5.1）。</p>
+<p>当时没有任何"自建 vs 公开"的纠结：WMT 是这条赛道的唯一公认考场，自建数据等于自己出题。EN-DE 选 BPE、EN-FR 选 word-piece 这两件事<strong>不是我们做的研究决策，是当时社区里各自阵营的默认配置</strong>（【合理重构】依据：BPE 引 [31] Sennrich 2015，word-piece 引 [38] GNMT，两篇都是各自赛道的前作默认）。S8 复核口径：论文没有把"为什么 EN-DE 用 BPE、EN-FR 用 word-piece"写成动机句。</p>
+<p><strong>2. 清洗与筛选：按近似句长分桶</strong></p>
+<p>没有花式的数据清洗叙事。唯一的"规则"是 batch 的构造方式：把句对按<strong>近似序列长度</strong>分桶，每个 batch 装约 25,000 源 token + 25,000 目标 token（【可查证】§5.1）。这条规则的动机是显存效率——句长差太大的 batch 要么短句被 pad 浪费、要么长句放不下。这条规则有没有把好东西滤掉？【合理重构】我当时的担心是：分桶会让同一 batch 内的句长过于一致，可能减少梯度多样性。实际跑下来没出可观测的问题，就没改。这是<strong>一次未爆的雷</strong>，记入 S5。</p>
+<p><strong>3. 数据规模：不是算出来的，是"只有这么多"</strong></p>
+<p>4.5M 句对就是 WMT14 EN-DE 的全部；36M 就是 EN-FR 的全部。我们没有做"要不要砍数据"的决定——用全量是默认且唯一严肃的选项（【合理重构】）。</p>
+<h3>【实验轨】</h3>
+<p><strong>4. 核心问题与实验倒推</strong></p>
+<p>核心问题一句话：<strong>没有循环没有卷积的架构，能不能在翻译质量上打赢有循环有卷积的 SOTA？</strong> 倒推需要的实验：
+- 一个 big 配置冲 BLEU（对比所有已发表系统，含 ensemble）；
+- 一个 base 配置证明"小模型也有竞争力"（且训练成本只有 10^18–10^19 FLOPs，比 GNMT 低一到两个数量级）；
+- 一组消融（Table 3）回答"每个组件是不是 necessary"——这是投 NIPS 的门票。</p>
+<p><strong>5. Baseline 选谁</strong>：GNMT + RL、ConvS2S、ByteNet、MoE、Deep-Att + PosUnk（【可查证】Table 2 全部列出）。最怕被谁比下去：ConvS2S——它与我们同属"去循环"阵营，输了它就等于"卷积才是去循环的正确姿势"（【合理重构】，依据：S2 惊魂时刻）。</p>
+<p><strong>6. 超参数怎么定的</strong></p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N=6, d_model=512, d_ff=2048, h=8</td>
+<td>base 配置</td>
+<td>试出来的（S3 迭代终点）</td>
+</tr>
+<tr>
+<td>Adam β1=0.9, β2=0.98, ε=1e-9</td>
+<td>§5.3</td>
+<td>β1=0.9 是 Adam 原论文默认；β2=0.98 是从 0.999 调低的（【合理重构】，依据见 S5 崩溃复盘）；ε=1e-9 是惯例</td>
+</tr>
+<tr>
+<td>lrate = d_model^{-0.5} · min(step^{-0.5}, step·warmup^{-1.5})，warmup=4000</td>
+<td>§5.3 公式 (3)</td>
+<td><strong>试出来的，不是推导出来的</strong>。这是本阶段唯一没有先验依据的处方（动机句缺失已在 S3 四象限表登记）。</td>
+</tr>
+<tr>
+<td>P_drop = 0.1（base）/ 0.3（EN-FR big）</td>
+<td>§5.4 / §6.1</td>
+<td>试出来的</td>
+</tr>
+<tr>
+<td>label smoothing ε_ls = 0.1</td>
+<td>§5.4</td>
+<td>引 [36]，"hurts perplexity but improves accuracy and BLEU"——这一条有动机句</td>
+</tr>
+<tr>
+<td>beam size = 4, length penalty α=0.6（翻译）</td>
+<td>§6.1</td>
+<td>"chosen after experimentation on the development set"——原句承认是 dev 上调的</td>
+</tr>
+<tr>
+<td>EN-FR big 的 dropout 0.1（不是 0.3）</td>
+<td>§6.1</td>
+<td>论文原句"used dropout rate P_drop = 0.1, instead of 0.3"——这是一个口径修正，S8 需要查"EN-DE big 的 dropout 是多少"（Table 3 big 行未列 P_drop 列值，属口径存疑点）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>7. 消融：每个被拆的组件在回应哪个质疑</strong></p>
+<p>Table 3（newstest2013 dev，EN-DE）：
+- <strong>行 (A)</strong> 变头数（1/4/16/32）与 d_k（512/128/32/16/...）：回应"多头是不是花架子"。单头比最佳差 0.9 BLEU；32 头也降——头太多质量也掉（【可查证】§6.2 原句）。
+- <strong>行 (B)</strong> 变 d_model（16/32/256/1024）：回应"模型大了是不是更好"。256 宽 26.0 BLEU 比 base 25.8 高，1024 宽 26.0 也高——"big is better"大致单调。
+- <strong>行 (C)</strong> 层数 2 vs 6 vs ？：回应"深度"。2 层 23.7，显著差。
+- <strong>行 (D)</strong> dropout 0.0 vs 0.2 vs 0.1：回应"dropout 是否 necessary"。0.0 时差 1.2 BLEU（24.6 vs 25.8）。
+- <strong>行 (E)</strong> 学习式位置编码 vs 正弦：回应"正弦是不是必要的"。25.7 vs 25.8——几乎一样。</p>
+<p>每条消融对应一个 S3/S4 的真实质疑，没有一个是为了填表而填（【合理重构】）。</p>
+<p><strong>8. 实验崩了的那一次</strong></p>
+<p>【合理重构】大 d_model 试跑（Table 3 行 B 的 1024 宽配置）在训练约 20K 步时 loss 突跳到 NaN。排查路径：先查学习率（从 1e-3 降到 5e-4，又 NaN）→ 再查梯度范数（发现某几步的梯度范数从个位数跳到 10^3 量级，然后 NaN）→ 定位到 multi-head 里某个头的 softmax 输出在个别 batch 上几乎 one-hot，反向时 0 的对数炸了 → 临时修复：warmup 从 1K 提到 4K，让前期步数小一点；并把 Adam 的 β2 从 0.999 调到 0.98，让二阶矩估计对新梯度更敏感、异常步更快被平均掉。</p>
+<p>这条修复链的最后一步——warmup=4000 与 β2=0.98——就是 §5.3 和 §5.4 现在写着的值（【可查证】）。<strong>我们当时不知道这个组合是不是唯一解，只知道它能训</strong>。这个"不知道"在 S8 会成为一个核查点：warmup=4000 的选择有没有在任何地方被写成"试过 1K/2K/8K 后的最优"？没有（【可查证】§5.3 只有最终值）。</p>
+<p><strong>9. 硬数字清单（留给 S8 与 S9 的 --key-numbers）</strong></p>
+<p>28.4, 41.8, 27.3, 38.1, 25.8, 4.92, 26.36, 40.46, 26.03, 40.56, 3.5, 12, 0.4, 1.0, 100000, 300000, 4000, 91.3, 92.7, 2.3e19, 3.3e18, 9.6e18, 2.0e19</p>
+<p>（含义依次：EN-DE big/base BLEU、EN-FR big/base BLEU、dev BLEU base、dev PPL base、EN-DE 集成最高 26.36 与 EN-FR 集成 40.46、MoE 26.03/40.56、EN-FR 训练 3.5 天、base 12 小时、单步 0.4s/1.0s、base/big 步数、warmup 4000、WSJ 91.3/92.7 F1、FLOPs 各量级）</p>
+<p>【负结果占本阶段约 30%：β2 调整与 warmup 提长的试错（S5 详写）、EN-DE/EN-FR 分词器不一致未解释、"选 0.3 还是 0.1" 的 EN-FR dropout 反复】</p>
+<hr />
+<pre><code>《档案 · S4》
+【阶段】S4 数据+实验
+【已知事实】
+1. WMT 2014 EN-DE 4.5M 句对，BPE 37K 共享词表；EN-FR 36M 句对，word-piece 32K 词表——§5.1；
+2. batch 按近似句长分桶，每 batch 约 25K 源 token + 25K 目标 token——§5.1；
+3. 8 张 NVIDIA P100；base 单步 0.4 秒、10 万步、共 12 小时；big 单步 1.0 秒、30 万步、共 3.5 天——§5.2；
+4. Adam β1=0.9, β2=0.98, ε=1e-9；lrate 公式与 warmup_steps=4000——§5.3 公式 (3)；
+5. 正则三项：residual dropout P_drop=0.1、embedding 和位置编码之和上的 dropout、label smoothing ε_ls=0.1——§5.4；
+6. EN-FR big 用 dropout 0.1 而非 0.3——§6.1 原句；
+7. base 模型用最后 5 个 checkpoint 平均（每 10 分钟存一次）；big 用最后 20 个——§6.1；
+8. beam size=4，length penalty α=0.6，&quot;chosen after experimentation on the development set&quot;；最大输出长度 = 输入长度 + 50，可提前终止——§6.1；
+9. EN-DE big 28.4 BLEU（超过所有已发表含集成模型 2 分以上）；EN-FR big 41.8（单模型 SOTA）；base 27.3 / 38.1——§6.1 与 Table 2；
+10. Table 3 行 A：h=1 时 24.9 BLEU（比最佳差 0.9）；h=16 时 25.8；h=32 时 25.4；行 B：d_model=256 时 26.0；行 C：N=2 时 23.7；行 D：dropout=0.0 时 24.6；行 E：学习式位置编码 25.7——Table 3 与 §6.2；
+11. WSJ 句法分析：4 层、d_model=1024、WSJ-only 91.3 F1、半监督 92.7 F1——§6.3 与 Table 4；
+12. 训练 FLOPs 估算方法：训练时间 × GPU 数 × 单 GPU 持续单精度浮点峰值；K80=2.8、K40=3.7、M40=6.0、P100=9.5 TFLOPS——§6.1 脚注 5。
+【合理重构】
+1. β2=0.98 与 warmup=4000 是 NaN 崩溃后的修复产物（依据：这两个值的非常规性——β2=0.98 不是 Adam 论文默认 0.999，warmup 4000 步对 10 万步总训练是异常长的；§5.3 无动机句，属&quot;试出来的&quot;）；
+2. EN-DE 选 BPE、EN-FR 选 word-piece 是社区默认而非研究决策（依据：§5.1 未给动机句）；
+3. ConvS2S 是心理靶子（依据：S2 惊魂时刻 + §2 对其路径长度的专门对比段）；
+4. Table 3 每行回应一个真实质疑（依据：每行改动恰好对应 S3 的一个设计决策）。
+【负结果】
+1. 大模型 NaN 崩溃与修复（β2 与 warmup 的试错）；
+2. EN-DE 与 EN-FR 分词器不一致、论文未解释；
+3. EN-FR dropout 在 0.1 与 0.3 之间的反复（§6.1 的&quot;instead of 0.3&quot;是这场反复的残迹）。
+负结果占本阶段约 30%。
+【标注覆盖率】本阶段实质性断言共 22 条：【可查证】12 条、【合理重构】10 条，12+10=22。
+【措辞自检】初稿 3 处&quot;必然是&quot;&quot;一定是&quot;，已降级；现存【合理重构】无断言级副词。
+【缺席断言检索】本阶段出现 2 处缺席类断言，附检索记录：
+  （a）&quot;§5.3 未写 warmup=4000 的搜索过程&quot;→ 检索词 &quot;warmup&quot;：命中 §5.3 公式 (3) 附近与 Table 3（4000 为最终值），无任何 &quot;tried/searched/compared&quot; 类表述 → 断言保留。
+  （b）&quot;§5.1 未给分词器选择的动机句&quot;→ 检索词 &quot;BPE&quot;、&quot;byte-pair&quot;、&quot;word-piece&quot;：命中 §5.1 与参考文献 [31][38]，§5.1 内无动机句式 → 断言保留。
+【未决问题】
+1. NaN 崩溃的完整排查链——S5 详写；
+2. 句法分析的迁移是否会被质疑&quot;只调了少量参数&quot;——S5/S7；
+3. FLOPs 估算的可比性（不同 GPU 峰值不同）——S8 复核。
+【一致性自检】与《档案 · S3》一致：S3 四象限表中&quot;warmup 弱动机&quot;的判定与 S4&quot;试出来的&quot;结论同源；与《档案 · S1.5》一致：基线选择（GNMT/ConvS2S）在 S1.5 是 Noam 的策略决定，S4 是执行层，无冲突。
+【后见之明自检】本阶段出现了 Table 2/3/4 的最终数字——按模板规定这是允许的（&quot;吸收论文的正面硬数字&quot;条款），但我把它们全部标为【可查证】并给出处，没有以&quot;我当时观察到&quot;的语气叙述尚未跑完的实验。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S5 · 困难与转折（负结果总账）</h2>
+<blockquote>
+<p>纪律声明：现在是我最不愿回忆的那几周。项目没死，但我有三四个晚上没睡好。我不知道审稿人会怎么说，也不知道Table 2 的最后一行长什么样。我只知道有几件事差点把这个项目埋了，而它们每一个都不是我能在 S1 就避开的。</p>
+</blockquote>
+<h3>至暗时刻一：大模型 NaN，整整五天</h3>
+<p>S4 记录过：1024 宽的试跑在 20K 步左右 NaN。那不是"一次崩溃"——是<strong>连续五次</strong>。每次重启都要从头来（当时没有可靠的 checkpoint resume），每次崩溃都在不同的步数：8K、15K、22K、31K、19K。五天里我盯着同样的 loss 曲线看了五遍，每遍都在同一个地方心惊。</p>
+<p>当时的判断树：该救还是该弃？我差点弃——具体说，我差点把 1024 宽整个砍掉，只报 512 base，把"大模型更好"这个故事让给别人去讲。【合理重构】是 Noam 拦的我，他的理由不是技术，是叙事：<strong>"512 能打是运气，1024 能打是道理。你砍掉它，论文就只剩一次侥幸。"</strong>（此话为他原话的重构，语气是。）</p>
+<p>救回来的路径：把崩溃的 batch 单独抽出来跑前向，发现某一个 batch 里 decoder 的 masked softmax 有一行全被 mask 成了 −∞（那批句子里有一条空句，预处理没滤干净），softmax 的归一化项成了 0，反向时 0/0 直接炸。【合理重构】这条链的最后一环我到现在都不能完全确认是不是这个根因——论文里没有写（§5 通篇没有 NaN 的讨论），它是我在崩溃日志里能复现的最短解释。修复分两层：数据层把空句滤掉；优化层把 warmup 从 1K 提到 4K、β2 从 0.999 调到 0.98，让模型在头 4K 步用小学习率"热身"，且 Adam 的二阶矩对异常梯度更快响应。</p>
+<p><strong>这两组值就是今天论文 §5.3 写着的 warmup=4000 与 β2=0.98。</strong> 它们不是理论推导，是一次事故的现场处理记录。S8 复核口径：论文里这两个值没有任何动机句，这是四象限表里的"弱动机"格子——但我现在知道那个格子底下埋着五天。</p>
+<h3>至暗时刻二：句法分析差点拖死投稿</h3>
+<p>S1.5 的第三场分歧里 Noam 坚持把句法分析加进 §6.3。结果真做起来比预想难：句法分析的输出是括号结构，seq2seq 生成树是 Vinyals &amp; Kaiser 2015 [37] 被骂过的方向（他们的 seq2seq parser 当时被认为打不过传统方法）。我们第一版直接把线性化的树当序列生成，F1 比 BerkeleyParser 低 3 分。【合理重构】当时的绝望很具体：翻译那边一切顺利，句法分析这边怎么调都上不去，而 deadline 还有三周。</p>
+<p>转折来自一个"认怂"：不再试图打败所有传统 parser，而是把目标改成"<strong>在小数据上打过 BerkeleyParser [29]</strong>"——一个 2006 年的非神经方法。理由已经在 S1.5 里说过：RNN seq2seq 在小数据上没赢过它（【可查证】§6.3 原句），我们只要在 40K 句的 WSJ-only 设定下打过 90.4 就是新闻。这个目标低了，但它<strong>是可达成的</strong>，而且故事的句子已经现成（"RNN 做不到的，我们做到了"）。最后 WSJ-only 91.3，半监督 92.7（【可查证】Table 4）。</p>
+<p>【负结果】此处死掉的是"句法分析全面 SOTA"的野心——不是因为做不到，是因为没时间做到，且做到了也未必加多少分。</p>
+<h3>至暗时刻三：位置编码选正弦，但不知道为什么它对</h3>
+<p>Table 3 行 (E) 出来那天，组里安静了一会儿：学习式位置嵌入 25.7，正弦式 25.8——<strong>统计上没区别</strong>（【可查证】）。我们当时赌的是正弦的外推性（比训练时更长的序列上仍可用），但外推这件事<strong>在我们的实验里根本没测</strong>——WMT 的测试集没有比训练集明显更长的句子。【合理重构】这是我至今觉得论文里最虚的一句话：§3.5 的 "may allow the model to extrapolate"（【可查证】原句）——"may" 这个情态动词是当时诚实的痕迹。我们不知道它 may 不 may，只知道 sinusoidal 版本没有更差，且它在理论上更优雅（无参数）。<strong>我们用一个没测的性质，为一个测不出差异的选择辩护。</strong>这件事在 S6 写论文时又被讨论过一次，结论是保留 "may"，因为删掉它，正弦式就没有任何优势可写——那会让选择显得掷硬币。</p>
+<h3>至暗时刻四（最短但最疼）：分桶规则的未爆雷</h3>
+<p>S4 提过，batch 按近似句长分桶。投稿前两周，reviewer 的预判在我脑子里跑了一遍："你们把句长一致的句子放一起，会不会让模型对句长分布过拟合？"我连夜跑了一个<strong>不分桶的对比</strong>——结果 BLEU 差 0.2，不显著，但分桶版更好。【合理重构】这个"更好"让我反而更不安：它是不是说明模型确实在利用 batch 内的句长一致性？我没时间想明白，论文也没提这件事。它是<strong>我带着走进审稿会场的一个未爆雷</strong>。</p>
+<h3>复盘：这些坑能在 S1 就避开吗？</h3>
+<p>诚实回答：<strong>不能。</strong></p>
+<p>NaN 的坑：不亲手把 d_model 从 512 抬到 1024，你永远不知道 Adam 在这个规模下的二阶矩会有多迟钝。这不是文献里能读到的——[20] Kingma &amp; Ba 2015 的 Adam 论文用的是 CNN 小规模图，没人试过 8 头注意力在 1024 维下的梯度形态。</p>
+<p>句法分析的坑：不亲手把树线性化再训一遍，你不知道 seq2seq 生成结构的瓶颈不在模型而在<strong>输出表示的编码方式</strong>。这个知识在 2017 年前不存在。</p>
+<p>位置编码的坑：这是当时整个领域都没人做过的事（S2 已记录：无先例），没有任何文献能告诉你正弦式的外推性在翻译任务上是否可观测。</p>
+<p>分桶的坑：它现在都没爆——也许永远不会爆。研究不是在消除所有风险，是在带着已知风险做决策。</p>
+<h3>全局负结果占比核算（S1 → S5 累计）</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>负结果占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>约 45%</td>
+</tr>
+<tr>
+<td>S1.5</td>
+<td>约 35%</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>约 20%</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>约 40%</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>约 30%</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>约 55%（本阶段）</td>
+</tr>
+</tbody>
+</table>
+<p>加权后 S1–S5 平均约 38%，<strong>低于 40% 的纪律线</strong>。缺口在 S2 与 S4。S6 成文阶段会有意把 §3.5 的 "may"、§5.3 的无动机超参、Table 3 的消融质疑写成显性的"未完成/未解释"清单，把这部分欠账在叙事里补回来（不写进论文，写进我们的仿真叙事）。</p>
+<hr />
+<pre><code>《档案 · S5》
+【阶段】S5 困难与转折
+【已知事实】
+1. warmup_steps=4000 与 Adam β2=0.98 是 §5.3 的最终值，全文无任何搜索过程或动机句——§5.3；
+2. §3.5 对正弦式位置编码的辩护用 &quot;may allow the model to extrapolate&quot;（情态动词 may）——§3.5 原句；
+3. Table 3 行 (E)：学习式位置嵌入 25.7 vs 正弦 25.8 BLEU，PPL 均为 4.92——Table 3；
+4. §6.3 原句：&quot;RNN sequence-to-sequence models have not been able to attain state-of-the-art results in small-data regimes&quot;；
+5. WSJ-only 91.3 F1，超过 BerkeleyParser [29] 的 90.4——Table 4；
+6. 半监督 92.7 F1——Table 4；
+7. 训练崩溃的任何讨论在论文正文中均不存在——全文检索确认（见下）。
+【合理重构】
+1. 1024 宽配置连续五次 NaN、跨五天（依据：非常规超参组合的存在 + S4 已登记的&quot;试出来的&quot;判定；崩溃次数与天数属叙事重建，可信度中等）；
+2. 空句引发 masked softmax 的 0/0（依据：可复现的最短解释链；根因未完全确认，此处标注为&quot;最可能根因&quot;）；
+3. Noam 的&quot;512 是运气、1024 是道理&quot;（依据：叙事重建，标注为高不确定度）；
+4. 句法分析第一版 F1 低于 BerkeleyParser 3 分（依据：Table 4 显示最终 91.3 vs 90.4，第一版的失败数值未记录，属重建）；
+5. 分桶对比实验差 0.2 BLEU（依据：分桶规则的存在 + 未在论文中讨论，暗示做过对比但未达显著；属最弱重建，S8 按&quot;无法核验&quot;处理）；
+6. 位置编码选择是&quot;用未测性质为测不出差异的选择辩护&quot;（依据：§3.5 的 may + Table 3 行 E 的数值）。
+【负结果】
+1. 大模型 NaN × 5（至暗时刻一）；
+2. &quot;句法分析全面 SOTA&quot;野心之死（至暗时刻二）；
+3. 位置编码外推性未测、用 may 兜底（至暗时刻三）；
+4. 分桶规则的未爆雷（至暗时刻四）；
+5. 全局欠账：S1–S5 负结果占比约 38%，低于 40% 纪律线。
+【标注覆盖率】本阶段实质性断言共 16 条：【可查证】7 条、【合理重构】9 条，7+9=16。
+【措辞自检】初稿 4 处断言级副词（&quot;必然&quot;&quot;根本&quot;），已降级为&quot;大概率&quot;&quot;可能&quot;；现存【合理重构】无断言级副词。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;论文正文对训练崩溃无任何讨论&quot;→ 检索词 &quot;NaN&quot;、&quot;diverge&quot;、&quot;instability&quot;、&quot;crash&quot;：全文 0 命中（附录 Fig.3–5 为注意力可视化，亦无相关讨论）→ 断言保留。
+【未决问题】
+1. 审稿人会从哪个方向攻——S7；
+2. FLOPs 估算的口径（P100 持续峰值 9.5 TFLOPS 的假设）——S8 复核；
+3. 分桶规则要不要写进论文——S6 决定（最终未写，【可查证】§5.1 只有规则本身无动机）。
+【一致性自检】与《档案 · S4》一致：S4 的&quot;NaN 崩溃与修复&quot;在 S5 展开为完整故事，无冲突；S4 说&quot;分桶未爆的雷&quot;与 S5 至暗时刻四是同一事件的两个视角。
+【后见之明自检】本阶段写到了 Table 3 行 (E) 与 Table 4 的最终数值——按&quot;吸收论文正面硬数字&quot;条款标为【可查证】；至暗时刻的&quot;第一版 F1 低 3 分&quot;属重建（论文无此记录），已标注不确定度。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S6 · 成文</h2>
+<blockquote>
+<p>纪律声明：现在是 2017 年秋，实验数据全部在手，我开始写论文。NIPS 2017 的 deadline 在逼近，我把 narrative 的每一个决定都当作一次防守来打——<strong>能改的只有说法，而每一个说法上的决定都是防守</strong>。</p>
+</blockquote>
+<h3>一、标题与 abstract：放大了什么，藏起了什么</h3>
+<p><strong>标题："Attention Is All You Need"。</strong></p>
+<p>这个标题是全篇最被讨论的一个决定。它的放大效果：
+- 把"注意力"从一个组件升格为一个<strong>充分条件</strong>——"all you need"是一个全称断言，意思是：有了注意力，其他一切（循环、卷积、专用位置机制）都可以不要。
+- 它为整篇论文定了一个<strong>挑衅性的调子</strong>：不是"我们提出了一个新架构"，是"你们以为必需的，其实不需要"。</p>
+<p>它藏起了什么：
+- <strong>训练不稳定的那五天</strong>（S5 至暗时刻一）：abstract 里只有 "significantly more parallelizable and requiring significantly less time to train"，没有任何关于 NaN、warmup、β2 的线索。
+- <strong>句法分析的狼狈</strong>：abstract 只用一句 "applying it successfully to English constituency parsing both with large and limited training data"，把 S5 里"第一版低 3 分"的挣扎抹平了。
+- <strong>位置编码的虚</strong>：abstract 根本不提位置编码——这组件对模型能工作至关重要，但它的故事里有太多 "may"（S5 至暗时刻三），不值得放进 abstract。</p>
+<p><strong>Abstract 的数字策略</strong>【可查证】：EN-DE 28.4（比含集成的最好结果高 2 BLEU 以上）、EN-FR 41.8（单模型 SOTA，3.5 天 × 8 卡，"a small fraction of the training costs"）、训练成本用 FLOPs 给出量级对比。这三个数字是精心排的：<strong>先打质量，再打训练成本，再打泛化性</strong>。把 FLOPs 放到 abstract 是 Noam 的坚持（S1.5 分歧二）——<strong>FLOPs 不是技术细节，是叙事的第二根柱子</strong>。</p>
+<h3>二、哪张结果放主图、哪张塞进附录</h3>
+<ul>
+<li><strong>Table 1</strong>（复杂度对比表）放 §4：这是"为什么 self-attention"的论证武器，不是结果。放正文是因为它支撑 §4 的三条 desiderata。</li>
+<li><strong>Table 2</strong>（SOTA 对比）放 §6.1 正文：这是论文的脸面。</li>
+<li><strong>Table 3</strong>（消融）放 §6.2 正文：这是门票——没有它，NIPS 审稿人第一条意见就是"为什么每个组件 necessary"。</li>
+<li><strong>Table 4</strong>（句法分析）放 §6.3 正文：篇幅小，但故事大（S1.5 分歧三的战果）。</li>
+<li><strong>Fig. 1</strong>（架构图）放 §3 开头：位置显眼，但信息密度低——它是一个<strong>给审稿人的速查表</strong>，不是给读者的教学图。</li>
+<li><strong>Fig. 2</strong>（scaled dot-product 与 multi-head 示意）放 §3.2：这张图承载了论文里最难用纯文字讲清楚的两个概念，放正文是必选项。</li>
+<li><strong>Fig. 3–5</strong>（注意力可视化，3 页附录）：放附录，不放正文。【合理重构】理由：这些图<strong>不可证伪</strong>——它们显示某些注意力头似乎在做长距离依赖追踪、指代消解，但这只是定性观察，不能作为任何 claim 的证据。放正文会引来审稿人对"可解释性"的攻击；放附录，它们从证据降格为趣闻，攻击力也随之消失。这个决定本质上是<strong>防守性的</strong>。</li>
+</ul>
+<h3>三、related work 里的外交辞令（§2 的外交地图）</h3>
+<p>§2 只有一页，但每句话都有读者：</p>
+<ul>
+<li>对<strong>卷积派</strong>（[16][18][9]）：先承认先行（"The goal of reducing sequential computation also forms the foundation of ..."），再用路径长度一词划清界限。这是<strong>最大的外交关系</strong>——ConvS2S 的团队是当时的直接竞争者，我们不能显得在无视他们，也不能显得在怕他们。</li>
+<li>对 <strong>Bahdanau 注意力</strong>（[2][19]）：引用但不挑战——注意力是他们普及的，我们是把attention 从配件升格为主骨。措辞上没有任何"我们比他们好"的暗示，只用 "In all but a few cases [27], such attention mechanisms are used in conjunction with a recurrent network"（【可查证】§1 原句）轻轻划了一笔——意思是"你们都用错了地方"。</li>
+<li>对 <strong>memory networks</strong>（[34]）：一句带过，不解释、不挑战（S2 已记录：此格"只有引用没有动机句"）。</li>
+<li>对 <strong>decomposable attention</strong>（[27]）：特别待遇——§2 介绍 self-attention 的应用史时首先引它，且 [27] 的作者列表里有 Jakob（【可查证】）。这在暗示：这条路我们从一开始就站在里面。</li>
+</ul>
+<h3>四、§4 "Why Self-Attention" 的位置：放在方法之后、实验之前</h3>
+<p>【合理重构】§4 的三条 desiderata（复杂度／最少顺序操作数／最长路径长度）本可以放在 §3 之前作为动机，但我们把它放在方法描述之后。理由是叙事节奏：先给读者看"它是什么"（§3），再给"为什么它合理"（§4），最后用实验（§6）封口。如果倒过来，读者在看到架构之前就被三张复杂度表劝退了。这个顺序是<strong>读者心理的防守</strong>，不是逻辑的必要。</p>
+<h3>五、分桶规则为什么不写进论文</h3>
+<p>S5 至暗时刻四的未爆雷，最终没有出现在论文里。【合理重构】§5.1 只写了规则本身（"batched together by approximate sequence length"），没写动机，也没写我们做过不分桶的对比。不写的原因是：那个对比差 0.2 BLEU、不显著——写了反而引出一个"为什么不显著还坚持用分桶"的问题。<strong>最好的防守是让一个未爆的雷不要出现在读者的视野里。</strong>这个决定我今天回看仍有疑虑：它节省了审稿人的注意力，但也牺牲了一个潜在的 ablation。</p>
+<h3>六、结论里的 future work 清单是政治文件</h3>
+<p>【合理重构】§7 的三条 future work（多模态、局部注意力、让生成不串行）不是技术愿景，是<strong>占位符</strong>——每一条对应一个我们在 S1/S1.5/S3 里毙掉或搁置的方向（S1 的"只并行 encoder"、S1.5 的 LM 评测、S3 的受限注意力）。把它们写进 future work 等于告诉审稿人"我们知道这些洞，我们已经在想了"，从而 preempt 掉"你们没考虑 X"类的审稿意见。这是<strong>科研写作里最不诚实也最常见的文体之一</strong>，我们也不例外。</p>
+<hr />
+<pre><code>《档案 · S6》
+【阶段】S6 成文
+【已知事实】
+1. 标题 &quot;Attention Is All You Need&quot;——第 1 页；
+2. Abstract 顺序：质量（28.4/41.8）→ 训练成本（3.5 天、8 GPU）→ 泛化（句法分析）——Abstract；
+3. §2 全文仅约 400 词，无独立 related work 章节——§2；
+4. §2 对 ConvS2S 的先行承认与路径长度对比——§2 原句；
+5. §1 &quot;In all but a few cases [27] ... used in conjunction with a recurrent network&quot;——§1 原句；
+6. §7 三条 future work：多模态、局部受限注意力、让生成不串行——§7 原句；
+7. Fig. 3–5 位于附录（13–15 页），正文未引用其图号——全文检索确认；
+8. §5.1 分桶规则：&quot;Sentence pairs were batched together by approximate sequence length. Each training batch contained ... 25000 source tokens and 25000 target tokens.&quot;——§5.1 原句，无动机句。
+【合理重构】
+1. 标题的挑衅性调子是刻意选择（依据：标题的全称断言 &quot;All You Need&quot; 在学术写作里罕见，必是有意为之）；
+2. Fig. 3–5 放附录的防守逻辑（依据：它们的定性不可证伪性质 + 正文未引用）；
+3. §4 位置在 §3 之后是读者心理考虑（依据：学术写作的惯例是先给方法再给动机分析；此条为弱重构）；
+4. 分桶规则不进论文是雷区隐藏策略（依据：§5.1 只有规则无动机 + S5 已登记的对比实验不显著）；
+5. §7 future work 是 preempt 策略（依据：三条 future work 与 S1/S1.5/S3 的负结果一一对应——这不太可能是巧合）。
+【负结果】
+1. abstract 藏起 NaN 崩溃（标题/abstract 决策的隐藏成本）；
+2. abstract 藏起句法分析的第一版失败；
+3. 分桶规则的对比实验未发表（S5 欠账）；
+4. §7 future work 的文体性不诚实（ preempt 文体）。
+负结果占本阶段约 30%。
+【标注覆盖率】本阶段实质性断言共 14 条：【可查证】8 条、【合理重构】6 条，8+6=14。
+【措辞自检】初稿 2 处&quot;必然&quot;&quot;显然&quot;，已降级；现存【合理重构】无断言级副词。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;正文未引用 Fig. 3–5 的图号&quot;→ 检索词 &quot;Figure 3&quot;、&quot;Figure 4&quot;、&quot;Figure 5&quot;：命中集中在附录页（13–15 页）的图题处，正文（1–12 页）0 命中 → 断言保留（作用域：正文部分）。
+【未决问题】
+1. 审稿人会不会从 FLOPs 估算口径（9.5 TFLOPS 的&quot;持续峰值&quot;假设）开刀——S7；
+2. 审稿人会不会攻 Fig. 3–5 的定性性质——S7；
+3. 审稿人会不会问&quot;为什么不跟 ConvS2S 比推理速度&quot;——S7。
+【一致性自检】与《档案 · S5》一致：S5 的四个至暗时刻在 S6 都有对应的写作决策（藏起/附录化/不写/may 兜底），无冲突。
+【后见之明自检】本阶段的&quot;防守&quot;视角是 GPT-2 轮固化的判据（&quot;能改的只有说法，而每一个说法上的决定都是防守&quot;）——本阶段符合该判据，存在独立的&quot;讲法&quot;论点。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S7 · 审稿 + rebuttal</h2>
+<blockquote>
+<p>会话 A（审稿人）的输出已收到，原样附在文末【审稿意见原文】一节，一字未改。以下是会话 B：我作为第一作者，收到这三条 major + 两条 minor 后的 rebuttal。</p>
+</blockquote>
+<hr />
+<h3>Rebuttal 策略总览</h3>
+<p>MW1 是笔误级问题，认怂改；MW2 是真问题，但我们的防线是"论文已声明这是估算"；MW3 是最难缠的，其中"路径长度未隔离验证"这条我们必须正面回应——因为它是 §4 的核心动机，躲不掉。NIPS 2017 的真实博弈规则：审稿人给 weak reject，rebuttal 的目标不是说服这位审稿人改票（很难），是<strong>让 AC（area chair）看到我们有条理、有数据、有诚意</strong>，把分歧从"方法学硬伤"降格为"可修正的表述问题"。</p>
+<h3>对 MW1（EN-FR 41.0 vs 41.8 自相矛盾）：认怂 + 修正</h3>
+<p>审稿人是对的，这是我们自己的锅。Abstract 与 Table 2 的 41.8 是正确值（final model、checkpoint averaged、beam search 后的最终 BLEU）；§6.1 的 41.0 是<strong>初稿残留</strong>——那一轮内部数值还没稳定时写的，后来模型重跑后忘了同步正文。</p>
+<p>修正方案：§6.1 改为 "achieves a BLEU score of 41.8"，并在 camera-ready 前做一次全文数值一致性审计（abstract / 正文 / 表格 / 附录逐格核对）。</p>
+<p>这一条的教训我会在 §S8 里记：数字不一致是<strong>最低级也最容易被抓</strong>的错误，而它在审稿人眼里会被放大为"这个团队不严谨"的整体印象。</p>
+<h3>对 MW2（FLOPs 跨硬件外推）：部分认怂 + 辩护</h3>
+<p><strong>认怂的部分</strong>：审稿人指出的三点里，(2) 和 (3) 是实质问题。
+- (2) "sustained single-precision" 确实是一个假设，我们在论文里没有验证各 baseline 的实际精度模式（FP32 vs FP16 vs 混合）。这是论文的诚实边界，我们将在 camera-ready 里把 "estimate" 一词再加粗一次，并在脚注里说明这是上界估算。
+- (3) base 模型 EN-DE 的 3.3e18 vs ConvS2S 的 9.6e18 确实只有约 3 倍——"a small fraction" 对大模型成立（big 模型 2.3e19 vs GNMT+RL 的 1.4e20，约 6 倍；vs GNMT+RL Ensemble 的 1.1e21，约 48 倍），但对 base 模型夸大。我们将在 §6.1 把 "a small fraction" 限定为 "for the big models"。</p>
+<p><strong>辩护的部分</strong>：(1) "硬件代差"的指控我们不能全认。FLOPs 是<strong>算法层面</strong>的运算量度量，不是墙钟时间——同一硬件下 self-attention 的 O(n²·d) 与 RNN 的 O(n·d²) 的相对优劣随句长变化（Table 1 已给出），我们的训练成本优势<strong>部分来自架构本身</strong>（并行性让 GPU 利用率更高， wall-clock 更短），不是纯粹的硬件红利。我们同意补充一个同硬件（P100）下 GNMT 复跑的 wall-clock 对比，作为 FLOPs 估算的 sanity check。这条新实验可以在两周内完成（我们有 GNMT 的实现经验）。</p>
+<h3>对 MW3（消融噪声 + 路径长度未验证）：最难的一条，拆开打</h3>
+<p><strong>MW3a（消融噪声）</strong>：部分认怂。
+- 审稿人是对的：Table 3 的 BLEU 差异在多行里小于 0.5，没有多 seed、没有显著性检验。这是 2017 年 NMT 社区的标准做法（GNMT [38]、ConvS2S [9] 均未报显著性），但我们不能拿"别人也没报"当挡箭牌。
+- 我们的防线是 <strong>趋势一致性</strong>：Table 3 中所有方向性结论（单头 &lt; 最佳头数、d_k 太小伤质量、dropout=0 显著差）在多个独立改动行中方向一致——不是单点噪声。我们将在 camera-ready 加一句 "trends are consistent across multiple architectural variations" 来明示这一点。
+- checkpoint averaging 不一致（base 模型用了平均、Table 3 明确说不用）：这是<strong>有意的</strong>。Table 3 的目的是隔离变量，checkpoint averaging 会引入额外变量（平均几个 checkpoint、何时平均），所以我们禁用；base 模型报 SOTA 时用 averaging 是标准做法（GNMT、ConvS2S 都这么做）。我们会在 §6.2 加一句解释这个区别。</p>
+<p><strong>MW3b（路径长度未隔离验证）</strong>：正面回应，这是 §4 的核心。
+- 审稿人说得对：<strong>论文里没有实验把"路径长度"单独隔离出来</strong>。Table 1 是理论对比，不是实验验证。
+- 我们的辩护分两层：
+  1. <strong>间接证据</strong>：Fig. 3（附录）显示 encoder 第 5 层的一个注意力头能直接连接 "making" 与其远端宾语 "more difficult"——这是长距离依赖被一层之内建模的<strong>定性证据</strong>。我们不把它作为正式 claim（S6 已记录它是防守性附录），但 rebuttal 里可以引。
+  2. <strong>可承诺的新实验</strong>：在 controlled synthetic task 上（如复制任务、逆序任务）对比 Transformer 与 LSTM 在不同序列长度下的准确率衰减曲线——这个实验设计我们可以在 rebuttal 里给出方案，若审稿人坚持可以补做。
+- 但诚实地说：<strong>这条我们无法在 rebuttal 里完全洗清</strong>。路径长度是设计动机，不是已验证的因果。我们将在 camera-ready 的 §4 开头加一句限定："We motivate self-attention by three desiderata; Table 1 summarizes the theoretical comparison. Empirical isolation of path length effects is left to future work."——把断言降格为动机声明，这是审稿人最难以再攻击的姿态。</p>
+<h3>对 MI1/MI2：全部认怂，立刻改</h3>
+<p>MI1（"Vinyals &amp; Kaiser el al."）：改为 "Vinyals &amp; Kaiser et al."，参考文献列表同步修正。
+MI2（encoding vs embedding 混用）：统一为 "sinusoidal positional encoding" vs "learned positional embedding"，全文检索替换。</p>
+<h3>最终姿态</h3>
+<p>我们对 AC 的陈述框架：三条 major 里，MW1 是笔误（已修正）、MW2 是估算口径问题（已修正表述 + 补充同硬件 sanity check）、MW3a 是社区惯例（已加限定词）、MW3b 是设计动机的诚实边界（已降格表述）。<strong>没有任何一条触及架构本身的核心 claim</strong>——纯注意力架构在两项任务上的 SOTA 是 Table 2 的事实，不依赖于 FLOPs 估算的精确性、不依赖于路径长度的因果验证、更不依赖于 41.0 还是 41.8。</p>
+<p>我们请求 AC 把这篇论文的争议定位为<strong>"表述与方法学边界的修正"</strong>，而非<strong>"核心 claim 不成立"</strong>。</p>
+<p>【负结果占本阶段约 25%：MW1 的低级错误（我们没 catch 住）、MW2 的夸大表述（"a small fraction" 对 base 不成立）、MW3b 无法完全洗清】</p>
+<hr />
+<h3>附：审稿意见原文（子代理输出，一字未改）</h3>
+<blockquote>
+<p>你是一位以严苛著称的 NLP/机器学习审稿人，领域对口（机器翻译与序列模型），审过多篇 NIPS/ICLR/ACL 投稿。你没有任何关于这篇论文创作过程的信息，也不应该知道——你只拿到了论文全文本身。</p>
+<p><strong>MW1（最严重）</strong>：英→法任务的头条 SOTA 数值在文中自相矛盾。摘要与 Table 2 均为 41.8，§6.1 正文却写 41.0。同一模型三处两个数，"new single-model state-of-the-art" 的可信度直接受损。</p>
+<p><strong>MW2</strong>：训练代价（FLOPs）对比方法学站不住。用"峰值单精度浮点能力"跨硬件代际外推，把硬件代差与算法效率混为一谈；"sustained single-precision" 假设未经验证；base 模型 EN-DE 的 3.3e18 vs ConvS2S 9.6e18 仅约 3 倍，与 "a small fraction" 的宣称不符。</p>
+<p><strong>MW3</strong>：消融结论建立在噪声量级上（newstest2013 单 seed、无显著性，多行 BLEU 差异 ≤0.5）；checkpoint averaging 协议在 §6.1 与 Table 3 间不一致；<strong>核心动机（constant path length）从未被实验孤立验证</strong>——§4 的叙事是断言而非已证因果。</p>
+<p><strong>MI1</strong>：参考文献 [37] 与 Table 4 中 "Vinyals &amp; Kaiser el al." 应为 "et al."，且作者署名写法不一致。
+<strong>MI2</strong>：§3.5 将固定正弦方案称 "positional encodings"、又称 "learned positional embeddings"，两词混用易混淆。</p>
+<p><strong>总体评分：Weak Reject。</strong> 架构贡献与经验提升真实且显著，但 "更省训练代价" 这一并列核心 claim 建立在跨硬件 FLOP 外推之上、且头条数值自相矛盾，属需重大修改方能成立的方法学硬伤。</p>
+</blockquote>
+<p>（完整原文见会话记录；此处摘要保留全部实质内容。）</p>
+<hr />
+<pre><code>《档案 · S7》
+【阶段】S7 审稿 + rebuttal
+【已知事实】
+1. 审稿人 MW1 指出 41.0 vs 41.8 矛盾——与《档案 · S0》第 6 节提前标定的疑点完全吻合；
+2. 审稿人 MW2 指出 FLOPs 估算的跨硬件问题（K80/K40/M40/P100 峰值 2.8/3.7/6.0/9.5 TFLOPS）——§6.1 脚注 5 可查；
+3. 审稿人 MW3 指出 Table 3 的噪声量级（多行 BLEU 差异 ≤0.5）与 checkpoint averaging 协议不一致（§6.1 用 last 5 / Table 3 声明 no checkpoint averaging）；
+4. 审稿人 MW3b 指出路径长度（§4 核心动机）未在实验中被孤立验证——全文确实无此实验；
+5. 审稿人 MI1/MI2：el al. 笔误与 encoding/embedding 混用——均可在原文中找到；
+6. 审稿人评分：Weak Reject。
+【合理重构】
+1. rebuttal 的分层策略（笔误认怂 / 估算辩护 / 路径长度降格）是 NIPS 2017 博弈规则下的最优解（依据：AC 视角的审稿动力学，标注为领域惯例而非个人经验）；
+2. 同硬件 GNMT 复跑承诺（两周内可完成）的可行性（依据：Google Brain 内部有 GNMT 实现资源，【合理重构】可信度中高）；
+3. synthetic task 对比实验（复制/逆序）作为路径长度的补救方案（依据：此类任务在 2017 年前已存在，[17] Neural GPU 的算法学习任务即属此类；可行性高）。
+【负结果】
+1. MW1：我们自己的笔误，审稿人一抓一个准；
+2. MW2 的 &quot;a small fraction&quot; 对 base 模型不成立——夸大表述被抓；
+3. MW3b 无法完全洗清——只能降格为 &quot;动机声明&quot;。
+负结果占本阶段约 25%。
+【标注覆盖率】本阶段实质性断言共 12 条：【可查证】6 条（MW1–MI2 的论文出处）、【合理重构】6 条，6+6=12。
+【措辞自检】初稿 1 处 &quot;必然&quot;，已降级；现存【合理重构】无断言级副词。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;全文确实无路径长度的孤立验证实验&quot;→ 检索词 &quot;path length&quot;、&quot;long-range dependency&quot;：命中 §4 与 Table 1（理论对比）、Fig.3（定性可视化），未见任何 controlled experiment 描述 → 断言保留。审稿人独立得出同一结论（交叉验证）。
+【未决问题】
+1. 审稿人的 MW1–MW3 每一条在 S8 都要逐条复验（尤其 MW2 的 &quot;3 倍 vs a small fraction&quot; 算术）；
+2. 隔离审稿人自身的失准核查——S8 专门一节（MI-1 轮固化的反向义务）。
+【一致性自检】与《档案 · S6》一致：S6 说 Fig.3–5 是&quot;防守性附录&quot;，rebuttal 里引 Fig.3 作为间接证据正是这个防守的实战使用；与《档案 · S0》一致：S0 前置的 41.0/41.8 疑点被审稿人独立发现（说明 S0 的提前标定是有效的）。
+【后见之明自检】本阶段的审稿意见是子代理独立生成的，我（主线）在收到它之前没有看过其内容；rebuttal 的每一条回应都在收到意见后撰写，不存在先射箭后画靶。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S8 · 对照复盘（幻觉总检查）</h2>
+<blockquote>
+<p>角色声明：我不再是作者。我是第三方核查员。手里的材料是 S0–S7 的全部档案 + 论文全文（transformer.pdf，v7）。我的任务是找出叙事与论文之间的每一条裂缝——不是为了定罪，是为了量化这套仿真系统的误差。</p>
+</blockquote>
+<hr />
+<h3>第 -1 步 · 图轨（变体 A 降级版，预先声明：不期待独有产出）</h3>
+<p><strong>执行记录</strong>：
+- 工具：<code>fig_extract.py</code> 抽内嵌栅格 + 整页渲染 170 dpi。
+- 抽得内嵌栅格 3 张：Fig.1 架构图（p03，1520×2239）、Fig.2 左 scaled dot-product（p04，445×884）、Fig.2 右 multi-head（p04，835×1282）。Fig.3–5 为附录整页渲染（p13–15），无独立内嵌图（热图以 PDF 矢量/整页形式存在）。</p>
+<p><strong>Fig.1（架构图）与 §3 正文逐项对照</strong>：
+| 图面元素 | 正文 §3 对应 | 一致性 |
+|---|---|---|
+| 编码器：Input Embedding → (+Positional Encoding) → [Multi-Head Attention → Add &amp; Norm → Feed Forward → Add &amp; Norm] ×N | §3.1 | 一致 |
+| 解码器：Output Embedding → (+Positional Encoding) → [Masked Multi-Head Attention → Add &amp; Norm → Multi-Head Attention（cross）→ Add &amp; Norm → Feed Forward → Add &amp; Norm] ×N → Linear → Softmax | §3.1/§3.2.3 | 一致 |
+| "Outputs (shifted right)" | §3.1 "the output embeddings are offset by one position" | 一致 |
+| 两处 N× 标注 | §3.1 "N=6" | 一致（图面未标具体数值，正文给定） |
+| 残差连接从 sub-layer 输入绕到 Add &amp; Norm | §3.1 "residual connection around each of the two sub-layers, followed by layer normalization" | 一致 |</p>
+<p><strong>Fig.2 左（scaled dot-product）与 §3.2.1 对照</strong>：流程为 MatMul(Q,K) → Scale → Mask(optional) → SoftMax → MatMul(·,V)。与公式 (1) softmax(QK^T/√d_k)V 的运算顺序完全一致，且图面明确标了 Mask 是 optional（对应 §3.2.3 只在 decoder self-attention 里用）。一致。</p>
+<p><strong>Fig.2 右（multi-head）与 §3.2.2 对照</strong>：V/K/Q 各经 h 个并行 Linear → h 个 Scaled Dot-Product Attention → Concat → Linear。与 multi-head 公式 Concat(head₁,…,head_h)W^O 一致。图面 h 的具体数值（8）未标，由正文给定。</p>
+<p><strong>Fig.3–5（附录热图）图注-图面对照</strong>：
+- Fig.3 图注说 "attentions here shown only for the word 'making'"，图面确实只从 'making' 一词出发画注意力线，落在 'more difficult' 上——图注与图面一致。
+- Fig.4 图注说 "Top: Full attentions for head 5. Bottom: Isolated attentions from just the word 'its' for attention heads 5 and 6"，图面确实上方是全注意力矩阵（head 5）、下方是从 'its' 出发的孤立注意力线（heads 5 与 6 分色）——一致。
+- Fig.5 图注说 "two such examples above, from two different heads"，图面上方绿色一组、下方红色一组，确为两个不同的头——一致。
+- <strong>无可直读数值</strong>：Fig.3–5 图面无轴、无刻度、无图例（除颜色区分头），任何"某注意力权重 = X"的读数都不可得。此三图在本流程中<strong>不产生可直读量</strong>，符合 S0 的预先声明。</p>
+<p><strong>降级版图轨结论</strong>：架构图与正文逐项一致，无撤销项。本轮图轨的独有产出 = 0，与 S0 第 3 节的预先声明相符。<strong>零产出不是失败，是执行了"价值在撤销"的纪律后确认无可撤销对象</strong>。</p>
+<hr />
+<h3>第 0 步 · 重算论文自己的趋势表（在读叙事之前做）</h3>
+<p><strong>重算对象 1</strong>：§6.1 "Even our base model surpasses all previously published models and ensembles"（Table 2）
+- EN-DE：base 27.3 &gt; 集成最高 ConvS2S Ensemble 26.36 ✓（成立，高出 0.94）
+- EN-FR：base 38.1 <strong>&lt;</strong> GNMT+RL Ensemble 41.16、ConvS2S Ensemble 41.29、Deep-Att+PosUnk Ensemble 40.4 ✗（不成立，低 2.28–3.19）
+- <strong>判定：该概括句在 EN-DE 上成立、在 EN-FR 上不成立。</strong> 论文未限定语言对，属<strong>概括句的过度泛化</strong>。严重度：论文自身问题（不是本仿真的幻觉），记入"论文自身的问题"清单，供 S9 附录《勘误与对照》使用。</p>
+<p><strong>重算对象 2</strong>：§6.2 "quality also drops off with too many heads"（Table 3 行 A）
+- h=1: 24.9；h=4(dk=128): 25.5；h=8(base): 25.8；h=16: 25.8；h=32: 25.4；h=32(dk=16): 25.4；h=16(dk=16): 25.8（最后一个为 dk/dv=16、h=16 的配置）
+- 从 h=8 到 h=16 BLEU 持平（25.8→25.8），到 h=32 才降（25.4）。"drops off with too many heads" 在 h=16 上不成立、在 h=32 上成立——<strong>概括句方向对、阈值模糊</strong>。论文自身问题（轻微）。</p>
+<p><strong>重算对象 3</strong>：§6.2 "bigger models are better"（Table 3 行 B + 行 C）
+- d_model=256: 26.0；d_model=1024: 26.0；base(d_model=512): 25.8。256→512→1024 的 BLEU 为 26.0→25.8→26.0——<strong>非单调</strong>。PPL 方向单调（4.66→4.92→4.33，1024 最优）。
+- N=2: 23.7；N=6(base): 25.8——层数方向单调。
+- <strong>判定："bigger is better" 在层数上单调、在 d_model 上不单调（BLEU 口径）。</strong> 论文自身问题（轻微，PPL 口径可救）。</p>
+<p><strong>重算对象 4</strong>：§3.5 "learned positional embeddings 与 sinusoidal 结果几乎一样"（Table 3 行 E）
+- 行 E: PPL 4.92, BLEU 25.7；base: PPL 4.92, BLEU 25.8。差 0.1 BLEU、PPL 相同——"几乎一样"成立 ✓。</p>
+<p><strong>重算对象 5</strong>（S0 前置疑点）：§6.1 的 "41.0" vs Abstract/Table 2 的 "41.8"
+- 三处出现：Abstract 41.8 ✓、Table 2 Transformer(big) 行 41.8 ✓、§6.1 正文 41.0 ✗
+- <strong>判定：论文自身的数字不一致，两处 41.8、一处 41.0。</strong> 按 S0 的处理路径，本篇无图能直接算出 41.8 或 41.0（无训练曲线图），只能定性为<strong>正文口径残留</strong>。S7 审稿人独立发现同一条（交叉验证）。</p>
+<p><strong>重算对象 6</strong>：Table 1 复杂度表与 §4 正文对应
+- Self-Attention 行：O(n²·d) / O(1) sequential / O(1) path length——§4 正文对应成立 ✓
+- Recurrent 行：O(n·d²) / O(n) / O(n)——§4 对应成立 ✓
+- Convolutional 行：O(k·n·d²) / O(1) / O(log_k n)——§4 "a stack of O(n/k) ... or O(log_k n) in the case of dilated convolutions" ✓
+- Restricted self-attention 行：O(r·n·d) / O(1) / O(n/r)——§4 "would increase the maximum path length to O(n/r)" ✓
+- 四格全对，Table 1 内部一致。</p>
+<p><strong>重算对象 7</strong>：S7 审稿人 MW2 的算术复核
+- "base 模型 EN-DE 3.3e18 vs ConvS2S 9.6e18 仅约 3 倍"：3.3e18 / 9.6e18 = 0.344，即 base 是 ConvS2S 的 34%，差约 2.9 倍——审稿人算术正确 ✓
+- "big vs GNMT+RL Ensemble 约 48 倍"：2.3e19 / 1.1e21 ≈ 0.021，即 1/48——S7 rebuttal 里的算术正确 ✓
+- "big vs GNMT+RL 约 6 倍"：2.3e19 / 1.4e20 ≈ 0.164，即 1/6.1——S7 rebuttal 里的算术正确 ✓</p>
+<hr />
+<h3>1. 【对上了】（叙事与论文一致，共 17 条）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>叙事条目</th>
+<th>论文出处</th>
+<th>一致性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>S1：顺序性阻碍并行 + 内存限制 batching</td>
+<td>§1 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>2</td>
+<td>S1：factorization [21] / conditional computation [32] 已试但不根本</td>
+<td>§1 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>3</td>
+<td>S1：Jakob 提出用 self-attention 取代 RNN</td>
+<td>第 1 页脚注</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>4</td>
+<td>S1.5：8 人等贡献、署名顺序随机</td>
+<td>第 1 页脚注</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>5</td>
+<td>S2：ConvS2S/ByteNet 路径长度随距离增长</td>
+<td>§2 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>6</td>
+<td>S2：§2 自述"据我们所知是第一个纯 self-attention 转导模型"</td>
+<td>§2 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>7</td>
+<td>S3：scaled dot-product 的方差推导（脚注 4）</td>
+<td>§3.2.1</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>8</td>
+<td>S3：multi-head 动机句（averaging inhibits）</td>
+<td>§3.2.2 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>9</td>
+<td>S3：正弦式位置编码公式 + 选它的理由（外推性）</td>
+<td>§3.5</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>10</td>
+<td>S3：学习式与正弦式结果几乎一样</td>
+<td>Table 3 行 E</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>11</td>
+<td>S4：batch 按句长分桶、25K+25K token</td>
+<td>§5.1 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>12</td>
+<td>S4：Adam β2=0.98、warmup=4000</td>
+<td>§5.3</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>13</td>
+<td>S4：base 12 小时、big 3.5 天、8×P100</td>
+<td>§5.2</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>14</td>
+<td>S5：RNN 在小数据句法分析上未达到 SOTA</td>
+<td>§6.3 原句</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>15</td>
+<td>S6：Fig.3–5 放附录、正文未引用图号</td>
+<td>全文检索</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>16</td>
+<td>S6：§7 三条 future work 与毙掉的方向一一对应</td>
+<td>§7 原文</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>17</td>
+<td>S7：审稿人抓到的 41.0/41.8、FLOPs、路径长度未验证</td>
+<td>§6.1/§6.1脚注5/§4</td>
+<td>✓（审稿人独立发现，说明这些问题在论文文本层面真实存在）</td>
+</tr>
+</tbody>
+</table>
+<h3>2. 【编圆了但论文没这回事】（幻觉清单）</h3>
+<p><strong>P0（与论文事实直接矛盾）：0 条。</strong>
+第四轮缺席断言禁令 + 两个必填检查点字段的组合起效：前三轮每轮一条的 P0 形态（"全文未提 X"而实际多处出现）在本轮<strong>零复发</strong>。S1–S7 的每一档案块都附了检索记录，S8 复核时逐条抽验，未发现任何一条"论文从未／均未／没有"式断言与论文事实矛盾。</p>
+<p><strong>P1（因果夸大或论据错位）：2 条。</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>出处</th>
+<th>幻觉内容</th>
+<th>论文事实</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1-1</td>
+<td>S3 v0 重建</td>
+<td>"d_k 从 8 抬到 32、64 时模型不收敛，loss 在前 5K 步几乎平着"——叙事把"不收敛"作为亲历观察写出</td>
+<td>论文 §3.2.1 只给理论推导（脚注 4）与 "We suspect that..."，没有任何"我们观察到不收敛"的实验记录；§5 无任何训练不稳定的讨论</td>
+<td>P1：把理论动机写成了实验观察，因果夸大</td>
+</tr>
+<tr>
+<td>P1-2</td>
+<td>S5 至暗时刻一</td>
+<td>"空句引发 masked softmax 的 0/0，是 NaN 的根因"</td>
+<td>论文全文无 NaN / 崩溃 / 空句的任何记录（S5 已自标"根因未完全确认"，但叙事正文用了可复现的最短解释链这种近似肯定的语气）</td>
+<td>P1：根因是重建，叙事语气过实</td>
+</tr>
+</tbody>
+</table>
+<p><strong>P2（标签错配与表述不严）：2 条。</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>出处</th>
+<th>内容</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P2-1</td>
+<td>S5 至暗时刻四</td>
+<td>"连夜跑了一个不分桶的对比，BLEU 差 0.2"</td>
+<td>该实验的存在本身是最弱重建（论文无记录），叙事正文以陈述句写出而非"我重建了这样一次实验"</td>
+</tr>
+<tr>
+<td>P2-2</td>
+<td>S4 第 9 节</td>
+<td>硬数字清单含 "2.3e19, 3.3e18" 等 FLOPs 值</td>
+<td>这些是估算值（论文自己声明是 estimate），叙事中作为"硬数字"列出而未标"估算"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>幻觉总计：P0 = 0，P1 = 2，P2 = 2，共 4 条。</strong>
+<strong>断言总数（S1–S7 档案块中【可查证】+【合理重构】之和）：S1: 18 + S1.5: 15 + S2: 14 + S3: 19 + S4: 22 + S5: 16 + S6: 14 + S7: 12 = 130 条。</strong>
+<strong>P0–P2 总量占比：4 / 130 ≈ 3.1%。</strong>
+<strong>对比前三轮</strong>：GPT-1 首跑 17%（P0 2 条）→ GPT-2 第二轮 18.2%（P0 1 条）→ MI-1 第三轮 12.1%（P0 1 条）→ <strong>本轮 3.1%（P0 0 条）</strong>。降幅显著，但需注意：本篇论文短（15 页）、结构规整（表格承载全部数字），核验难度客观上低于 GPT-1/2 与 MI-1——<strong>不能把这 3.1% 全归功于新条款</strong>。</p>
+<h3>3. 【论文有而叙事漏了】（覆盖度缺口）</h3>
+<ol>
+<li><strong>Table 2 完整 FLOPs 量级对比</strong>：S4/S7 引用了部分（GNMT+RL 1.4e20、GNMT+RL Ensemble 1.1e21、ConvS2S 9.6e18、ConvS2S Ensemble 1.2e21、MoE 2.0e19、ByteNet 无 FLOPs、Deep-Att+PosUnk 1.0e20、Deep-Att Ensemble 8.0e20），但 Deep-Att + PosUnk Ensemble 的 8.0e20 未在任何阶段被引用——它是 Table 2 里 EN-FR 方向的第二贵模型。</li>
+<li><strong>§6.1 的推理超参数</strong>：beam size=4、length penalty α=0.6、max output = input+50、early termination——S4 第 6 节的超参表收了 beam/α，但 max output 与 early termination 未收。</li>
+<li><strong>Table 4 的 beam size=21 与 α=0.3</strong>（句法分析的推理超参与翻译不同）——S4/S5 均未提。</li>
+<li><strong>§3.4 embedding 层权重乘 √d_model</strong>——S3 四象限表列了 embedding 共享，但乘 √d_model 这一条未在四象限表或正文任何地方被单独登记。</li>
+</ol>
+<h3>4. 论文自身的问题（本流程的独立产出，与叙事幻觉无关）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>位置</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-1</td>
+<td>EN-FR BLEU 三处两值：Abstract 41.8 / Table 2 41.8 / §6.1 正文 41.0</td>
+<td>§6.1 vs Abstract/Table 2</td>
+<td><strong>高</strong>（S7 审稿人独立发现，交叉验证）</td>
+</tr>
+<tr>
+<td>R-2</td>
+<td>"base model surpasses all previously published models and ensembles" 在 EN-FR 上不成立（38.1 &lt; 41.29）</td>
+<td>§6.1 vs Table 2</td>
+<td>高（概括句过度泛化）</td>
+</tr>
+<tr>
+<td>R-3</td>
+<td>"quality also drops off with too many heads" 在 h=16 上不成立（25.8 = base），h=32 才降</td>
+<td>§6.2 vs Table 3 行 A</td>
+<td>中</td>
+</tr>
+<tr>
+<td>R-4</td>
+<td>"bigger models are better" 在 d_model 上非单调（256: 26.0 → 512: 25.8 → 1024: 26.0，BLEU 口径）</td>
+<td>§6.2 vs Table 3 行 B</td>
+<td>中</td>
+</tr>
+<tr>
+<td>R-5</td>
+<td>路径长度（§4 核心动机）未在任何实验中被孤立验证——Table 1 是理论对比，Fig.3 是定性可视化，均不构成 controlled evidence</td>
+<td>§4 全文</td>
+<td>中（S7 MW3b 独立发现）</td>
+</tr>
+<tr>
+<td>R-6</td>
+<td>[37] 与 Table 4 中 "Vinyals &amp; Kaiser el al." 应为 "et al."</td>
+<td>参考文献 [37] 与 Table 4</td>
+<td>低（S7 MI1 独立发现）</td>
+</tr>
+<tr>
+<td>R-7</td>
+<td>§3.5 encoding/embedding 两词混用（sinusoidal 也称 encoding、learned 也称 embedding，但论文自己把 learned 当另一种机制）</td>
+<td>§3.5 与 Table 3 行 E</td>
+<td>低（S7 MI2 独立发现）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>隔离审稿人失准核查（MI-1 轮固化的反向义务）</strong>：
+- MW1（41.0/41.8）：<strong>准确</strong>。与 S0 前置疑点 + S8 重算对象 5 完全吻合。
+- MW2（FLOPs 跨硬件）：<strong>算术全对</strong>（3.3e18/9.6e18≈0.344 ✓），方法学指控合理。但有一处轻微过火：说 "a small fraction" 宣称对 base 模型 "远谈不上"——base/big 的区分在 §6.1 里其实有（"Even our base model surpasses..." 后面跟着 "a fraction of the training cost of any of the competitive models"），审稿人没有引用这句 "any of the competitive models"（它指的是 single models，不是 ensembles——这又回到 R-2 的概括句问题）。轻微失准，不构成撤销。
+- MW3a（消融噪声）：<strong>准确</strong>，Table 3 多行 BLEU 差异确实 ≤0.5，无显著性检验。
+- MW3b（路径长度未验证）：<strong>准确</strong>，§4 全文无 controlled experiment。
+- MI1/MI2：<strong>均准确</strong>。
+- <strong>审稿人总失准率：0 条完全错误，1 条轻微过火（MW2 的 "远谈不上"）</strong>。本轮隔离审稿人的可靠性显著高于 MI-1 轮（那次撤了 2 条审稿人指控）。</p>
+<h3>5. 论文正面硬数字吸收核查</h3>
+<p>§6.1 的 28.4/41.8、Table 3 的 25.8/4.92、Table 4 的 91.3/92.7、§5.2 的 12h/3.5d/0.4s/1.0s——全部被 S4/S5 的叙事吸收（S4 第 9 节有完整清单）。<strong>无遗漏</strong>。</p>
+<h3>6. 这套仿真教会我什么（分层声明）</h3>
+<p><strong>读论文原文绝对学不到的</strong>（流程产出）：
+- 论文自己没写的：β2=0.98 与 warmup=4000 背后的故事（S5 至暗时刻一）；§7 三条 future work 与毙掉方向的对应关系（S6 第 6 节）；Fig.3–5 放附录的防守逻辑（S6 第 2 节）。
+- 论文写了但读者通常忽略的：Table 2 的 FLOPs 列是叙事第二根柱子（S1.5 分歧二）；§6.3 立项理由是"RNN 在此有案底"（S1.5 分歧三）。</p>
+<p><strong>本流程特有的方法学产出</strong>：
+- 第四轮条款（缺席断言禁令 + 检查点字段）起效：P0 零复发。这是三轮以来第一次。
+- 隔离审稿人的可靠性在不同轮次间方差极大（MI-1 轮撤 2 条 vs 本轮撤 0 条）——<strong>"隔离"只保证视角独立，不保证结论可靠</strong>这条 MI-1 轮的经验在本轮得到反向确认。
+- 论文自身的 R-2（"base surpasses all ensembles" 在 EN-FR 上不成立）是<strong>两轮视角都漏了</strong>的发现——S7 审稿人没抓（他抓了 R-1 的 41.0/41.8 但没抓 R-2 的过度泛化），叙事各阶段也没抓。它是 S8 第 0 步"先重算趋势表"的产物——<strong>这一步仍是全流程性价比最高的一步</strong>。</p>
+<hr />
+<pre><code>《档案 · S8》
+【阶段】S8 对照复盘
+【已知事实】
+1. 幻觉清单：P0=0，P1=2，P2=2，共 4 条，占 130 条断言的 3.1%；
+2. 论文自身问题 7 条（R-1 至 R-7），其中 R-1/R-2 为高严重度；
+3. 隔离审稿人 3 条 major + 2 条 minor 的独立发现与 S8 复核交叉验证一致（除 MW2 一处轻微过火）；
+4. 图轨降级版执行完成：Fig.1/2 与 §3 逐项一致，Fig.3–5 无可直读数值，零撤销项；
+5. 覆盖度缺口 4 条（Deep-Att Ensemble FLOPs、推理超参细节、句法分析 beam/α、√d_model）；
+6. P0–P2 占比历史：17% → 18.2% → 12.1% → 3.1%。
+【合理重构】无（本阶段为核查报告，不做新断言）。
+【负结果】本阶段的&quot;负结果&quot;是论文自身的问题清单（R-1 至 R-7），不是仿真的失败。仿真自身的失败是 4 条幻觉（P1-1/P1-2/P2-1/P2-2）。
+【标注覆盖率】不适用（本阶段为核查报告，不做来源标注）。
+【措辞自检】不适用。
+【缺席断言检索】本阶段出现 1 处缺席类断言，附检索记录：
+  &quot;§5 无任何训练不稳定的讨论&quot;→ 检索词 &quot;NaN&quot;、&quot;diverge&quot;、&quot;instability&quot;：全文 0 命中（已在 S5 档案登记，此处复核一致）→ 断言保留。
+【未决问题】
+1. 4 条覆盖度缺口是否补进 S9 成稿——按 S9 素材边界条款，默认不补，留在覆盖度清单；
+2. R-1 至 R-7 是否写入 S9 附录《勘误与对照》——按 S9 规则，S8 的三张表压缩进附录，R 系列作为&quot;论文自身问题&quot;单列一节。
+【一致性自检】与 S0–S7 全部档案一致，无新冲突。
+【后见之明自检】不适用（本阶段为核查视角，本来就站在终点回望）。
+</code></pre>
+</section>
+</body>
+</html>

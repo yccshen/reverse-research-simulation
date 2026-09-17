@@ -1,0 +1,91 @@
+pdf: C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/ScalingLaws_科研全仿真_完整版.pdf
+pages=37 bytes=7232631
+
+p01 chars=  483 | Scaling Laws 科研全仿真 · 完整版
+p02 chars= 1894 | S0 · 选材闸 —— Scaling Laws 科研全仿真
+p03 chars= 2463 | 真叙事必须诚实面对"这不是一个大学实验室能复制的实验"，S1/S1.5 需要处理"为什么 O
+p04 chars= 2319 | Transformer 更大，而是因为 Transformer 的注意力机制更好。如果我是错
+p05 chars=  155 | 【一致性自检】本阶段推出的判断与 S0 档案无冲突——S0 确认了论文基本信息与作者贡献结构
+p06 chars= 2181 | S1.5 · 内部博弈 —— Scaling Laws 科研全仿真
+p07 chars= 1905 | 分歧三：要不要加入算力最优分配这个"实用"方向
+p08 chars= 1511 | 3. §2.3 确认数据集为 WebText2（WebText 扩展版），增加 2018 年
+p09 chars= 2420 | S2 · 文献调研 —— Scaling Laws 科研全仿真
+p10 chars= 2371 | 【可查证：§7 说 "EﬃcientNet [TL19] advocates scaling
+p11 chars= 1212 | a. Hestness et al. 和我们的工作差异部分源于他们未区分 embedding
+p12 chars= 1928 | S3 · 建模迭代 —— Scaling Laws 科研全仿真
+p13 chars= 2265 | where the dataset has been reduced by a factor
+p14 chars= 2099 | 3. §4.2 报告拟合在小 D 端（约 2×10^7 tokens）不好："We obta
+p15 chars= 1776 | S4 · 数据 + 实验 —— Scaling Laws 科研全仿真
+p16 chars= 1980 | 点估计】
+p17 chars= 2506 | 扫 batch size（Figure 18）
+p18 chars= 1232 | a. 数据子集按文档随机截取而非按 token 截取——依据：文档是语义上独立的单元，且 F
+p19 chars= 1836 | S5 · 困难与转折 —— Scaling Laws 科研全仿真
+p20 chars= 1590 | 最终我们在论文中同时报告了两种解释：scaling law 在临界点之前会 break do
+p21 chars= 1539 | 2. D.6 说 "We found that larger models require 
+p22 chars= 1759 | S6 · 成文 —— Scaling Laws 科研全仿真
+p23 chars= 2337 | 针对 "Hestness et al. 已经做过了"： "Note, however, th
+p24 chars= 2045 | S7 · 审稿 + Rebuttal —— Scaling Laws 科研全仿真
+p25 chars= 2205 | 认为这不是攻击，而是诚实。我们的立场是：一个拟合良好的 ansatz 比一个没有拟合的推导更
+p26 chars= 2042 | 【可查证：论文最终版本确实在 §3.1 保留了 "Performance depends v
+p27 chars= 1980 | 的联合拟合 L(N,D)）：Nc = 6.4×10^13, Dc = 1.8×10^13
+p28 chars= 1656 | 2
+p29 chars= 1782 | 第三张表：【论文有而叙事漏了】（覆盖度缺口）
+p30 chars= 2032 | 隔离是否合规
+p31 chars=  129 | 【一致性自检】本阶段发现与 S1–S7 档案无冲突——幻觉清单中的 P1/P2 条目已在相应
+p32 chars= 1706 | Scaling Laws：一篇论文的诞生
+p33 chars= 1816 | 所以我们的项目仍然有独立价值。
+p34 chars= 1861 | Transformer 的非常相似——都是先快速下降然后趋于平缓。这给了我们一个提示：也许拟
+p35 chars= 2050 | 这不是我最光彩的承认。但论文的核心贡献——系统性地观测了七个数量级的 scaling 行为，
+p36 chars= 2687 | 条）。
+p37 chars= 1066 | 《档案 · S9》
+
+--- last page tail ---
+8%。低于 60–70% 目标。原因：S8 审计报告压缩为
+三段反思；S7 审稿原文压缩为一段。以可读性优先，通过附录保留完整记录。
+3. 素材边界：未引入 S1–S8 中没有的论文材料。覆盖度缺口 11 项默认不补。
+4. 标签转写：行内标签已撤掉，重构点在附录"重构点留痕"中逐条列出。
+5. 负结果占比：37.8%（低于 40% 目标）。原因：Scaling Laws 论文本身没有方法层面的失败（它成功了），负结果
+集中在过程层面，成稿中通过第四幕的"至暗时刻"和"矛盾"呈现。
+6. 外行闸：三段抽检均通过。词表包含 PF-days 和 nats 两个本文特有单位，首次出现未加括号释义，可能构成阅读门
+槛。
+7. 文风纪律：无网络/营销语域词汇。比喻仅"理想气体定律/热力学"一处，未升级。
+【新增风险】
+1. "PF-days" 和 "nats" 未加释义，可能对外行读者构成门槛。
+2. 成稿中"后续的实践也证明了大模型确实比大数据更重要"涉及 2020 年后信息，虽然在"反思"语境中合法，但 S8 的
+幻觉清单未覆盖此类"后见之明合法化"的边界情况。
+3. 篇幅占比 37.8% 显著低于 60–70% 目标。如果严格执行该目标，成稿需要扩充约一倍，但会显著降低可读性。本成稿
+选择优先可读性。
+【未决问题】
+1. S9 篇幅口径的豁免条款应尽快立项（连续两轮低于下限）。
+2. "后见之明合法化"的边界需要更明确的规则——在"反思"语境中引用后续工作是否允许？
+3. 下一轮应改为先把覆盖度缺口补进 S4/S8，再写 S9（本流程改造仍未执行）。
+【措辞自检】成稿中标【合理重构】的段落已在附录"重构点留痕"中逐条列出，无断言级副词残留。
+【缺席断言检索】成稿无"论文从未/均未/没有/未提及 X"类断言，无需检索。
+【一致性自检】成稿的判断与 S1–S8 档案无冲突。幻觉清单中的 7 条 P1/P2 已在成稿中修正或删除。
+【后见之明自检】成稿的"反思"语境（发表一年后）允许引用后续工作，但已标注为后见之明。其余部分未泄露 2020 年后
+的信息——合规。
+· 36 ·
+
+
+--- keyword coverage ---
+GLUE             0
+修订注              0
+档案               43
+λ                0
+9 out of 12      0
+
+--- residue check (must be all 0) ---
+QQMATH     0
+**         0
+```        0
+| ---      0
+###        0
+> **       0
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p01.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p02.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p03.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p06.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p10.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p15.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p21.png
+preview C:/Users/A/WorkBuddy/科研/paper-sim/ScalingLaws/_preview\p37.png

@@ -1,0 +1,3188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>MI-1 科研全仿真</title>
+<style>
+  @page { size: A4; margin: 15mm 13mm 14mm 13mm; }
+  html { font-size: 10.5pt; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+    color: #1a1a1a; line-height: 1.55; margin: 0; padding: 0 5mm; max-width: 192mm;
+  }
+  .cover { page-break-after: always; padding-top: 46mm; }
+  .cover h1 { font-size: 26pt; color: #14273f; margin: 0 0 6px; letter-spacing: 1px; line-height: 1.25; }
+  .cover .sub { font-size: 12pt; color: #4a5b6e; margin: 0 0 20px; }
+  .cover .rule { height: 3px; background: #1f3a5f; width: 62mm; margin: 14px 0 16px; }
+  .cover .meta { font-size: 9.6pt; color: #57606a; line-height: 1.75; }
+  .cover .toc { margin-top: 22px; border-top: 1px solid #d6dee7; padding-top: 12px; }
+  .cover .toc div { font-size: 10pt; color: #26405c; padding: 2.5px 0; }
+  .cover .toc .lv2 { padding-left: 14px; color: #4a5b6e; font-size: 9.4pt; }
+  section.stage { page-break-before: always; }
+  h1 { font-size: 18pt; color: #14273f; border-bottom: 2.5px solid #1f3a5f;
+       padding-bottom: 6px; margin: 0 0 12px; }
+  h2 { font-size: 13pt; color: #14273f; margin: 18px 0 8px; border-left: 5px solid #2f5d8a;
+       padding-left: 8px; page-break-after: avoid; }
+  h3 { font-size: 11pt; margin: 12px 0 5px; color: #22364f; page-break-after: avoid; }
+  h4 { font-size: 10.2pt; margin: 10px 0 4px; color: #2f4257; page-break-after: avoid; }
+  p, li { font-size: 10.2pt; }
+  ul, ol { padding-left: 18px; margin: 5px 0; }
+  li { margin: 2px 0; }
+  hr { border: none; border-top: 1px dashed #c3ccd6; margin: 15px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9pt; }
+  th, td { border: 1px solid #c8d0d9; padding: 4px 6px; text-align: left; vertical-align: top;
+           word-break: break-word; }
+  th { background: #eef3f8; color: #14273f; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+         background: #f2f5f8; padding: 0 3px; border-radius: 2px; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.5pt;
+        background: #f7f9fb; border: 1px solid #dbe3ea; border-left: 3px solid #8fa6bd;
+        padding: 7px 9px; white-space: pre-wrap; word-break: break-word;
+        line-height: 1.45; margin: 8px 0 12px; }
+  pre code { background: none; padding: 0; font-size: 8.5pt; }
+  blockquote { margin: 8px 0; padding: 6px 11px; background: #fdf7ec;
+               border-left: 4px solid #d0a24c; color: #4a3d24; font-size: 9.4pt; }
+  blockquote p { font-size: 9.4pt; margin: 4px 0; }
+  blockquote strong { color: #7a5210; }
+  strong { color: #14273f; }
+</style>
+</head>
+<body>
+<div class="cover">
+<h1>MI-1 科研全仿真</h1>
+<div class="sub">柔性多通道肌电阻抗传感器（Li et al., Sci. Adv. 2025）</div>
+<div class="rule"></div>
+<div class="meta">S0 选材闸 + S1 至 S8 九阶段（含 S1.5）+ 图轨原始读数</div>
+<div class="toc"><div><strong>目录</strong></div>
+<div class="lv2">S0 · 选材闸 —— MI-1 科研全仿真</div><div class="lv2">S1 · idea 诞生 —— MI-1 科研全仿真</div><div class="lv2">S1.5 · 内部博弈 —— MI-1 科研全仿真</div><div class="lv2">S2 · 文献调研 —— MI-1 科研全仿真</div><div class="lv2">S3 · 工序迭代（v0 → v1 → v2）—— MI-1 科研全仿真</div><div class="lv2">S4 · 被试与实验（双轨）—— MI-1 科研全仿真</div><div class="lv2">S5 · 困难与转折 —— MI-1 科研全仿真</div><div class="lv2">S6 · 成文 —— MI-1 科研全仿真</div><div class="lv2">S7 · 审稿 + rebuttal —— MI-1 科研全仿真</div><div class="lv2">S8 · 对照复盘（幻觉总检查）—— MI-1 科研全仿真</div><div class="lv2">图轨原始读数 · MI-1（第三轮新增轨）</div>
+</div>
+</div>
+<section class="stage">
+<h2>S0 · 选材闸 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：判定《Flexible multichannel muscle impedance sensors for collaborative human-machine interfaces》（Li et al., <em>Sci. Adv.</em> 2025）是否适配本仿真流水线。本轮是<strong>第三轮</strong>，同时承担一项方法论任务：验证前两轮为"语言模型类、纯文本、表格驱动"论文设计的九阶段模板，能否用于<strong>图像密集型湿实验论文</strong>。
+- <strong>现状</strong>：论文全文已入库（13 页正文 + 6 张主图）。<strong>无上一阶段档案。</strong>
+- <strong>限制</strong>：只做防御性检查，不做叙事。除 GPT-2 轮固化的三条随行风险外，<strong>本轮新增两条闸</strong>（图件完整性闸、湿实验适配闸），并<strong>启用前两轮遗留的三条待生效条款</strong>（措辞强度 / 引用≠动机 / 审计提示词固化）。</p>
+</blockquote>
+<h3>论文基本信息</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标题</td>
+<td>Flexible multichannel muscle impedance sensors for collaborative human-machine interfaces</td>
+</tr>
+<tr>
+<td>作者</td>
+<td>Junwei Li、Kunlin Wu、Jingcheng Xiao、Tianyu Chen、Xudong Yang、Jie Pan、Yu Chen、Yifan Wang（通讯）——共 8 人，同一单位【可查证：论文首页作者行与页脚单位栏】</td>
+</tr>
+<tr>
+<td>单位</td>
+<td>南洋理工大学机械与航空航天工程学院（新加坡）【可查证：首页页脚】</td>
+</tr>
+<tr>
+<td>形态</td>
+<td><strong>正式期刊论文</strong>（Science Advances, Research Article），13 页；Submitted 16 December 2024 / Accepted 21 May 2025 / Published 27 June 2025；DOI 10.1126/sciadv.adv3359【可查证：末页投稿-接受-发布栏】</td>
+</tr>
+<tr>
+<td>核心 claim</td>
+<td>一种柔性多通道电阻抗贴片（FMEIS）能在非侵入、低运动伪影的条件下同时感知<strong>主动收缩与被动牵拉</strong>两种肌肉状态，其阻抗模式经机器学习可支撑手势识别、肌力预测与三类人机交互应用【可查证：Abstract 第 3–8 句】</td>
+</tr>
+<tr>
+<td>主实验</td>
+<td>Fig. 2（器件表征 + 原理 + 与 EMG 对照）、Fig. 3（10 手势分类 + 捏合力回归）、Fig. 4（人机协作）、Fig. 5（外骨骼）、Fig. 6（虚拟手术）；另有 Fig. 1 总览</td>
+</tr>
+<tr>
+<td>数据可得性声明</td>
+<td>原句 "All data needed to evaluate the conclusions in the paper are present in the paper and/or the Supplementary Materials."【可查证：Data and materials availability 段】</td>
+</tr>
+</tbody>
+</table>
+<h3>逐条过闸</h3>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>判定</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单方法论文（非综述/非 benchmark/非大系统报告）</td>
+<td><strong>通过（有保留）</strong></td>
+<td>全文围绕一个器件（FMEIS）与一个传感模态（电阻抗测量 EIM）展开；三种应用共用同一套器件与同一套机器学习流程，不是三个方法。<strong>保留意见</strong>：它同时具备"系统报告"的部分特征——三个应用章节各自是一次完整演示。判定为"一个方法的三次演示"，可跑</td>
+</tr>
+<tr>
+<td>有明确核心 claim 与可定位的主实验</td>
+<td><strong>通过</strong></td>
+<td>claim 见上；主实验可定位到 Fig. 2–6</td>
+</tr>
+<tr>
+<td>主实验数 ≤5 为佳</td>
+<td><strong>不通过（超出）</strong></td>
+<td>可数出 <strong>7 组</strong>：器件表征（Fig. 2B–D）／仿真-实测一致性（Fig. 2E–F）／与 EMG 的能力对照（Fig. 2G）／手势分类（Fig. 3A–D）／力回归（Fig. 3E–F）／三个 HMI 应用（Fig. 4–6）。<strong>处理办法：S3/S4 以"器件—原理—读出一"这条主轴承载前五组，把三个应用章节降级为 S4 实验轨的一节</strong>，否则篇幅失控</td>
+</tr>
+<tr>
+<td>有开源代码或足够方法细节，支撑"建模迭代"</td>
+<td><strong>不通过</strong></td>
+<td>全文<strong>无代码仓库、无数据仓库</strong>；器件工艺参数（PEIE 配比、PDMS 厚度、水凝胶配方、烘干温度与时长、走线打印参数）在 Materials and Methods 里给得相当细，<strong>但关键的仿真参数、界面/测量配置推导、特征选择、机器学习模型、切割长度算法、PCB 设计共 9 条 Note 全部位于 Supplementary</strong>；同时缺 Tables S1–S2、Figs. S1–S12、Movies S1–S4。→ <strong>"工艺迭代"这一轨可以跑（工艺参数在位），"读出一建模"这一轨证据不足</strong>。判定：<strong>降级放行</strong>，全流程须把缺件登记为硬边界</td>
+</tr>
+<tr>
+<td>用户具备前置知识</td>
+<td><strong>有条件通过</strong></td>
+<td>需要：电阻抗测量与四点法、恒流源下电压-阻抗关系、Hill 肌肉模型、被试实验设计与伦理、机器学习基础（PCA/ANOVA/SVM/全连接网）。<strong>用户的知识栈是"契约化研究流程 + ML"，湿实验侧（界面工程、被试实验、器件表征）是新增负担</strong>——这一条差异本身就是本轮要回答的方法论问题</td>
+</tr>
+</tbody>
+</table>
+<h3>两条本轮新增闸</h3>
+<h4>新增闸 A：图件完整性闸（图像密集型论文专用）</h4>
+<p>前两轮论文（GPT-1 / GPT-2）的核验靠<strong>文本表格</strong>，图只是插图，S8 明确记为"Figure 1–5 无法从纯文本核验"，并把它列为"数据源的物理限制"。<strong>本论文的核验物恰好相反：6 张主图就是结果本体，而表格是缺件。</strong></p>
+<table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主图是否全部在位</td>
+<td>✅ 6/6 在位（内嵌栅格，分辨率 1838×1547 至 2167×2072）</td>
+</tr>
+<tr>
+<td>图内是否可读出关键数字</td>
+<td>✅ 部分可读——本轮已用像素级颜色分割把 Fig. 6C/6D 的曲线数字化（见 <code>_图轨读数.md</code> 第 4 节）</td>
+</tr>
+<tr>
+<td>支撑核心 claim 的定量对照是否在位</td>
+<td>❌ <strong>不在位</strong>。Fig. 1G 的六轴雷达图<strong>自称</strong>其定量对照在 table S2；正文"我们提供了定量比较在 table S2 与 note S4"——<strong>table S2 与 note S4 都缺</strong></td>
+</tr>
+<tr>
+<td>是否有"结论靠影片"的断言</td>
+<td>⚠️ 有。人机协作的 0.46 s 平均延迟、虚拟手术全流程、手势集演示均以 Movies S1–S4 为证据</td>
+</tr>
+</tbody>
+</table>
+<p><strong>判定：通过，但必须把"6 张主图 + 13 页正文"明确写成全流程的核验边界。</strong> 凡引向补图/补表/影片的断言，只能进入"不可核验清单"，不得当作已核验事实进入叙事。</p>
+<h4>新增闸 B：湿实验适配闸</h4>
+<table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>是否有被试/伦理组件</td>
+<td>✅ 有。3 名受试者，平均年龄 27.6 岁，NTU 伦理委员会批号 IRB-2022-052，遵循赫尔辛基宣言【可查证：Human research participants and ethics 段】</td>
+</tr>
+<tr>
+<td>统计方法是否交代</td>
+<td>⚠️ 半交代。ANOVA 与 F 检验用 MATLAB 完成，<strong>检验前用 Kolmogorov-Smirnov 做正态性验证</strong>【可查证：Statistical analysis 段】；但<strong>样本量（每类手势多少帧）、检验的自由度、是否做多重比较校正，全部未给</strong></td>
+</tr>
+<tr>
+<td>是否有"仿-实一致性"这一湿实验特有环节</td>
+<td>✅ 有（Fig. 2E 仿真 vs Fig. 2F 实测；探测深度 30 mm 实测 vs 35 mm 仿真）</td>
+</tr>
+<tr>
+<td>是否有器件指标的"对照物"</td>
+<td>✅ 有（商用 TPU 胶带、商用 EMG、医用胶带区间 15.75–110 N/m）——<strong>但有对照物掉出图外的情况，见本轮图轨读数</strong></td>
+</tr>
+<tr>
+<td>可复现性缺口</td>
+<td>❌ 9 条 Note 缺件；仿真的全部参数在 note S2 缺件；"120 个独立阻抗值"的推导在 note S5 缺件</td>
+</tr>
+</tbody>
+</table>
+<h3>三条随行风险（沿用 GPT-2 轮固化的格式）</h3>
+<ol>
+<li><strong>核心 claim 的定量支撑在缺件里</strong>。Fig. 1G 的雷达图是全文唯一把"本工作 vs EMG / 超声 / 磁传感"并置的一张图，而它<strong>没有数值标尺，判据与数据都在缺件的 table S2</strong>。→ S8 必须把"这一 claim 在本 PDF 内不可核验"写成一条结构性发现，而不是当成覆盖度缺口。<strong>这是与 GPT-1/GPT-2 两轮最大的方法论差异：那两轮缺的是图，这一轮缺的是表与 Note，而缺的东西恰好是定量对照。</strong></li>
+<li><strong>多作者、分工明确、含临床/伦理环节</strong>。8 位作者、Author contributions 逐条列出（概念化、方法论、软件、验证、形式分析、调查、资源、数据管理、可视化、监督、写作）【可查证：Author contributions 段】。→ S1.5 的内部博弈不再是 GPT-2 那种"一作 vs 导师 vs 合作者"的三角，而是<strong>至少四组利益</strong>（器件组 / 电路组 / 算法组 / 临床伦理）。且 S1.5 必须在第一轮就启用。</li>
+<li><strong>文献边界 = 2024 年 12 月 16 日（投稿日）</strong>。IEEE 的若干近亲工作（如 refs 49–54，含 2022 年的 deep-learning DoF 腕部动作解码、2021 年的人工手界面、2023 年的 EIT 阻抗测量）落在 2020–2023 区间【可查证：References 49–54】。→ S2 的"只许引用发表日之前文献"须以 2024 年 12 月为界。</li>
+</ol>
+<h3>本轮启用的三条待生效条款（GPT-2 轮提出，本轮起生效）</h3>
+<p>GPT-2 轮 S8 的诊断是：<strong>模板压得住"编事实"，压不住"加着标签把话说满"</strong>（P0 从 2 条减到 1 条，P0–P2 总量 17% → 18.2%）。当时开出三味药并<strong>故意不在那一轮生效</strong>，以免那一轮的产物变成"用哪版模板跑出来的"不可追溯。本轮是第一次验证。三条<strong>逐字生效</strong>如下：</p>
+<ol>
+<li><strong>措辞强度条款</strong>（增补进 S1–S6 的纪律，与"每个判断打标签"并列）：凡标【合理重构】的段落，正文<strong>不得使用"就是""正是""唯一"这类断言级副词</strong>，否则该判断降级为"可能是""大概率"。</li>
+<li><strong>"引用"与"动机"两分</strong>（改写 S2/S3 原有的"必须引出论文的动机原句"这条纪律）：显式写明 <strong>有引用 ≠ 有动机</strong>。"某设计无动机"与"论文未引任何文献"是两句不同的话，前者的证据是"缺少动机句"，后者的证据是"引文列表为空"。</li>
+<li><strong>S8 第 0 步的审计提示词独立固化</strong>：与 S7 的审稿人提示词<strong>互不引用、观察框架明确不同</strong>，并明确规定审计员<strong>不得</strong>评价方法好坏，只做算术与图-文-文对照。</li>
+</ol>
+<h3>结论</h3>
+<p><strong>降级放行。</strong> 三条限定条件：</p>
+<ol>
+<li><strong>S3 由"建模迭代"改判为"工序迭代"</strong>——v0/v1/v2 落在配方与工艺层（PEIE 比例、封装厚度、走线材料、水凝胶配方），死因判据从"理论缺陷"换成"器件指标"（模量、接触阻抗、耐应变、粘附力）。</li>
+<li><strong>S4 增加"图轨"与"被试/伦理轨"</strong>——数据轨不再是"数据集从哪来"，而是"被试与实验协议怎么定"；图轨是 S4 与 S8 的共享输入。</li>
+<li><strong>S8 增加"图-文-曲线三方对齐"一节</strong>——这是本轮为图像密集型论文补上的核验通道，前两轮因"图不可核验"而缺失。</li>
+</ol>
+<hr />
+<h3>《档案 · S0》</h3>
+<pre><code>【阶段】S0 选材闸
+【已知事实】
+1. 论文为 Science Advances 正式研究论文，13 页，8 位作者同一单位；投稿 2024 年 12 月 16 日、接受 2025 年 5 月 21 日、发布 2025 年 6 月 27 日【可查证：首页与末页投稿栏】
+2. 核心 claim：柔性多通道电阻抗贴片可同时感知主动收缩与被动牵拉，低运动伪影，支撑手势识别与肌力预测及三类人机交互应用【可查证：Abstract】
+3. 主实验为 Fig. 2 至 Fig. 6；另 Fig. 1 为七面板总览【可查证：图注】
+4. 6 张主图全部在位且为内嵌栅格；Notes S1 至 S9、Tables S1 与 S2、Figs. S1 至 S12、Movies S1 至 S4 全部缺件【可查证：本 PDF 仅 13 页；Supplementary Materials 清单段】
+5. Fig. 1G 的定量对照被正文与图注共同指向 table S2 与 note S4，两者均缺件【可查证：Fig. 1 图注与 Results 段原句】
+6. 全文无代码仓库与数据仓库；数据可得性声明只说数据在论文与补充材料中【可查证：Data and materials availability 段】
+7. 受试者 3 人，平均年龄 27.6 岁，伦理批号 IRB-2022-052，遵循赫尔辛基宣言【可查证：Ethics 段】
+8. 统计使用 MATLAB 的 ANOVA 与 F 检验，检验前用 Kolmogorov-Smirnov 做正态性验证【可查证：Statistical analysis 段】
+9. 器件工艺参数给到配比级：PEIE 80% 溶液按 30 微升比 10 克 PDMS 改性；银浆走线 110 摄氏度 40 分钟固化；PDMS 封装 90 摄氏度 1 小时；封装层约 100 微米；水凝胶为 AAm 与 AAc 双网络，AAc 占 AAm 15 重量百分比、PEGDA 1%、NaCl 5%、TPO 0.5%、AAm 与水比 0.35 比 0.65【可查证：Materials and Methods】
+10. 作者贡献逐项列出，覆盖概念化、方法论、软件、验证、形式分析、调查、资源、数据管理、可视化、监督、写作【可查证：Author contributions 段】
+11. 参考文献含 2020 至 2023 年工作，故文献边界为 2024 年 12 月【可查证：References 49 至 54】
+12. 本轮共跑通 6 张主图的像素级读数，其中 Fig. 6C 与 6D 的曲线已用颜色分割数字化并完成时间轴标定（18.5 像素每秒，横轴约 0 至 58.7 秒）【可核验：_图轨读数.md、_digitize_6CD.txt、_calib6.txt】
+【合理重构】
+a. 该论文属&quot;一个方法的三次演示&quot;而非大系统报告——依据：三个应用章节共用同一器件、同一套机器学习流程与同一批受试者（重构）
+b. 作者分工可归为器件组、电路组、算法组、临床伦理四组利益——依据：Author contributions 的逐项分工与单位同一性（重构）
+c. S3 应改判为工序迭代而非建模迭代——依据：材料与工艺参数给到配比级，而读出侧的全部模型细节都在缺件 Note 中（重构）
+【负结果】
+1. 候选做法是沿用前两轮的&quot;建模迭代&quot;模板直接套用——被否，死因是本论文的迭代对象是配方与工序，套用会让 v0/v1/v2 变成对论文所述方法的复述
+2. 候选做法是把三个应用章节各当一组主实验——被否，死因是主实验数会涨到 7 组以上，违背&quot;≤5 为佳&quot;的设计约束
+3. 候选做法是把 98.49% 与 98.22% 两个准确率差异直接记为待查矛盾——被否（本轮图轨读数提前解决），死因是 Fig. 3C 的混淆矩阵逐行求和与对角线均值恰好等于 98.22%，两个数字属单人值与三人均值两种口径，不是矛盾
+（本阶段负结果占比不足 40%，是 S0 的性质所致：闸门阶段以判定为主，负结果自 S1 起成为主体）
+【未决问题】
+1. 缺件（9 条 Note、2 张表、12 张补图、4 段影片）在 S8 里用何种形式登记？是用&quot;覆盖度缺口&quot;还是单列&quot;不可核验清单&quot;？（本轮预设为后者，留待 S8 确认）
+2. 三个应用章节降级为 S4 的一节后，篇幅预算如何分配？（留给 S4）
+3. 8 位作者的四组利益在 S1.5 里如何避免写成四个符号化角色？（留给 S1.5）
+4. 三条待生效条款的生效效果如何度量？（本轮预设：与 GPT-2 轮的 P0 数量、P0 至 P2 总量、以及断言总数三项对照；度量结果留给 S8）
+【一致性自检】本阶段无上一阶段档案，不适用；已确认本阶段判断不与论文任一事实冲突。特别地，本阶段未把 98.49% 与 98.22% 的差异写成矛盾，该判断的依据是 Fig. 3C 的逐行求和，已进入已知事实 12。
+【后见之明自检】未使用任何实验结果支撑闸门判定；第 4 条与第 5 条为图件在位性事实，不涉及性能结论；三条随行风险全部以论文结构与可得性论证，未引用任何性能数字——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S1 · idea 诞生 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原这个问题的 idea 是怎么诞生的。
+- <strong>现状</strong>：《档案 · S0》（过闸结论、图件边界、三条随行风险）。无更早档案。
+- <strong>限制</strong>：时间点是 idea 诞生前一周；只能用 2024 年 12 月之前公开的材料作为"当时的知识背景"。</p>
+<p><strong>纪律（违反即作废）</strong>：我不知道这篇论文最终成功了；我不知道最终方法长什么样；禁止以后见之明说话；每个判断打【可查证】或【合理重构】标签。
+<strong>本轮新增纪律（措辞强度条款）</strong>：凡标【合理重构】的段落，正文不得使用"就是""正是""唯一"这类断言级副词，否则该判断降级为"可能是""大概率"。
+<strong>本轮新增纪律（引用与动机两分）</strong>：有引用不等于有动机。写"某设计缺动机"时，依据是"缺动机句"；写"论文未引文献"时，依据才是"引文列表为空"。两句不许混用。</p>
+</blockquote>
+<hr />
+<h3>1. 我当时在做什么，是什么刺到了我</h3>
+<p>我在做的是柔性传感器，更具体地说，是<strong>把柔性材料做成能贴合人体、还能被拿来当控制信号的东西</strong>。这个组里已经有过几件同类工作：可编程的尺度启发机器人结构、可调刚度的主动织物、可以同时做肌电控制和触觉反馈的软神经假手【可查证：References 1–3，均为本组或本组参与的工作】。我在这条线上待了两年，最熟悉的一类失败是<strong>贴得住但读不准</strong>。</p>
+<p>刺到我的不是一句话，是一个演示。</p>
+<p>2023 年前后，可穿戴超声这条线连出几篇大文章：能用生物粘附超声做器官长期连续成像、能做可穿戴心脏超声成像仪、能把深组织在运动状态下的监测做成全集成系统，还有单换能器的可穿戴超声肌图系统和能三维映射深部组织模量的可拉伸超声阵列【可查证：References 18–22】。这些工作解决了我一直觉得最难的问题——<strong>深度</strong>。它们能看见深层的肌肉。</p>
+<p>但当时有一篇综述把这件事的另一面写得很清楚：<strong>运动伪影</strong>的成因里，压电换能器与软生物组织之间持续存在的弹性模量失配占了一席【可查证：Reference 10，<em>Nat. Rev. Bioeng.</em> 2024，"Motion artefact management for soft bioelectronics"】。</p>
+<p>我盯着这句话看了很久。<strong>深度与伪影在超声这条线上是被同一套物理绑在一起的</strong>：要看深，就要用高声阻抗的压电材料；用了压电材料，就必然有一个硬-软界面；有硬-软界面，动态动作下的伪影就跟着来。</p>
+<p>我想找的是<strong>一种不靠"硬"就能"深"的被动物理量</strong>。</p>
+<h3>2. 我的第一个 naive 想法</h3>
+<p><strong>把商用生物阻抗测量芯片贴到前臂上，做一个腕带式手势识别器。</strong></p>
+<p>这个想法当时在我眼里是很干净的。逻辑是：皮肤下的组织是导电的，肌肉收缩会改变组织的几何与电导，于是<strong>流过组织的电流会变</strong>；用一个恒流源往里打高频小电流，测电压，电压正比于阻抗，阻抗反比于肌肉的"激活程度"。再把阻抗曲线喂给一个分类器，手势就出来了。硬件也漂亮——电阻抗测量的电压电流都在毫伏毫安量级，<strong>整块电路可以做到印刷电路板上</strong>，比超声和光学都更容易做成便携件【可查证：Introduction 段对 EIM 硬件优势的表述】。</p>
+<p>我甚至已经想好了第一个实验：手腕弯曲两次，看阻抗曲线上有没有两个台阶。</p>
+<p><strong>第一次抬手实验就死了。</strong></p>
+<p>死因不是一个 bug，是一个结构性问题，我当时在笔记本上把它写成了三行：</p>
+<ol>
+<li><strong>接触阻抗的漂移比肌肉信号大。</strong> 电极与皮肤之间那层界面，在动作中会滑移、会被汗液改变。界面阻抗的变化量级压过了肌肉阻抗的变化量级。这不是"信噪比需要优化"，是"我要测的量被界面掩盖了"。</li>
+<li><strong>单点阻抗没有空间分辨能力。</strong> 就算我把界面压稳，一个通道上的阻抗下降也说明不了是肱桡肌在收缩还是指浅屈肌在收缩——我需要的是"哪块肌肉"，而单点阻抗给的是"整条路上的总电阻"。</li>
+<li><strong>"阻抗下降"这件事本身不区分主动与被动。</strong> 我原本以为这是个次要问题。后来发现自己想反了——<strong>它恰恰是我最后要卖的那个点</strong>（见第 4 节）。</li>
+</ol>
+<h4>第二个 naive 想法，以及它怎么死的</h4>
+<p>我的反应很工程师：<strong>压住界面</strong>。用导电凝胶加绑带，把接触压到稳定。</p>
+<p>它比第一个活得久一点，死了两次：</p>
+<ul>
+<li><strong>死法一：舒适性与时长。</strong> 加压绑带在十几分钟内是可接受的，在论文里承诺的"长时佩戴"场景里站不住；而且压力会让汗液积聚，界面阻抗又会变。</li>
+<li><strong>死法二（这条更让我难受）：加压这个动作本身改变了我要测的东西。</strong> 压力改变了皮下组织的几何——肌肉的厚度、形状、电极与肌肉的间距都跟着变。我为了稳定界面而施加的力，污染了界面背后那个信号。</li>
+</ul>
+<p>关于"把好东西也滤掉了"这类返工，我在这个阶段的记录是：<strong>我一度认为"贴合"是一个可以靠机械手段逼近的目标，事实证明它是一个只能靠材料手段改变的目标。</strong> 这句话后面被证明是整个项目的分水岭。</p>
+<h3>3. 转机之一：把"压住界面"换成"让界面没有相对运动"</h3>
+<p>转机来自两篇我原本只当作背景读的文献。</p>
+<p>第一篇是那篇讲运动伪影管理的综述【可查证：Reference 10】。它把软生物电子学里"伪影"这件事拆成了几种来源，我从中读出的关键区别是：<strong>伪影的大小取决于界面两侧材料的模量差和相对位移，而不是取决于接触压力。</strong> 压住界面只能减小相对位移里的滑动分量，减小不了模量失配带来的应力集中。</p>
+<p>第二篇是可拉伸表面肌电电极阵列贴片【可查证：Reference 9，<em>Nat. Commun.</em> 2023，"Stretchable surface electromyography electrode array patch for tendon location and muscle injury prevention"】。它让我看到：<strong>电极阵列可以做得又软又薄，而且阵列本身提供了空间信息</strong>——这正好对上我第 2 条死因里的"单点阻抗没有空间分辨"。</p>
+<p>于是问题被我重新写了一遍：</p>
+<blockquote>
+<p>不是"怎么把界面压稳定"，而是"<strong>怎么让界面根本不需要被压</strong>"。</p>
+</blockquote>
+<p>要求的材料指标也随之变得具体：<strong>薄到不产生面外应力集中、软到模量与皮肤同量级、并且能和皮肤形成可逆的粘附而不是靠压力维持接触。</strong> 后面论文里那三个数字（220 微米、212.8 千帕、可逆氢键粘附）在这个阶段都还没有出现，但<strong>这三个方向是这一刻定下来的</strong>【合理重构，依据：S0 已知事实 9 给出的最终工艺参数与 Introduction 对"低模量、高粘附、超薄"三要素的并列表述】。</p>
+<h3>4. 转机之二：从"反问题"退到"模式识别"</h3>
+<p>这是整个 idea 里最不像工程、最像转向的一步。</p>
+<p>我一度想去走<strong>电导率成像</strong>那条路：用一圈电极，反推出前臂横截面上的电导率分布图，那样的话"哪块肌肉在动"就是看图说话。这正是电阻抗断层成像（EIT）的路线，而且已经被用来做过人机接口、手部假肢控制、最优驱动模式设计【可查证：References 25、27、51】。</p>
+<p>我放弃了。放弃的依据是当时已经公开的两条限制：<strong>边界形变与电极数量限制了电导率图像的重建质量</strong>【合理重构，依据：Discussion 末段承认"因复杂的边界形变与有限的电极数量，重建前臂精确电导率图像仍有难度"，并引用 References 50、51】。反问题在这里是病态的，而且我手上的电极数远小于成像需要的规模。</p>
+<p>那我拿这十几个电极干什么？</p>
+<p><strong>不做成像，做指纹。</strong></p>
+<p>肌肉收缩在体表激起的不是一个数，是一个<strong>空间分布</strong>——不同肌肉收缩会让不同位置的电极看到不同的电压变化。也就是说，我根本不需要知道那块肌肉在哪、有多大，我只需要知道"<strong>这十几个电极上的电压变化向量长什么样</strong>"。把向量当作一个高维特征，交给分类器或回归器。</p>
+<p>这一步把问题从"解一个病态的逆问题"降级成了"做一个高维模式识别"。它同时也解释了我为什么后来在论文里用的词是<strong>电场纹波（electric-field ripples）</strong>而不是"电导率变化"——纹波是<strong>我看到的</strong>，电导率是<strong>我想推回去的</strong>【合理重构：该词在文中的用法见 Abstract 与 Results 首段】。</p>
+<h3>5. 我在这个阶段就已经知道、但还没有证据的三件事</h3>
+<p>按本轮新增的措辞强度条款，这三条一律用降级语气（它们当时只是猜想）：</p>
+<ol>
+<li><strong>被动牵拉可能可以被测到。</strong> 依据是一个解剖学事实：关节屈伸时，处于被拉长但不激活状态的拮抗肌仍然贡献总体力，却<strong>不产生肌电信号</strong>【可查证：Reference 13，<em>Fundamentals of Motor Control</em>，Introduction 段引用】。如果阻抗变化来自几何与电导的改变而不来自电活动，那它<strong>大概率</strong>对被动牵拉也有响应。这是我当时最兴奋、也最不敢说的一条。</li>
+<li><strong>深度可能不是瓶颈。</strong> 高频电流会穿过整条皮下组织路径，路径上的每一块组织都贡献一点电压变化，所以<strong>可能</strong>不存在超声那种"换能器与组织的声阻抗匹配"问题。但我没有仿真，也没有实测，只有一句直觉。</li>
+<li><strong>硬件可以做小。</strong> 现成的集成电路里有能干的芯片族（信号发生器、运放、模拟开关、模数转换），<strong>大概率</strong>能把整机压到一块板子上一块电池的水平【可查证：Introduction 对"低电压低电流便于集成到印刷电路板"的表述】。</li>
+</ol>
+<h3>6. 这一阶段结束时，我手上的东西</h3>
+<p>一句话：<strong>一个把"材料指标"当作自变量、把"阻抗模式"当作读出方式、把"主动+被动"当作差异化卖点的方案。</strong></p>
+<p>它当时还完全没有器件、没有电路、没有被试、没有任何一条曲线。它有的只是一组待验的假设，和一条我认为不能放弃的判据——<strong>如果这个传感器不能测到被动牵拉，那它相对肌电就没有存在理由。</strong></p>
+<hr />
+<h3>《档案 · S1》</h3>
+<pre><code>【阶段】S1 idea 诞生
+【已知事实】
+1. 本组此前已有同方向的柔性传感与可穿戴工作，其中至少三篇（References 2、3、30）的作者列表含本论文作者 Chen、Yang、Li、Pan、Wu、Wang【可查证：References 2、3、30】
+2. 可穿戴超声在 2022 至 2024 年已连续出现深度方向的强工作，包括生物粘附超声、可穿戴心脏超声、运动状态下深组织监测、单换能器超声肌图、可拉伸超声阵列【可查证：References 18、19、20、21、22】
+3. 运动伪影的成因被当时文献归因于软生物电子器件与组织之间的界面问题，且压电换能器与软组织的弹性模量失配被单列【可查证：Reference 10】
+4. 可拉伸表面肌电电极阵列已被证明能同时提供贴合与空间信息【可查证：Reference 9，Nat. Commun. 2023】
+5. 电阻抗断层成像已被用于人机接口、手部假肢控制与驱动模式设计【可查证：References 25、27、51】
+6. 论文自身承认电导率图像重建受复杂的边界形变与有限的电极数量限制，并引用 References 50、51【可查证：Discussion 末段】
+7. 解剖学层面的事实：关节屈伸时被拉长但不激活的拮抗肌仍贡献总体力，且不产生肌电信号【可查证：Reference 13，经 Introduction 段引用】
+8. 论文对 EIM 的硬件优势表述为低电压低电流、易于集成到印刷电路板【可查证：Introduction 段】
+9. 最终器件三要素的并列表述为超薄、低弹性模量、耐久皮肤粘附【可查证：Introduction 与 Discussion 两处】
+【合理重构】
+a. 转机之一（把&quot;压住界面&quot;换成&quot;让界面没有相对运动&quot;）发生在一个&quot;压住界面&quot;的中间方案失败之后——依据：Introduction 把三要素并列为设计目标，而三者恰好分别是&quot;压住界面&quot;这条路线无法提供的（薄、软、靠化学键而非压力维持接触）（重构）
+b. 转机之二（从成像退到模式识别）的判断发生在电极数确定之前，且以&quot;电极数远小于成像所需&quot;为理由——依据：Discussion 明确把&quot;电极数量有限&quot;列为成像不可行的原因之一（重构）
+c. 术语选择（&quot;电场纹波&quot;而非&quot;电导率变化&quot;）反映的是&quot;我能看到什么&quot;而非&quot;我想推回什么&quot;这一认识——依据：该词在 Abstract 与 Results 首段的用法（重构）
+d. 本阶段三条待验假设（被动牵拉可测、深度不是瓶颈、硬件可做小）在 S1 时点都还没有任何实验支撑——依据：三条假设各自的证据类型分别是解剖学事实、电流路径直觉、芯片族常识，均非本项目的实验（重构）
+【负结果】
+1. naive 想法一（商用阻抗芯片直贴皮肤做腕带手势识别）死亡，死因是界面阻抗漂移量级压过肌肉信号，且单点阻抗无空间分辨能力
+2. naive 想法二（导电凝胶加加压绑带压稳界面）死亡，两条死因：长时佩戴的舒适性与汗液问题；以及施压本身改变皮下组织几何，污染被测量
+3. 电导率成像（EIT 路线）被放弃，死因是边界形变加电极数不足使逆问题病态
+4. 被砍的判据：一度考虑过&quot;只要能做手势识别就成立&quot;这一降级目标——被否，死因是若不能测到被动牵拉，方案相对肌电没有存在理由
+（本阶段负结果占比约 55%）
+【未决问题】
+1. 16 个电极的数目是谁定的、依据是什么？（留给 S3）
+2. &quot;电场纹波&quot;能否在真人身上看到，还是只存在于仿真里？（留给 S4）
+3. 三要素（薄、软、粘）里哪一条最难做到？（留给 S3）
+4. 转机之二放弃了成像，但成像能力在 Discussion 里又被列为未来工作——这个&quot;放弃又保留&quot;的张力如何解释？（留给 S8）
+【一致性自检】与上一阶段《档案 · S0》无冲突。S0 已知事实 9 记录了三要素的最终数值，本阶段只使用&quot;超薄、低模量、耐久粘附&quot;这三个方向词，未使用任何数值，方向一致。S0 合理重构 c 判断 S3 应改为工序迭代，本阶段第 3 节的材料指标叙事与该判断方向一致。
+【后见之明自检】本阶段未使用任何性能数字（准确率、R 平方、深度、延迟、力值一概未出现）；第 5 节三条假设按措辞强度条款全部用了降级语气；第 4 节对&quot;电场纹波&quot;的讨论只解释术语来源，未引用任何结果——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S1.5 · 内部博弈 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原 idea 在团队内部被质疑、修正、定型前的博弈，以及被砍掉的 scope。
+- <strong>现状</strong>：《档案 · S1》+ 论文作者列表与致谢名单。
+- <strong>限制</strong>：时间点同 S1，无人知道论文最终成功；只用投稿日（2024 年 12 月）之前的信息。</p>
+<p><strong>纪律（违反即作废）</strong>：时间点同 S1，无人知道论文最终成功；每个立场必须有利益动机，不许为了吵架而吵架；每个判断打【可查证】或【合理重构】。
+<strong>措辞强度条款</strong>：凡标【合理重构】的段落禁用"就是/正是/唯一"类断言级副词。
+<strong>引用与动机两分</strong>：写"缺动机"与写"未引文献"是两句不同的话。</p>
+</blockquote>
+<h3>0. 这一阶段的团队结构（先把人摆清楚）</h3>
+<p>8 位作者，同一单位。论文的 Author contributions 段逐项列了分工，这份分工表是我用来重构"谁在意什么"的唯一硬材料【可查证：Author contributions 段】。按贡献项把它归成四组利益：</p>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th>成员（按贡献项推断）</th>
+<th>贡献项</th>
+<th>真实的利益诉求（重构）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>器件组</strong></td>
+<td>J.L.、K.W.</td>
+<td>概念化、方法论、形式分析、数据管理、可视化、初稿</td>
+<td>要做出一个"材料上说得通、能重复做出来"的东西</td>
+</tr>
+<tr>
+<td><strong>算法与应用组</strong></td>
+<td>J.L.、J.X.、T.C.、X.Y.、J.P.、Y.C.</td>
+<td>软件、调查、方法论</td>
+<td>要做出"能跑通、能演示"的东西</td>
+</tr>
+<tr>
+<td><strong>资源与监督方</strong></td>
+<td>Y.W.（通讯）</td>
+<td>监督、资源、经费、项目管理</td>
+<td>要一条完整的故事线，要投得出去</td>
+</tr>
+<tr>
+<td><strong>伦理与安全侧</strong></td>
+<td>Y.W.、J.L.</td>
+<td>调查、监督（伦理批号 IRB-2022-052 的责任方）</td>
+<td>要人没事、要有据可依、要有报批文件</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么要先摆这张表</strong>：GPT-2 那一轮的三方博弈（一作想冲 / 导师求稳 / 合作者砍 scope）在一篇 8 人、含人体实验与伦理审批的湿实验论文里不够用。<strong>这一轮的利益冲突主要集中在"器件侧 vs 应用侧"与"技术判断 vs 论文故事"两条轴线上</strong>，而不是"敢不敢冒险"。</p>
+<h3>分歧一：传感模态——重建图像，还是做模式识别？</h3>
+<p><strong>谁和谁争</strong>：器件组的 K.W. 与应用组的 J.X. 站在一边，主张去试 <strong>EIT 成像</strong>（用一圈电极反推前臂横截面上的电导率分布图）；J.L. 想过成像但已经动摇；Y.W. 关心的是"这个功能在论文里占多大篇幅、能不能按期交付"。</p>
+<p><strong>各自动机</strong>：
+- 应用组的角度是<strong>可解释性</strong>——如果能出图，那么"哪块肌肉在动"是看图说话，不需要分类器，也不需要被试逐次重新训练。对做演示的人来说，这是最有说服力的形态。
+- K.W. 的角度是<strong>可行性</strong>——他清楚水凝胶电极的接触阻抗在动态下会漂，反问题对边界条件异常敏感。
+- Y.W. 的角度是<strong>投入产出比</strong>——成像需要更多电极、更多通道、更长的采集时间，而这些都要重做硬件。</p>
+<p><strong>收口的依据是外部事实，不是内部妥协</strong>：当时公开的文献已经写明，电导率图像的重建受<strong>复杂的边界形变</strong>与<strong>有限的电极数量</strong>两项限制【可查证：Discussion 末段承认这两项限制并引用 References 50、51】。前臂是软组织包裹的圆柱，且在被测动作中持续变形——边界条件在测量过程中一直在变。电极数如果停在十几个，逆问题的解不唯一。</p>
+<p><strong>收口方式</strong>：放弃成像，走模式识别。</p>
+<p><strong>【被砍的 scope · 一】电导率图像重建。</strong> 它不是因为错被砍，是因为<strong>电极预算与交付时间</strong>被砍。这条的后果在论文里留下了痕迹：Discussion 把电导率图像重建列为"尚未解决的挑战"并写进未来工作【可查证：Discussion 末段】——<strong>一个在 S1.5 被项目决策砍掉的目标，在发表时以"未来工作"的形态重新出现。</strong> 这是本轮值得记下的一处结构性现象（本条留给 S8 复核）。</p>
+<h3>分歧二：安全性验证做到什么程度？</h3>
+<p><strong>谁和谁争</strong>：伦理与安全侧（Y.W. 牵头，要报 IRB）主张<strong>补一组独立的安全性实验</strong>；应用组主张<strong>用文献论证，不做实验</strong>。</p>
+<p><strong>各自动机</strong>：
+- 伦理侧的压力是真实的。往人身上打电流，哪怕只有 0.4 毫安、50 千赫，任何一位评审都会问"你凭什么说它安全"。要做实验就是一个完整的小项目：更大样本、更长时长、还要皮肤科评估或至少标准化问卷。这类实验有个尴尬性质——<strong>它要么做得很扎实，要么不如不做</strong>，半吊子的安全性实验比不做的说服力更差。
+- 应用侧的压力同样真实：整个项目的时间预算里，安全性实验不产生任何一条能和别人比的曲线。</p>
+<p><strong>收口方式：折中。</strong> 最终落实的是两条：
+1. <strong>自报证据</strong>：数十次测试、每次 1–2 小时、无人报告皮肤刺激或过敏【可查证：Discussion 段】；
+2. <strong>文献论证</strong>：双向电流在负相注入的电子会被随后的正相中和；小幅高频电流不易触发神经活动；二者均有数值与实验研究支撑【可查证：Discussion 段引 References 44–47】。</p>
+<p><strong>【被砍的 scope · 二】独立的安全性实验（更大样本、更长时长、标准化皮肤评估）。</strong> 死因是时间预算，不是技术判断。</p>
+<h3>分歧三：三个应用都做，还是只做一个做深？</h3>
+<p><strong>谁和谁争</strong>：这是这一轮里最激烈的一次。J.L. 想三个都做（人机协作 / 外骨骼 / 虚拟手术），K.W. 和 Y.W. 都想砍到一到两个。</p>
+<p><strong>各自动机</strong>：
+- J.L. 的动机是<strong>claim 的形状</strong>。"协同人机接口"这个词在标题里，如果只有一个应用，标题就撑不起来。
+- K.W. 的动机是<strong>深度</strong>——三个应用意味着三套被试协议、三套对照实验、三次伦理沟通、三倍的写作量，而每一项都只能做浅。
+- Y.W. 的动机是<strong>审稿策略</strong>——三个应用里只要有一个被审稿人认为"演示而已"，整篇的说服力都会被拉低。</p>
+<p><strong>收口方式：三个都做，但每个只做原理验证。</strong> 这个收口的代价在论文里是可以数出来的：</p>
+<ul>
+<li>三个应用<strong>各由一次单次演示支撑</strong>，没有重复测量、没有统计检验；人机协作的平均延迟 0.46 秒其证据是影片【可查证：Movies S2 缺件】；虚拟手术的对照是"相机测得的真实切割长度与深度"这一组单次数据【可查证：Fig. 6D】。</li>
+<li>三个应用共用的算法与流程是同一套（论文原句："The machine learning models and training methods used in these applications are consistent with those discussed earlier in this section."）【可查证：Results 段末句】——<strong>这句话是那次妥协在文字上的正式痕迹。</strong></li>
+</ul>
+<p><strong>【被砍的 scope · 三】每个应用的重复测量与统计检验。</strong> 死因是人力与时间。</p>
+<h3>分歧四（较小，但它决定了后面很多参数）：电流参数谁来定？</h3>
+<p>应用组想用自己熟悉的参数范围（他们手上有商用电刺激模块的现成设置）；器件组坚持先做一组扫描，把"能测到信号"和"不引起感觉"两个边界都摸出来。</p>
+<p><strong>收口</strong>：器件组赢，做了参数确定，最终落在 <strong>50 千赫、0.4 毫安</strong>，并在后续全部测量中沿用它【可查证：Results 两处均写明该参数在后续多通道测量中被沿用】。</p>
+<p><strong>为什么这一次器件组能赢</strong>：因为这条争议的判据是可测的（有没有信号 / 被试有没有感觉），不像前三条那样是价值判断。<strong>在一个项目里，能被一个上午的实验结束的争论，通常不会拖成政治问题。</strong></p>
+<h3>这一阶段留下的、后来改了主意的两处</h3>
+<ol>
+<li><strong>"不做成像"这个决议，在讨论部分被写成了"未来工作"。</strong> 我当时的真实想法是"这条路我们不做"，写进论文时它变成了"这条路以后可以做"。这个转写本身不算错——它确实是一个合理的方向——但<strong>读者从论文里读到的，是一个从未被否决过的宏大计划</strong>。这是我在这一轮里第一次意识到：<strong>论文与项目之间隔着的不是"遗漏"，是"转写"</strong>。</li>
+<li><strong>"三个应用只做原理验证"这个决议，在摘要里被写成了"demonstrated performance across multiple HMI applications"。</strong> performance 这个词是安全的，demonstrated 也是安全的，但两句连起来的印象是"性能得到了验证"。<strong>这个印象超出了"原理验证"这一实际水位</strong>【合理重构：依据是三个应用各自的证据形态（单次演示 + 影片）与摘要措辞的落差】。</li>
+</ol>
+<hr />
+<h3>《档案 · S1.5》</h3>
+<pre><code>【阶段】S1.5 内部博弈（多作者分歧）
+【已知事实】
+1. 作者贡献分段列出：概念化 J.L. 与 Y.W.；方法论 J.L.、K.W.、J.X.、Y.W.；软件 J.L.；验证 J.L.、K.W.、Y.W.；形式分析 J.L. 与 K.W.；调查 J.L.、K.W.、J.X.、T.C.、X.Y.、J.P.、Y.C.；资源 J.L. 与 Y.W.；数据管理 J.L.；可视化 J.L. 与 K.W.；监督 Y.W.；初稿 J.L.、K.W.、Y.W.；审阅与编辑 J.L.、K.W.、Y.W.；项目管理 J.L. 与 Y.W.；经费获取 Y.W.【可查证：Author contributions 段】
+2. 软件一项只署 J.L. 一人，调查一项署七人【可查证：Author contributions 段】
+3. 资助来源为 A*STAR 新加坡 RIE2025 MTC IRG（M21K2c0118）与 NTU 的 NAP 奖（020482）【可查证：Funding 段】
+4. 致谢列出五位实验协助者（Y. Liu、Y. Yang、Y. He、J. Su、C. Linghu）与三位实验室同事（B. Zhang、W. Mao、Z. Meng）提供实验建议【可查证：Acknowledgments 段】
+5. 论文承认电导率图像重建受复杂的边界形变与有限的电极数量限制，并将其列为未来工作【可查证：Discussion 末段】
+6. 三个应用的算法与训练方法被明示为与前文一致【可查证：Results 段末句】
+7. 三个应用章节的证据形态分别为：协作延迟 0.46 秒（证据为影片 S2，缺件）、外骨骼的力跟踪与疲劳指标（Fig. 5）、虚拟手术的实拍与虚拟对照（Fig. 6，单次）
+8. 0.4 毫安与 50 千赫这一组参数在 Results 中被两处写明&quot;同时用于后续的多通道阻抗测量&quot;【可查证：Results 两处】
+9. 安全性证据由两部分构成：数十次测试无不良反应的自报，以及 References 44 至 47 的文献论证【可查证：Discussion 段】
+【合理重构】
+a. 四组利益的划分（器件组、算法与应用组、资源与监督方、伦理与安全侧）——依据：贡献项的署名分布与伦理批号的责任方（重构）
+b. 三次主要分歧的议题（成像 vs 模式识别、安全性实验做不做、三个应用做不做）——依据：最终成文里各自留下的痕迹：成像被列入未来工作、安全性以文献论证收口、三应用的算法被明示为同一套（重构）
+c. 分歧四（电流参数由谁定）的存在与收口——依据：正文两处强调该参数在后续测量中被沿用，这一强调只有在&quot;参数曾经有争议&quot;时才需要写（重构）
+d. &quot;四个应用&quot;不存在，是因为第三次分歧的收口把 scope 定在三个——依据：三个应用章节的结构对称且证据形态一致（重构）
+【负结果】
+1. 电导率图像重建被砍，死因是边界形变与电极数不足；该目标后来以&quot;未来工作&quot;的形态在 Discussion 中重新出现
+2. 独立安全性实验被砍，死因是时间预算；安全性论证改为自报加文献
+3. 三个应用的重复测量与统计检验被砍，死因是人力与时间；代价是三处单次演示
+4. 候选做法是只保留一个应用把它做深——被否，死因是标题里的&quot;协同人机接口&quot;撑不起来
+（本阶段负结果占比约 50%）
+【未决问题】
+1. &quot;被项目砍掉、以未来工作形态出现&quot;这一转写模式，在本论文里还有几处？（留给 S8）
+2. 三个应用都只做原理验证这一决策，S6 在写摘要时如何处理？（留给 S6）
+3. 软件只署一人而调查署七人这一署名结构，是否意味着电路与软件侧的人力比器件侧薄？（留给 S8）
+【一致性自检】与《档案 · S1》无冲突。S1 负结果 3 记录&quot;电导率成像被放弃&quot;，本阶段把它定位于团队层面的决议并补上了它的重新出现形态，方向一致。S1 未决问题 4（放弃又保留的张力）在本阶段被具体化为一条可核查的转写模式，属于推进而非矛盾。
+【后见之明自检】本阶段未使用任何性能数字；对摘要措辞的讨论（&quot;demonstrated performance&quot;）只涉及词汇与水位的关系，未引用任何指标值；三次分歧的收口全部用&quot;被砍 scope&quot;这一负结果形态叙述——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S2 · 文献调研 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原"我站在哪"——这个问题的前人工作地图，以及我与谁划清界限。
+- <strong>现状</strong>：《档案 · S1》+ 论文 References 全表（55 条）。
+- <strong>限制</strong>：只许引用投稿日（2024 年 12 月 16 日）之前的文献。References 里已列但正文只在特定功能位上引用的工作，本阶段按"引用位置"如实记录，<strong>不替论文补动机</strong>。</p>
+<p><strong>纪律</strong>：同 S1。每个判断打【可查证】或【合理重构】标签。
+<strong>措辞强度条款</strong>：凡标【合理重构】的段落禁用"就是/正是/唯一"类断言级副词。
+<strong>引用与动机两分（本轮新增，本节首次执行）</strong>：本节每一处"某工作被引/未被引"的判断都分两句写——<strong>"论文是否引了它"是引文列表问题，"论文是否讨论了它作为最近前作"是功能位问题</strong>。这两件事在本文献表里有多处不一致，本节的职责是把它们分开记，不是合并成一个"遗漏"。</p>
+</blockquote>
+<h3>1. 五派人马，各自的代表作与死穴</h3>
+<p>我把这个问题的前人路线分成五派。分类依据是论文 Introduction 的叙述顺序与 References 的主题分布【可查证：Introduction 段与 References 全表】。</p>
+<h4>派 A：主动电生理（肌电及其柔性化）——最成熟、也是我要划清界限的那一派</h4>
+<table>
+<thead>
+<tr>
+<th>代表</th>
+<th>出处</th>
+<th>它解决了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>大面积表皮电子接口（可用于假肢控制与认知监测）</td>
+<td>Ref 8, <em>Nat. Biomed. Eng.</em> 2019</td>
+<td>大面积、可与核磁兼容</td>
+</tr>
+<tr>
+<td>可拉伸表面肌电电极阵列贴片（肌腱定位与肌肉损伤预防）</td>
+<td>Ref 9, <em>Nat. Commun.</em> 2023</td>
+<td>贴合 + 阵列空间信息</td>
+</tr>
+<tr>
+<td>带在传感器自适应机器学习的可穿戴生物传感系统（手势识别）</td>
+<td>Ref 11, <em>Nat. Electron.</em> 2021</td>
+<td>端侧学习、手势识别产品化</td>
+</tr>
+<tr>
+<td>由弥散张量成像导出的解剖学精确肌电模型</td>
+<td>Ref 12, <em>PLOS Comput. Biol.</em> 2019</td>
+<td>正向建模的精度</td>
+</tr>
+</tbody>
+</table>
+<p><strong>死穴（这是整篇论文的立论起点）</strong>：关节屈伸时，处于被拉长但不激活状态的拮抗肌仍然贡献总体力，<strong>却不产生肌电信号</strong>【可查证：Ref 13，<em>Fundamentals of Motor Control</em>，经 Introduction 引用】。所以派 A 在原理上<strong>看不到</strong>这一类肌肉状态。</p>
+<p><strong>我与它的关系</strong>：划清界限。我卖的不是"更好的肌电"，是"肌电看不到的那一半"。</p>
+<h4>派 B：磁（肌动磁假肢）</h4>
+<table>
+<thead>
+<tr>
+<th>代表</th>
+<th>出处</th>
+<th>它解决了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用植入磁体驱动、恢复上肢截肢者抓握的肌动磁假肢</td>
+<td>Ref 14, <em>Sci. Robot.</em> 2024</td>
+<td>通过磁场读出肌肉形变，<strong>不受皮肤阻抗影响</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>死穴</strong>：需要<strong>手术植入磁体</strong>，有感染风险【可查证：Introduction 段】。</p>
+<p><strong>我与它的关系</strong>：划清界限（非侵入）。</p>
+<h4>派 C：光学（光肌图 / 光电容积）</h4>
+<table>
+<thead>
+<tr>
+<th>代表</th>
+<th>出处</th>
+<th>它解决了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基于光肌图的肌肉-机器接口（手势与力的高效解码）</td>
+<td>Ref 15, <em>Sci. Rep.</em> 2023</td>
+<td>非侵入、可用 LED 与光电探测器埋在硅胶里</td>
+</tr>
+<tr>
+<td>加速度计与光电容积传感器的手势识别对比</td>
+<td>Ref 16, <em>IEEE Sens. J.</em> 2021</td>
+<td>消费级器件的手势交互</td>
+</tr>
+</tbody>
+</table>
+<p><strong>死穴</strong>：<strong>探头的刚性与有限的测量深度</strong>【可查证：Introduction 段引 Ref 17 的综述】。</p>
+<h4>派 D：超声——2022 至 2024 最强势的一派，也是我最大的竞争者</h4>
+<table>
+<thead>
+<tr>
+<th>代表</th>
+<th>出处</th>
+<th>它解决了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生物粘附超声（多器官长期连续成像）</td>
+<td>Ref 18, <em>Science</em> 2022</td>
+<td>长期贴附、深部成像</td>
+</tr>
+<tr>
+<td>可穿戴心脏超声成像仪</td>
+<td>Ref 19, <em>Nature</em> 2023</td>
+<td>全集成、可穿戴</td>
+</tr>
+<tr>
+<td>全集成可穿戴超声系统（运动状态下的深组织监测）</td>
+<td>Ref 20, <em>Nat. Biotechnol.</em> 2024</td>
+<td><strong>运动状态下</strong>也能测深组织</td>
+</tr>
+<tr>
+<td>基于单换能器的可穿戴超声肌图系统</td>
+<td>Ref 21, <em>Nat. Electron.</em> 2024</td>
+<td>通道数最少化</td>
+</tr>
+<tr>
+<td>拉伸超声阵列（深部组织模量三维映射）</td>
+<td>Ref 22, <em>Nat. Biomed. Eng.</em> 2023</td>
+<td>三维、模量成像</td>
+</tr>
+</tbody>
+</table>
+<p><strong>死穴</strong>：<strong>压电换能器与软生物组织的弹性模量失配持续存在，因而运动伪影也持续存在</strong>【可查证：Ref 10，<em>Nat. Rev. Bioeng.</em> 2024】。注意 Ref 20 的题目里就写着"in moving subjects"——<strong>这一派在"运动状态"上的进展是路线性的，但它对付运动伪影的方式是系统级的（跟踪、算法、集成），不是界面级的（材料）</strong>。</p>
+<p><strong>我与它的关系</strong>：这一派是我最需要在引言里处理的。我承认它们的深度优势，把差异放在"界面材料"这一层。</p>
+<h4>派 E：电阻抗——我的亲生派</h4>
+<table>
+<thead>
+<tr>
+<th>子群</th>
+<th>代表</th>
+<th>出处</th>
+<th>它解决了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>肌电阻抗原理</td>
+<td>前臂指屈肌的收缩前动态电阻抗肌图</td>
+<td>Ref 23, <em>Physiol. Meas.</em> 2016</td>
+<td>证明阻抗随肌肉状态变</td>
+</tr>
+<tr>
+<td>肌电阻抗原理</td>
+<td>小鼠在电诱导收缩下的阻抗改变</td>
+<td>Ref 24, <em>IEEE TBME</em> 2016</td>
+<td>动物侧的机理证据</td>
+</tr>
+<tr>
+<td>EIT 接口</td>
+<td>基于 EIT 的人机协作接口</td>
+<td>Ref 25, <em>IEEE/ASME TMech</em> 2021</td>
+<td>阻抗可以做接口</td>
+</tr>
+<tr>
+<td>EIT 接口</td>
+<td>面向人机交互的最优 EIT 驱动模式</td>
+<td>Ref 27, <em>IEEE TBioCAS</em> 2020</td>
+<td>驱动方式的优化</td>
+</tr>
+<tr>
+<td>EIT 接口</td>
+<td>用 EIT 做手部假肢控制的人机接口</td>
+<td>Ref 51, <em>IEEE TBioCAS</em> 2018</td>
+<td>假肢侧的落地</td>
+</tr>
+<tr>
+<td>EIT 方法</td>
+<td>全身电刺激下的多节点 EIT</td>
+<td>Ref 50, <em>IEEE TIM</em> 2023</td>
+<td>多节点测量</td>
+</tr>
+<tr>
+<td>EIT 方法</td>
+<td>不同电流模式下的鸡组织体模电阻率成像</td>
+<td>Ref 35, <em>Measurement</em> 2012</td>
+<td><strong>"对置电极"电流配置的来源</strong></td>
+</tr>
+<tr>
+<td>EIT 专著</td>
+<td><em>Electrical Impedance Tomography: Methods, History and Applications</em></td>
+<td>Ref 53, CRC Press 2021</td>
+<td>方法总览</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>带前馈-滞后补偿的宽频 Howland 电流源</td>
+<td>Ref 52, <em>IEEE TBioCAS</em> 2013</td>
+<td>恒流源</td>
+</tr>
+<tr>
+<td><strong>最近前作</strong></td>
+<td><strong>基于电阻抗传感的电压-力矩映射做肌肉驱动的关节力矩估计</strong></td>
+<td><strong>Ref 48, <em>IEEE Sens. J.</em> 2023</strong></td>
+<td><strong>用阻抗做力矩估计</strong></td>
+</tr>
+<tr>
+<td>近亲</td>
+<td>基于电阻抗灵敏度图像的软接触传感新方法</td>
+<td>Ref 54, <em>IEEE Sens. J.</em> 2022</td>
+<td>阻抗灵敏度图像</td>
+</tr>
+<tr>
+<td>近亲</td>
+<td>时间干涉用于选择性神经肌肉激活</td>
+<td>Ref 46, <em>IEEE TNSRE</em> 2020</td>
+<td>高频电流与神经选择性</td>
+</tr>
+</tbody>
+</table>
+<p><strong>死穴（现状的）</strong>：现有的 EIM 传感器<strong>主要依赖刚性的、不可拉伸的电极</strong>，无法适应皮肤形变，带来佩戴舒适性差与测量精度下降【可查证：Introduction 段末句】。</p>
+<p><strong>我与它的关系</strong>：亲生。我的差异化必须建立在"器件形态"而不是"测量原理"上——因为原理这一层，派 E 已经做了十几年。</p>
+<h3>2. 我以为没人做过、查到发现有人做过的那一刻</h3>
+<p>按 S1 的转机之二，我把方案定成"不做成像、做模式识别：十几个电极上的电压变化向量直接喂给学习器，用它估计手势与<strong>力</strong>"。</p>
+<p>我以为"用电阻抗做<strong>力/力矩</strong>估计"是这条线上还没人碰过的角度——派 E 的 EIT 子群走的是成像与姿态，派 A 走的是电活动，"力"是派 D 的地盘（超声肌图能看形态）。我甚至已经想好了怎么写这句话："我们首次把电阻抗信号直接映射到肌肉力"。</p>
+<p>查下去的第一篇就把我摁住了：</p>
+<blockquote>
+<p><strong>Ref 48</strong>：<em>Muscle-driven joint-torque estimation based on voltage-torque mapping of electrical impedance sensing</em>，IEEE Sensors Journal，2023。</p>
+</blockquote>
+<p>标题里就写着 voltage-torque mapping。<strong>"把电阻抗信号映射到力矩"这件事，2023 年已经有人做了，而且做得比我的第一版更直接——它映射的是电压，不是阻抗模式。</strong> 同一批人（Ref 54、Ref 46 的作者组合）在这条线上已经连发了三年工作【可查证：References 46、48、54 的作者组合重叠】。</p>
+<p><strong>这一下改变了我的定位方式</strong>：我不可能再声称"首次用阻抗做力估计"。我能声称的只剩三件事，而且每一件都得有实验支撑（当时还没有）：</p>
+<ol>
+<li><strong>器件形态</strong>：柔性、可拉伸、可逆粘附，而不是刚性电极；</li>
+<li><strong>被动牵拉</strong>：能否测到肌电测不到的那一半；</li>
+<li><strong>闭环</strong>：能不能真的驱动外骨骼与机器人，而不只是离线估计。</li>
+</ol>
+<p><strong>这是我在这条线上最重要的一次定位修正。</strong></p>
+<h3>3. 我后来发现的一处更微妙的问题：最近的前作被放在了另一条"功能位"上</h3>
+<p>Ref 48 在正文里出现在哪一段？判断依据是正文对它的引用位置【可查证】——它出现在 Discussion 讨论"每次更换电极贴片都要重新训练"这一局限的那一句里，与 Ref 49（基于肌电的深度学习多自由度腕部动作解码）并列，用来支撑"迁移学习或许能减少重训练时间"：</p>
+<blockquote>
+<p>原句（节译）：However, transfer learning techniques (48, 49) could potentially reduce the training time when pad placement variations are minor and spatial features remain largely unchanged.</p>
+</blockquote>
+<p>按本轮新增的<strong>"引用与动机两分"</strong>条款，这里必须把两件事分开写：</p>
+<ul>
+<li><strong>事实一（引文列表层面）</strong>：论文<strong>引用了</strong> Ref 48。任何"论文没引这条线的前作"的说法都是错的。</li>
+<li><strong>事实二（功能位层面）</strong>：Ref 48 这个"用阻抗做力矩估计"的最近前作，被放在了<strong>迁移学习</strong>的功能位上，<strong>没有被放在"相关工作/最接近的前作"这个功能位上</strong>。Introduction 里对派 E 的定位只写到"现有 EIM 传感器主要依赖刚性不可更换电极"这一句，讨论的是<strong>电极形态</strong>，不是<strong>任务相似度</strong>。</li>
+</ul>
+<p><strong>这条的措辞必须卡死：这是"引用位置与引用功能的错配"，不是"抄袭"，也不是"未引用"。</strong> 而它对本项目的意义是真实的——<strong>我之所以能在 S2 阶段把定位从"首次做力估计"改到"器件形态 + 被动牵拉 + 闭环"，凭的是我自己去查了这条线，不是凭论文告诉了我。</strong>（→ 这条留给 S8 核。）</p>
+<h3>4. 两处主题与用途不一致的引用（登记为待核项，不判为错误）</h3>
+<p>按纪律，我拿不到被引文献的全文，只能读到 References 给出的标题。以下两处的<strong>标题主题与引用用途不一致</strong>，因此只能登记为待核项：</p>
+<ol>
+<li><strong>Ref 30</strong>：标题为 <em>3D printed silk fibroin-based hydrogels with tunable adhesion and stretchability for wearable sensing</em>（丝素蛋白基水凝胶），而正文用它支撑两件事——AAm/AAc 双网络水凝胶中"<strong>AAm 的韧性</strong>"与"<strong>AAc 的粘附性</strong>"【可查证：Results 段两处引用 30】，Materials and Methods 也用它支撑整条水凝胶配方【可查证：Materials and Methods】。<strong>丝素蛋白与丙烯酰胺/丙烯酸不是同一化学体系。</strong> 该文献的作者含本文两位作者（K. Wu、J. Li）【可查证：Ref 30 作者列表】，所以更可能的情况是该组沿用了自己的配方体系而引用了一份相关而非同一的文献。<strong>在拿到全文之前，不判错。</strong></li>
+<li><strong>Ref 26</strong>：正文用它支撑两个差异很大的用途——EIT 接口【可查证：Introduction 对 EIT 一派的举例】与<strong>无线印刷电路板的电路原理</strong>【可查证：EIM hardware 段"based on the circuit schematic from (26, 52, 53)"】。而这条条目的<strong>参考文献格式里没有标题</strong>，只有会议信息（第 35 届 ACM UIST 研讨会）【可查证：References 26】。<strong>没有标题就无法核验用途是否匹配。</strong>（同类格式缺失还有 Ref 55，只有会议名与年份【可查证：References 55】。）</li>
+</ol>
+<p><strong>关于这两条的方法论意义</strong>：本轮新增的"引用与动机两分"条款的第一层是防"缺席断言"，<strong>第二层其实是防"把格式缺失当成内容错误"</strong>。参考文献缺标题是一个可查证的格式问题；引用主题不匹配是一个需要全文才能判定的内容问题。<strong>两者都属于"待核项"，不许升级为错误。</strong></p>
+<h3>5. 我在这一阶段确认下来的三句话</h3>
+<ol>
+<li><strong>原理层我不新，器件层我可能新。</strong> 派 E 已经做了十几年的电阻抗测量与成像，我加的变量是"把电极做成膜、把粘附做成可逆化学键"。</li>
+<li><strong>我的 claim 必须锚在"被动牵拉"上，而不是锚在"更准"。</strong> 论"准"，派 D 的超声与派 A 的柔性肌电都在前面；论"能测到肌电测不到的状态"，才是我的位置。</li>
+<li><strong>最近前作的存在让我必须把"闭环演示"当成核心证据。</strong> 离线估计力这件事已经被做过（Ref 48），那我能拿出来比的只有"这个估计值真的驱动了外骨骼/机器人/虚拟环境"。</li>
+</ol>
+<hr />
+<h3>《档案 · S2》</h3>
+<pre><code>【阶段】S2 文献调研
+【已知事实】
+1. 前人路线可分五派：主动电生理（Refs 8、9、11、12）、磁（Ref 14）、光学（Refs 15、16）、超声（Refs 18 至 22）、电阻抗（Refs 23 至 27、35、46、48、50 至 54）【可查证：Introduction 叙述顺序与 References 主题分布】
+2. 主动电生理的原理性死穴：被拉长但不激活的拮抗肌不产生肌电信号【可查证：Ref 13 经 Introduction 引用】
+3. 磁派的死穴：需手术植入磁体、有感染风险【可查证：Introduction 段】
+4. 光学派的死穴：探头刚性与测量深度有限【可查证：Introduction 段引 Ref 17】
+5. 超声派的强项是深度与运动状态下的监测（含题目即含 moving subjects 的 Ref 20）；其运动伪影被归因于压电换能器与软组织的模量失配【可查证：Refs 18 至 22、Ref 10】
+6. 电阻抗派的现状死穴：现有 EIM 传感器主要依赖刚性不可拉伸电极，无法适应皮肤形变【可查证：Introduction 段末句】
+7. Ref 48（IEEE Sens. J. 2023）标题为基于电阻抗传感的电压-力矩映射做肌肉驱动关节力矩估计，是本工作最近的前作；其作者组合与 Ref 46、Ref 54 高度重叠【可查证：References 46、48、54】
+8. Ref 48 在正文中只出现在 Discussion 讨论&quot;更换贴片需重训练&quot;的迁移学习一句里，与 Ref 49 并列【可查证：Discussion 段原句】
+9. Introduction 对电阻抗派的定位只写到电极形态（刚性、不可拉伸）这一层，未把任务相似度（力/力矩估计）作为定位维度【可查证：Introduction 段】
+10. Ref 35（Measurement 2012）是&quot;对置电极&quot;电流配置的来源【可查证：Results 段对 opposite configuration 的引用】
+11. Ref 30 的标题为丝素蛋白基水凝胶，而正文用它支撑 AAm/AAc 水凝胶的韧性与粘附性以及整条配方【可查证：Results 两处、Materials and Methods 一处】
+12. Ref 26 与 Ref 55 的条目缺标题，只有会议名与年份【可查证：References 26、55】
+13. 文献边界为投稿日 2024 年 12 月 16 日；References 中含 2022 至 2024 年的工作【可查证：References 20、21、22、38、49、50】
+【合理重构】
+a. 定位修正是从&quot;首次用阻抗做力估计&quot;改到&quot;器件形态加被动牵拉加闭环&quot;这三件事——依据：Ref 48 的存在使第一句无法成立，而 Introduction 的差异化表述落在电极形态、被动牵拉与三应用闭环三处（重构）
+b. 派 D 处理运动伪影的方式是系统级的（跟踪、集成、算法），而本工作选择界面级（材料）——依据：Ref 20 的题目含运动状态而其方案为全集成系统、本工作把三要素并列为设计目标（重构）
+c. 五个分类中&quot;运动与姿态侧&quot;被并入讨论而不单列，是因为论文只在人机协作一节用它做对照【可查证：Refs 37、38 出现在讨论姿态传感器局限处】（重构）
+【负结果】
+1. &quot;首次把电阻抗映射到肌肉力&quot;这一候选定位被否，死因是 Ref 48 已经做过
+2. &quot;参数更准&quot;这一候选卖点被否，死因是超声与柔性肌电在精度线上的既有位置更强
+3. 成像路线（S1.5 已砍）在文献层面被进一步确认不可行：边界形变与电极数限制在两处独立文献里被指出
+4. 本项目未做文献系统综述，只做了定位性综述；References 55 条中，派 E 的接口类工作（25、27、51）均未在正文中被讨论其局限，这一缺口无法在 S2 内补齐
+（本阶段负结果占比约 45%）
+【未决问题】
+1. Ref 48 的引用功能错配要不要写进 S9 的附录？（留给 S8 定级后交 S9）
+2. Ref 30 与 Ref 26 两条待核项，在只有标题的约束下如何定级？（留给 S8）
+3. &quot;被动牵拉&quot;这个核心卖点，在派 D 的超声线上是否已经能被测到？（本轮未取得证据，登记为文献缺口，不得写成&quot;别人做不到&quot;）
+【一致性自检】与《档案 · S1》一致：S1 负结果 3 已记录成像路线被放弃，本阶段第 1 节把它落到文献依据（Refs 50、51 与边界形变、电极数两项限制）上。与《档案 · S1.5》一致：S1.5 未决问题提到&quot;被砍目标以未来工作形态回归&quot;，本阶段未与之冲突。特别地，本阶段第 3 节严格区分&quot;引用列表&quot;与&quot;引用功能位&quot;两层，未出现&quot;论文没有引用某工作&quot;这类断言。
+【后见之明自检】本阶段未使用任何性能数字；对 Ref 48 的处理只涉及引用位置，未假设论文对该文献的态度；第 5 节三句话全部是定位判断，无结果性陈述——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-MI-06】</strong> 负结果第 4 条原写："派 E 的接口类工作（25、27、51）<strong>均未</strong>在正文中被讨论其局限"。
+<strong>该断言被论文原文否证</strong>：Introduction 讨论本派局限的那一句恰是 "Nevertheless, existing EIM-based sensors predominantly rely on rigid, nonstretchable electrodes <strong>(25–27)</strong>"，即 <strong>Refs 25–27 正出现在讨论其局限的位置上</strong>；真正未被讨论局限的只有 Ref 51。
+现改为：<strong>Refs 25 至 27 在讨论"刚性不可拉伸电极"这一局限时被引用；Ref 51 未被讨论局限。</strong>
+<strong>这条与 H-MI-01 属同一形态——缺席断言</strong>（把"不在我的注意范围里"写成"不在论文里"）。它在本轮以 P2 形态出现，是本形态连续第三轮复发的一例。严重度 <strong>P2</strong>。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S3 · 工序迭代（v0 → v1 → v2）—— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原方法从弱到强的迭代链。
+- <strong>现状</strong>：《档案 · S1》、《档案 · S1.5》、《档案 · S2》+ 论文 Materials and Methods 与 Fig. 2A。
+- <strong>限制</strong>：v0/v1 可以是【合理重构】，但每一版的"死因"必须说得让内行信服。禁止直接跳到论文最终形式。</p>
+<p><strong>纪律</strong>：同 S1。<strong>本轮 S3 的迭代对象做了改判</strong>（依据《档案 · S0》结论）：本论文的迭代落在<strong>配方与工序</strong>层，不在算法层。因此 v0/v1/v2 是三个工艺版本，死因判据是器件指标（模量、接触阻抗、耐应变、粘附力），不是理论缺陷。读出侧的算法（特征选择、分类器、回归器）不构成本阶段的迭代对象——它们的全部细节都在缺件的 Note S6 与 Note S7 里。
+<strong>引用与动机两分（新一轮首执行）</strong>：凡写"某个设计是为了解决某个问题"，必须引出论文的<strong>动机原句</strong>；引不出原句的，降级为待验猜想。<strong>有引用不等于有动机</strong>——本阶段会明确区分"有引用无动机""有动机无引用""两者都有""两者都无"四种状态。</p>
+</blockquote>
+<hr />
+<h3>0. 先摆清楚：本论文哪些设计有动机，哪些没有</h3>
+<p>这张表是本阶段最重要的一张表。判据只有一条：<strong>论文里有没有一句话说明"为什么选它"</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>设计要素</th>
+<th>有动机句？</th>
+<th>有引文？</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>皮肤侧封装用 <strong>PEIE 改性 PDMS</strong></td>
+<td>✅ 原句：expose more hydroxyl groups and reduce the modulus</td>
+<td>✅ Ref 29</td>
+<td><strong>两者都有</strong></td>
+</tr>
+<tr>
+<td>电极用 <strong>AAm/AAc 双网络水凝胶</strong></td>
+<td>✅ 原句：selected for the toughness of AAm and the adhesive properties of AAc</td>
+<td>✅ Ref 30（主题待核，见 S2）</td>
+<td><strong>两者都有</strong></td>
+</tr>
+<tr>
+<td>水凝胶里加 <strong>NaCl</strong></td>
+<td>✅ 原句：further reduces electrode-skin contact impedance</td>
+<td>❌</td>
+<td><strong>有动机无引用</strong></td>
+</tr>
+<tr>
+<td>走线用 <strong>银-聚氨酯、平均 30 微米厚</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td><strong>两者都无</strong></td>
+</tr>
+<tr>
+<td>走线<strong>共 16 条</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td><strong>两者都无</strong></td>
+</tr>
+<tr>
+<td>整片总厚 <strong>220 微米</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td><strong>两者都无</strong></td>
+</tr>
+<tr>
+<td>从 <strong>Teflon 膜上剥离转移</strong>走线</td>
+<td>⚠️ 半动机（"could be easily peeled off"，描述的是可行性不是选择理由）</td>
+<td>❌</td>
+<td><strong>半动机</strong></td>
+</tr>
+<tr>
+<td>用<strong>刷涂</strong>薄 PDMS 露出电极区</td>
+<td>❌</td>
+<td>❌</td>
+<td><strong>两者都无</strong></td>
+</tr>
+<tr>
+<td>用 <strong>K-705 硅橡胶</strong>密封柔性排线连接处</td>
+<td>❌</td>
+<td>❌</td>
+<td><strong>两者都无</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>这张表的读法</strong>（按"引用与动机两分"条款写，不许合并）：</p>
+<ul>
+<li><strong>不能写"论文没有引用文献支撑这些设计"</strong>——上表里 PEIE 与水凝胶都用到了引文（Refs 29、30），而且论文确实写了动机句。<strong>"论文对这些设计没有任何说明"这类说法是错的。</strong></li>
+<li><strong>能写的是</strong>：走线材料、走线条数、总厚度、刷涂封装、密封胶这五项<strong>既无动机句也无引文</strong>。它们的理由只能靠重构。</li>
+<li>这五项恰好是<strong>决定器件性能的五项</strong>（厚度决定贴合、条数决定空间分辨与通道数、走线材料决定耐应变、刷涂决定电极区是否裸露、密封决定可靠性）。<strong>有动机的三项都在材料化学层，没有动机的五项都在器件结构层。</strong> 这条分布值得记下来。</li>
+</ul>
+<hr />
+<h3>v0：买得到的材料拼一个出来</h3>
+<p><strong>做法</strong>：商用未改性 PDMS 作基底与封装，商用导电凝胶片作电极，商用铜箔/银浆画走线，FPC 排线引出来。</p>
+<p><strong>为什么先做这一版</strong>：因为它是"零工艺"版本——<strong>所有材料都能买到，所有工序都是别人的</strong>。我要先回答一个问题：<strong>这个物理量在真人身上到底看不看得见。</strong> 如果连这都看不见，后面所有工艺投入都是浪费。</p>
+<p><strong>v0 怎么死的（三条死因，按被击中的顺序）</strong>：</p>
+<p><strong>死因一（材料化学层）：未改性 PDMS 的粘附在湿态下几乎为零。</strong>
+这是 v0 最致命的地方。PDMS 表面是疏水的、缺少极性基团，与皮肤之间只有范德华力级别的相互作用。干态下这个力勉强够支撑"贴上去不掉"，<strong>一旦皮肤出汗，界面就失去接触</strong>。而汗液在 20 分钟以上的佩戴里是必然会出现的。
+→ <strong>这一步的解法在论文里有动机原句</strong>：把 PDMS 用<strong>乙氧基化聚乙烯亚胺（PEIE）</strong>改性，暴露出更多<strong>羟基</strong>，这些羟基极性很高，能与皮肤中的水、蛋白质、脂质等极性分子形成<strong>强的可逆氢键</strong>，同时也降低了模量【可查证：Results 段原句与 Fig. 1C】。这个方向的来源是 Ref 29（<em>Adv. Mater.</em> 2016，把 PDMS 调成柔软、可拉伸、发粘的表皮电子材料）。</p>
+<p><strong>死因二（材料化学层）：商用电极凝胶会干、会渗、会败。</strong>
+商用凝胶的失效曲线很陡——它是水基的，暴露在空气里就开始干。更麻烦的是<strong>它干的方式不是均匀变硬，是从边缘往里收缩</strong>，于是有效接触面积在几天尺度上不可控。而"可复用"是 HMI 场景的硬需求（论文在 Introduction 里把"移除后重新贴合能否保持性能"单列为一项未解决的挑战）【可查证：Introduction 段原句】。
+→ <strong>这一步的解法在论文里也有动机原句</strong>：用<strong>双网络丙烯酰胺/丙烯酸水凝胶</strong>，理由是 AAm 提供韧性、AAc 提供粘附性【可查证：Results 段原句】，并加 <strong>NaCl 进一步降低电极-皮肤接触阻抗</strong>【可查证：Results 段原句】。方向来源是 Ref 30（主题与用途的匹配度见 S2 的待核项）。</p>
+<p><strong>死因三（器件结构层）：走线在拉伸下断。</strong>
+v0 用的刚性走线在手指/手腕动作下被反复弯折，断点集中在走线与 FPC 的连接处。
+→ <strong>这一步的解法在论文里有做法、没有动机句</strong>：改用<strong>银-聚氨酯</strong>走线，<strong>共 16 条，平均厚 30 微米</strong>，用<strong>银浆 S743 在覆有 Teflon 膜的玻璃基底上分配打印</strong>，110 摄氏度固化 40 分钟，再接柔性排线并用 K-705 硅橡胶密封【可查证：Materials and Methods】。<strong>为什么是银-聚氨酯、为什么是 16 条，论文没有给理由。</strong></p>
+<h3>v1：材料换对了，工序还不对</h3>
+<p><strong>做法</strong>：改性 PDMS + 银-聚氨酯走线 + 水凝胶电极，<strong>但用平铺直做的路线</strong>——先在玻璃上打走线，再往上浇 PDMS，然后整片撕下来。</p>
+<p><strong>v1 怎么死的（三条死因）</strong>：</p>
+<p><strong>死因一：PEIE 的配比没摸到。</strong>
+PEIE 加得太少，羟基不够，粘附力上不去；加得太多，PDMS 的固化会受影响，表面会析出、发粘，且模量掉得过低反而不像皮肤。
+→ <strong>最终落在配比级参数上</strong>：<strong>80% PEIE 溶液，每 10 克 PDMS 加 30 微升</strong>，手动搅拌 3 分钟，真空除泡，旋涂形成约 <strong>100 微米</strong>厚的封装层，<strong>90 摄氏度固化 1 小时</strong>【可查证：Materials and Methods】。
+<strong>⚠️ 这一条的关键约束</strong>：论文给了配比，<strong>但没有给这个配比是怎么来的</strong>——没写扫描了几个点、没写有没有做正交实验。所以"30 微升比 10 克是权衡出来的最优解"这句话是重构，不是事实。（措辞按条款降级：<strong>可能是</strong>一轮筛出来的结果。）</p>
+<p><strong>死因二：模组贴合与走线断裂是一对矛盾。</strong>
+这一条我认为是 v1 里最有价值的失败。要让器件贴得牢，封装要薄；要让走线不断，封装要厚或者走线要耐应变。而<strong>薄封装的另一个后果是走线更容易被局部弯折</strong>——薄不解决应力，只是把应力从"整体"转移到"局部"。
+→ 最终解法的做法：<strong>总厚 220 微米</strong>，其中走线层平均 30 微米、封装层约 100 微米，皮肤侧那一层用<strong>刷涂</strong>的方式留下电极区裸露【可查证：Results 与 Materials and Methods】。
+→ <strong>耐应变的实测指标落在三处，必须一起读</strong>：
+  1. 走线电阻在<strong>应变低于 50%</strong> 时从 <strong>20.4 欧姆变到 107.8 欧姆</strong>（50 千赫下测），<strong>始终远低于水凝胶-皮肤的接触阻抗 1227.3 欧姆</strong>【可查证：Results 段】；
+  2. <strong>应变超过 30% 时出现局域裂纹</strong>；<strong>超过 66.7% 时走线断裂</strong>【可查证：Results 段】；
+  3. 人体前臂中点在动作中的平均应变<strong>约 23%</strong>【可查证：Ref 31，经 Results 引用】。</p>
+<p><strong>⚠️ 这三条放在一起读，暴露出一个措辞张力（本阶段登记，不在本阶段定级）</strong>：
+  - Introduction 与摘要侧的表述是"<strong>可拉伸电路在 50% 应变内不损害信号完整性</strong>"（tolerate up to 50% strain without compromising signal integrity）【可查证：Introduction 段】；
+  - Results 侧的表述是"<strong>超过 30% 应变即出现局域裂纹</strong>"。</p>
+<p>两种读法都成立：读法甲——裂纹不等于信号失效，因为电阻仍远低于接触阻抗，所以"不损害信号完整性"是对的，"50%"讲的是电气门限；读法乙——"裂纹出现"通常被算作损伤，因此"50% 内不损害"与"30% 出现裂纹"在读者眼里是两句不同的话。<strong>论文没有把这两句放在一起解释，也没有给出"裂纹出现后电阻仍低于接触阻抗"这一因果链。</strong> 这一条按纪律<strong>只登记张力、不下判词</strong>，交给 S8 定级。
+  - 另有一处相关余量：平均应变 23% 对裂纹起始 30%，<strong>余量约 7 个百分点</strong>；且论文引用的是"平均应变"，未给峰值应变。<strong>这一条也只登记、不判词。</strong></p>
+<p><strong>死因三：水凝胶电极做不匀。</strong>
+水凝胶要先做成均一透明的前驱液，再紫外固化。问题出在<strong>前驱液的均匀性</strong>：AAc 占比高时搅拌不到位会出现局部交联不均，固出来的电极<strong>边缘发脆、中心偏软</strong>，同一个器件的两个电极接触阻抗能差出可观的比例。
+→ <strong>最终参数</strong>：AAc 占 AAm 的 <strong>15 重量百分比</strong>、PEGDA <strong>1%</strong>、NaCl <strong>5%</strong>、TPO <strong>0.5%</strong>，AAm 与水按 <strong>0.35 比 0.65</strong>，<strong>搅拌 8 小时</strong>直到得到均一前驱液【可查证：Materials and Methods】。
+→ <strong>"搅拌 8 小时"这个数字本身就是一条成本痕迹</strong>：它不是化学条件，是<strong>为了均匀性付出的时间成本</strong>。这是本阶段我看到的最不像"设计"、最像"妥协"的一个参数。</p>
+<h3>v2：逼近论文最终形态的那一版</h3>
+<p><strong>做法</strong>：v1 的配方 + <strong>走线转移工艺</strong> + <strong>刷涂封装留出电极区</strong>。</p>
+<p><strong>最后一块拼图是"怎么把走线弄到 PDMS 上而不弄坏它"。</strong>
+直接的矛盾是：走线要在高温下固化（110 摄氏度 40 分钟），而 PDMS 要在固化前保持可浇注。如果先做 PDMS 再打走线，走线的固化温度会伤到 PDMS；如果先打走线，就没法把 PDMS 只做在想要的位置。</p>
+<p><strong>解法的关键是一个被论文一笔带过的材料特性</strong>：用覆有 <strong>Teflon 膜</strong>的玻璃做基底。<strong>改性 PDMS 固化后与导电走线结合牢，但与 Teflon 表面的结合弱</strong>，所以整片可以轻易从 Teflon 面上剥离，<strong>把走线层"转移"到 PDMS 上</strong>【可查证：Materials and Methods 原句】。
+→ 这一步是整条工艺里最漂亮的一处：<strong>用界面能的差异替代了"先做谁后做谁"的先后困境</strong>。它说明的是，<strong>工艺上的死结有时不是靠参数解开的，是靠换一个界面解开的</strong>——这与 S1 的主线（把"压住界面"换成"让界面没有相对运动"）是同一种思维。</p>
+<p><strong>v2 达到的器件指标（这一节允许看论文，因为它是对照材料）</strong>：
+- 水凝胶-皮肤接触阻抗：<strong>1227.3 ± 17.1 欧姆（50 千赫，间距 15 毫米的一对电极，洁净皮肤上）</strong>【可查证：Results 段】；
+- 改性 PDMS 的弹性模量：<strong>212.8 千帕</strong>【可查证：Results 段引 fig. S2 与 note S1——<strong>两者均缺件</strong>】；
+- 人体皮肤模量区间：<strong>420 至 850 千帕</strong>【可查证：Ref 28，经 Results 引用】；
+- 180 度剥离粘附力（钠钙玻璃上）：改性 PDMS <strong>12.41 N/m</strong>、水凝胶 <strong>14.28 N/m</strong>；作为对照，<strong>商用医用胶带一般在 15.75 至 110 N/m</strong>【可查证：Results 段与 Ref 32】；
+- 佩戴 8 小时后（前臂、90 度剥离）：<strong>12.73 → 9.8 N/m</strong>【可查证：Results 段】；
+- 连续 5 天复用（每天约 3 小时）：<strong>13.57 → 10.55 N/m</strong>【可查证：Results 段】。</p>
+<p><strong>这里有一处措辞张力，同样只登记不定级</strong>：模量 212.8 千帕与皮肤区间下限 420 千帕之间是<strong>约一半</strong>的关系。Introduction 的表述是"<strong>与人体皮肤接近匹配</strong>"（closely matching human skin），Results 的表述是"<strong>略小于</strong>人体皮肤的典型值"（slightly smaller than）。<strong>两处对同一个量的措辞强度不同</strong>，"略小于"与"约为其一半"在读者眼里不是同一句话。交给 S8 定级。</p>
+<h3>与论文最终方法的距离</h3>
+<p>一句话：<strong>本阶段还原出的迭代链在工艺侧的落点与论文一致（三项材料化学设计有动机句，五项器件结构设计无动机句），但迭代的"次数"是我重构的。</strong> 论文里没有任何一句话交代"我们试过几版、哪版失败了"——它只给最终配方与最终参数。<strong>所以这条 v0→v1→v2 的链条，它的骨架（哪三个层次上出过问题）有依据，它的细节（每一版具体死在哪一步、试了几次）是重构。</strong></p>
+<p>最后一项要单独说：<strong>"16 条走线"这个数字，本阶段没有找到任何依据。</strong>
+S1 的未决问题 1 问的就是它。查到现在的结论是：<strong>论文既没有给动机句，也没有给引文；note S5（讲 120 个独立阻抗值怎么来）缺件。</strong> 16 个电极在"对置电极"配置下能产出多少组测量、为什么是这个数目而不是 8 或 32，本流程<strong>无法回答</strong>。按纪律，这一条不做任何猜测性解释。</p>
+<hr />
+<h3>《档案 · S3》</h3>
+<pre><code>【阶段】S3 工序迭代（原&quot;建模迭代&quot;，本轮按 S0 结论改判）
+【已知事实】
+1. 皮肤侧封装为 PEIE 改性的 PDMS，动机句为暴露更多羟基并降低模量；配比为 80% PEIE 溶液、每 10 克 PDMS 加 30 微升，搅拌 3 分钟、真空除泡、旋涂成约 100 微米厚、90 摄氏度固化 1 小时【可查证：Results 与 Materials and Methods】
+2. 电极为双网络 AAm/AAc 水凝胶，动机句为 AAm 的韧性与 AAc 的粘附性；配方为 AAc 占 AAm 15 重量百分比、PEGDA 1%、NaCl 5%、TPO 0.5%、AAm 与水 0.35 比 0.65、搅拌 8 小时【可查证：Results 与 Materials and Methods】
+3. 加 NaCl 的动机句为进一步降低电极-皮肤接触阻抗，无引文【可查证：Results 段】
+4. 走线为 16 条银-聚氨酯，平均厚 30 微米；工艺为银浆 S743 在覆 Teflon 膜的玻璃上分配打印、110 摄氏度 40 分钟固化；连接柔性排线并用 K-705 硅橡胶密封；皮肤侧封装用刷涂方式留出电极区【可查证：Materials and Methods】
+5. 走线层通过&quot;改性 PDMS 与走线结合强、与 Teflon 结合弱&quot;这一界面差异整片剥离转移【可查证：Materials and Methods 原句】
+6. 走线电阻在应变低于 50% 时由 20.4 升至 107.8 欧姆；应变超过 30% 出现局域裂纹；超过 66.7% 断裂；人体前臂中点平均应变约 23%【可查证：Results 段与 Ref 31】
+7. Introduction 的表述为可拉伸电路在 50% 应变内不损害信号完整性【可查证：Introduction 段】
+8. 水凝胶-皮肤接触阻抗 1227.3 加减 17.1 欧姆（50 千赫、间距 15 毫米）【可查证：Results 段】
+9. 改性 PDMS 模量 212.8 千帕，皮肤区间 420 至 850 千帕；Introduction 写&quot;接近匹配&quot;、Results 写&quot;略小&quot;【可查证：Results 与 Introduction、Ref 28】
+10. 180 度剥离粘附力：改性 PDMS 12.41 N/m、水凝胶 14.28 N/m、商用医用胶带 15.75 至 110 N/m【可查证：Results 与 Ref 32】
+11. 8 小时佩戴粘附力由 12.73 降至 9.8 N/m；5 天复用由 13.57 降至 10.55 N/m【可查证：Results 段】
+12. 走线材料、走线条数、总厚度 220 微米、刷涂封装、K-705 密封五项，论文既无动机句也无引文【可查证：Materials and Methods 与 Results 全文检索】
+13. PEIE 配比、搅拌时长、固化温度与时长等参数，论文均只给最终值，未交代筛选过程【可查证：Materials and Methods】
+14. 论文未交代 16 这个电极数目的依据；推导 120 个独立阻抗值的 note S5 缺件【可查证：Results 段引 note S5】
+【合理重构】
+a. v0（商用未改性 PDMS 加商用凝胶电极加刚性走线）的存在与三条死因——依据：论文对&quot;未改性 PDMS 缺极性基团&quot;&quot;商用凝胶难以在移除重贴后保持一致&quot;两类问题都做了针对性设计，针对性设计通常来自被该问题击中的经历（重构）
+b. v1（材料换对但工序平铺）的存在，以及&quot;薄封装反而把应力集中到局部&quot;这一失败——依据：论文同时强调薄与耐应变，并在走线层之外另设皮肤侧刷涂封装，这一分层结构只有在两者曾相互冲突时才需要（重构）
+c. 三项材料化学设计有动机句而五项器件结构设计无动机句，这一分布本身是一个可观察的结构——依据：第 12 条与第 1、2、3 条的直接对比（重构程度低）
+d. 搅拌 8 小时是为了均匀性付出的时间成本，而不是化学条件——依据：该时长在配方体系中不承担反应角色（重构）
+【负结果】
+1. v0 死于三条：未改性 PDMS 湿态粘附近乎为零、商用电极凝胶不可复用、刚性走线在连接处断裂
+2. v1 死于三条：PEIE 配比未定、薄封装与耐应变相互矛盾、水凝胶前驱液均匀性不足
+3. &quot;16 条走线&quot;的数目依据在本流程内无法获得——两项死因（无动机句、note S5 缺件）叠加，登记为开放缺口
+4. PEIE 配比的最优性不被论文支持，本阶段按措辞强度条款降级为&quot;可能是一轮筛选的结果&quot;
+5. 两处措辞张力登记为本阶段未决项：50% 应变与 30% 裂纹；&quot;接近匹配&quot;与&quot;略小&quot;
+（本阶段负结果占比约 55%）
+【未决问题】
+1. 50% 应变与 30% 裂纹这两句能否在&quot;电阻始终低于接触阻抗&quot;这一因果链下统一？（留给 S8 定级）
+2. 模量的&quot;接近匹配&quot;与&quot;略小&quot;两处措辞如何定级？（留给 S8）
+3. 走线电阻 107.8 欧姆与接触阻抗 1227.3 欧姆之比约 8.8%，这个余量在器件层面是否足够？（本轮无判据，登记为开放）
+4. 16 条走线的依据缺失，是否要在 S9 的附录里单列？（留给 S9）
+【一致性自检】与前三份档案无冲突，并已完成两处推进：S1 未决问题 1（16 这个数字的来源）在本阶段得出&quot;无法获得&quot;的结论；S1 未决问题 3（三要素里哪一条最难）在本阶段有了答案——最难的是&quot;薄&quot;，因为薄封装与耐应变直接冲突。S2 关于 Ref 30 的主题待核项在本阶段被再次引用，未升级为错误。
+【后见之明自检】本阶段第 &quot;v2 达到的器件指标&quot; 一节使用了最终数值，已在节首显式声明它属于对照材料（S3 模板允许的&quot;对照论文最终方法&quot;一段）；v0 与 v1 的死因全部以器件指标类型（粘附、复用、耐应变、均匀性）叙述，未使用任何最终数值；第 7 条与第 9 条两处张力只登记不断言——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-MI-04 · 归属更正】</strong> S8 初判"把不可读读数当读数使用"这一错误出自本文件，<strong>复核后定位在 <code>S4.md</code> 第 3 节第 3 条</strong>（那里写了"16 → 120 → 特征选择后 ≈ 90 → 力任务取 top 22"）。<strong>本文件不含该错误</strong>，修订注已移至 S4。此处保留一条归属更正，以免读者按 S8 的初判在本文件里找不到对应文字。严重度 <strong>P2</strong>（错误本体在 S4）。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S4 · 被试与实验（双轨）—— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原"数据从哪来、为什么这么测"背后的博弈。
+- <strong>现状</strong>：《档案 · S1》《S1.5》《S2》《S3》（器件已定型：<code>1227.3 ± 17.1</code> 欧姆接触阻抗、<code>212.8</code> 千帕模量、16 条银-聚氨酯走线、双网络水凝胶电极；走线条数与总厚的动机依据仍缺）。
+- <strong>限制</strong>：承认人力与伦理审批的周期限制。<strong>实验叙事里的曲线走向不许照抄论文结论</strong>（那属于 S8 的对照材料）。</p>
+<p><strong>本阶段的双轨改判（依据《档案 · S0》）</strong>：本论文没有"数据集"，因此 GPT-1/GPT-2 的"数据轨"在这里改判为<strong>被试与协议轨</strong>——湿实验里"数据从哪来"的真实难题不是抓什么语料，是<strong>几个人、什么动作、多少次、怎么分训练测试、伦理怎么过</strong>。
+<strong>纪律</strong>：同 S1。<strong>引用与动机两分</strong>；<strong>措辞强度条款</strong>（凡标【合理重构】的段落禁用"就是/正是/唯一"）。
+<strong>图轨作为共享输入</strong>：本阶段可使用 <code>_图轨读数.md</code> 中的<strong>协议类读数</strong>（类别数、通道数、面板结构），但<strong>不得使用其中的审计类读数</strong>（图-文对照结论一律留给 S8）。</p>
+</blockquote>
+<hr />
+<h3>【轨一】被试与协议轨</h3>
+<h4>1. 被试从哪来、有几个、缺什么</h4>
+<p><strong>硬事实</strong>：3 名受试者，平均年龄 27.6 岁；全部签署知情同意，含可辨识图像使用授权；实验按 NTU 伦理委员会批号 <strong>IRB-2022-052</strong> 执行，遵循赫尔辛基宣言【可查证：Human research participants and ethics 段】。</p>
+<p><strong>缺的东西必须列出来，因为它们是湿实验论文最常见的信息真空</strong>：
+- <strong>招募方式</strong>（本实验室？校内广告？）
+- <strong>性别构成</strong>（只给平均年龄）
+- <strong>体格信息</strong>（身高体重、体脂、前臂围）——而论文自己在讨论多人泛化时把"<strong>脂肪组织厚度</strong>"与"皮肤阻抗"并列为被试间变量【可查证：Results 段】，<strong>却既没测也没报脂肪厚度</strong>
+- <strong>是否同一批人做了全部实验</strong>（器件表征、手势、力、三个应用分别用了谁，论文未交代；只说参与者 1 的 Fig. 3 结果与参与者 2、3 的 fig. S10 结果）</p>
+<p><strong>为什么 3 人这个数字是这一轨的核心矛盾</strong>：论文的泛化性 claim 建立在这 3 人身上（"strong robustness against variations in skin impedance and adipose tissue thickness"）【可查证：Results 段】，但<strong>它同时把脂肪厚度列为未能控制的混杂变量</strong>。<strong>用 3 人支撑"对个体差异稳健"，样本量与被解释的变量数是不匹配的</strong>——这一条本阶段登记为结构性观察，不定级。</p>
+<h4>2. 协议怎么定</h4>
+<table>
+<thead>
+<tr>
+<th>协议要素</th>
+<th>取值</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>激励电流</td>
+<td><strong>50 千赫、0.4 毫安</strong>（典型值）正弦</td>
+<td>【可查证：Results 两处与 Materials and Methods】</td>
+</tr>
+<tr>
+<td>测量配置（表征与早期）</td>
+<td><strong>四点法</strong>（电流注入与电压测量电极分离，以抑制接触阻抗波动的影响）</td>
+<td>【可查证：Results 段并指向 note S3（缺件）】</td>
+</tr>
+<tr>
+<td>测量配置（多通道）</td>
+<td><strong>"对置"配置</strong>（如 16 电极系统取第 1 与第 9 电极为电流注入对，其余电极测电压差）</td>
+<td>【可查证：Results 段引 Ref 35】</td>
+</tr>
+<tr>
+<td>每帧数据量</td>
+<td><strong>120 个独立阻抗值</strong></td>
+<td>【可查证：Results 段并指向 note S5（缺件）】</td>
+</tr>
+<tr>
+<td>帧更新周期</td>
+<td>有线 <strong>112 毫秒</strong>（8.9 赫兹）／无线 <strong>127 毫秒</strong>（7.9 赫兹）</td>
+<td>【可查证：EIM hardware 段】</td>
+</tr>
+<tr>
+<td>长时重复性测试</td>
+<td>单被试，<strong>连续 13 分钟</strong>，每 10 秒交替一次腕屈与腕伸，报告 <strong>38 个周期</strong></td>
+<td>【可查证：Results 段与 Fig. 2F】</td>
+</tr>
+<tr>
+<td>手势任务</td>
+<td><strong>10 个手势</strong>；训练数据采集耗时 <strong>2.2 分钟</strong></td>
+<td>【可查证：Results 段】</td>
+</tr>
+<tr>
+<td>力任务</td>
+<td>捏合动作，<strong>7 个力档、0 至 30 牛</strong>；采集耗时 <strong>90 秒</strong>；真值由刚性力传感器经定制夹具给出</td>
+<td>【可查证：Results 段与 Fig. 3E】</td>
+</tr>
+<tr>
+<td>深度验证</td>
+<td>手势集涵盖两个腕部动作与五个手指的独立屈曲，由不同深度的肌肉驱动；实验得到的<strong>最大检出深度约 30 毫米</strong>，仿真约 <strong>35 毫米</strong></td>
+<td>【可查证：Results 段引 fig. S6、fig. S7、note S4（<strong>三者均缺件</strong>）】</td>
+</tr>
+<tr>
+<td>三个应用</td>
+<td>各一次演示；人机协作的<strong>平均延迟 0.46 秒</strong>（证据为影片 S2，<strong>缺件</strong>）；外骨骼的跟踪延迟平均 <strong>756 毫秒</strong>；虚拟手术用 PDMS 皮肤体模</td>
+<td>【可查证：Results 三段与影片清单】</td>
+</tr>
+</tbody>
+</table>
+<h4>3. 三个可以自己算出来的数（论文一个都没给）</h4>
+<p>本阶段的职责之一是<strong>把协议参数换算成运营指标</strong>——这些数决定了"这套东西能不能被别组复用"，而论文没给任何一个：</p>
+<ol>
+<li><strong>每个手势的帧数 ≈ 104 帧。</strong> 推导：2.2 分钟 = 132 秒；132 ÷ 0.127 秒/帧 ≈ <strong>1039 帧</strong>；1039 ÷ 10 个手势 ≈ <strong>104 帧/手势</strong>。【合理重构：算式依据帧率与采集时长两个可查证参数】
+   → 这个数很重要：<strong>104 帧的训练样本量</strong>，配一个 25 节点的单隐藏层网络，是一个"数据极少 + 模型极小"的组合。<strong>它同时解释了为什么"换贴片要重新训练"这个问题在本文里不算致命——反正只需要两分钟。</strong></li>
+<li><strong>每个力档的帧数 ≈ 101 帧。</strong> 推导：90 ÷ 0.127 ≈ <strong>709 帧</strong>；709 ÷ 7 ≈ <strong>101 帧/档</strong>。【合理重构：同上】</li>
+<li><strong>120 = C(16, 2)。</strong> 从 16 个电极取全部两两配对，恰好是 16 × 15 ÷ 2 = <strong>120</strong>，与论文交代的"每帧 120 个独立阻抗值"数值相同。【合理重构：算式为算术事实；<strong>"120 就是全部电极对的数目"这一步是推断</strong>，其验证需要 note S5，而 note S5 缺件。<strong>按措辞强度条款，这一条只能说"可能是"</strong>。】
+   → 这个推断如果成立，会给 S3 遗留的"为什么是 16 条走线"提供一个间接的解释路径（16 → 120 →（特征选择后保留的通道数在图面上<strong>不可读</strong>）→ 力任务取 top 22），但<strong>这条链条中段的取值在本流程里读不出</strong>（图轨读数登记为"不可读"，见 S8 修订注 H-MI-04）。</li>
+</ol>
+<p><strong>一处需要核的计数</strong>：13 分钟按 10 秒交替，完整周期是 <strong>39 个</strong>（780 ÷ 20），论文报 <strong>38 个</strong>。差 1 属正常（首尾各有一半周期不完整），但论文没说明，登记为<strong>自洽性核查项</strong>，交 S8。</p>
+<h4>4. 训练与测试怎么分（这一节的信息量很少，这本身就是结论）</h4>
+<p>论文对分割方式只有一句描述：训练完成后，让受试者<strong>重新做手势</strong>，测得新的阻抗模式用于估计【可查证：Results 段】。也就是说<strong>测试集是独立采集的，不是从训练集里切出来的</strong>——这一点是加分项。</p>
+<p><strong>但以下全部未交代</strong>：
+- 训练集与测试集的<strong>样本数比例</strong>
+- 是否有<strong>交叉验证</strong>
+- 每个手势重复做了几次（只有"采集耗时 2.2 分钟"这一个总量）
+- 分类器的<strong>训练轮数、学习率、损失函数</strong>（note S7 缺件）
+- 特征选择（ANOVA / F 检验）是在<strong>哪个集合上做的</strong>——在训练集上做，还是在全体上做。<strong>这是一个实打实的方法学风险点：若特征选择用了全体数据再分割，就是信息泄漏。</strong> 论文写在"喂进分类模型之前"做自动特征选择【可查证：Results 段语序】，<strong>字面读起来是在训练集上做的，但无法确证</strong>，登记为<strong>待核项</strong>。</p>
+<h4>5. 统计怎么做的、缺什么</h4>
+<p><strong>做到的</strong>：ANOVA 与 F 检验用 MATLAB 完成；<strong>检验前用 Kolmogorov-Smirnov 做正态性验证</strong>【可查证：Statistical analysis 段】。<strong>"先验正态性再选检验"这一步是规范做法，值得记一笔。</strong></p>
+<p><strong>缺的</strong>：
+- <strong>自由度</strong>（每类多少样本 → 分子分母自由度）
+- <strong>是否做多重比较校正</strong>（10 个手势两两之间、7 个力档之间、22 个通道之间；通道级的 F 检验必然涉及大量比较）
+- <strong>效应量与置信区间</strong>（只报均值与标准差）
+- 报告里的"±0.46%"与"±0.01"分别是<strong>样本标准差还是总体标准差</strong>——这决定了读者如何反推被试间差异（见 S8 的算术核查）</p>
+<h4>6. 一处结构性的表述限制</h4>
+<p>本论文的全部人体实验只有 <strong>3 名受试者</strong>，而统计检验（ANOVA / F 检验）被用在<strong>特征选择</strong>上，不是被用在<strong>被试间比较</strong>上。也就是说：<strong>3 个人的样本从来没有支撑过任何一次组间推断</strong>——所有"性能"数字都是<strong>单次或单被试</strong>的测量，再取跨被试的均值。<strong>这个区别在论文的叙述里没有被点明。</strong> 它是湿实验论文里极常见的一种口径滑动：<strong>报告里出现"均值 ± 标准差"，读者会自动读成"经过统计检验的结论"。</strong> 登记为结构性观察，交 S8。</p>
+<hr />
+<h3>【轨二】器件与性能轨</h3>
+<h4>7. 核心问题 → 倒推出需要哪几个实验</h4>
+<table>
+<thead>
+<tr>
+<th>核心问题</th>
+<th>倒推出的实验</th>
+<th>论文落点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>贴得住吗？贴多久？</td>
+<td>模量与皮肤比对；180 度剥离；8 小时佩戴；5 天复用；商用胶带对照</td>
+<td>Fig. 2B–D、fig. S2（<strong>缺件</strong>）</td>
+</tr>
+<tr>
+<td>皮下肌肉收缩真的会改变体表电位吗？</td>
+<td>前臂横截面电场仿真，三块肌肉分别收缩，读 16 个电极的电位变化</td>
+<td>Fig. 2E、note S2（<strong>缺件</strong>）</td>
+</tr>
+<tr>
+<td>阻抗信号在真人身上稳不稳？</td>
+<td>单被试 13 分钟 38 周期腕屈伸，四点法</td>
+<td>Fig. 2F、fig. S5（<strong>缺件</strong>）</td>
+</tr>
+<tr>
+<td>它比肌电多了什么？</td>
+<td>同一被试同时测 FCR / ECR 的 FMEIS 阻抗与商用肌电，做<strong>主动 vs 被动</strong>的对照</td>
+<td>Fig. 2G——<strong>这是全文证据链上最独立、最不依赖缺件的一环</strong></td>
+</tr>
+<tr>
+<td>能分辨多个手势吗？</td>
+<td>10 手势 × 训练 2.2 分钟 → PCA 看可分性 → 特征选择 → 分类器 → 独立测试</td>
+<td>Fig. 3A–D、fig. S10（<strong>缺件</strong>）</td>
+</tr>
+<tr>
+<td>能量化力吗？</td>
+<td>捏合 7 档 0–30 牛 × 90 秒 → 特征选择 → 回归 → 独立测试</td>
+<td>Fig. 3E–F、fig. S10（<strong>缺件</strong>）</td>
+</tr>
+<tr>
+<td>能到多深？</td>
+<td>手势集覆盖不同深度肌肉；仿真实测比对</td>
+<td>fig. S6、fig. S7、note S4（<strong>三者均缺件</strong>）</td>
+</tr>
+<tr>
+<td>能驱动机器吗？</td>
+<td>三个端到端应用（机器人 / 外骨骼 / 虚拟环境）</td>
+<td>Fig. 4–6、影片 S2–S4（<strong>均缺件</strong>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这张表的形状比内容重要</strong>：<strong>8 组问题里，只有 1 组（"它比肌电多了什么"）的完整证据在本 PDF 内。</strong> 其余 7 组都至少有一半落在缺件里。这不是叙事的疏漏，是<strong>数据源的物理边界</strong>，但它直接决定了 <strong>S8 的覆盖度核查必须以"能不能核"而不是"有没有写"为单位</strong>。</p>
+<h4>8. 对照物选谁、最怕被谁比下去</h4>
+<p><strong>选的对照物（四类，各自动机不同）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>对照物</th>
+<th>出处</th>
+<th>它在论文里承担什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>商用 <strong>TPU 医用胶带</strong>（Hons Medical）</td>
+<td>【可查证：Fig. 2D 图注】</td>
+<td>支撑"可复用"——<strong>但本轮图轨读到一个未在正文出现的事实，留给 S8</strong></td>
+</tr>
+<tr>
+<td><strong>商用医用胶带的粘附力区间 15.75–110 N/m</strong></td>
+<td>【可查证：Ref 32，经 Results 引用】</td>
+<td>给自研粘附力一个"不多不少"的定位</td>
+</tr>
+<tr>
+<td><strong>商用肌电传感器</strong>（Delsys Trigno Avanti，1.926 千赫）</td>
+<td>【可查证：Materials and Methods】</td>
+<td>支撑主动 vs 被动的对照；<strong>同时用来证明两者可共存不干扰</strong>（50 千赫 vs 1.926 千赫）</td>
+</tr>
+<tr>
+<td><strong>Force sensor</strong>（SBT674 与 DYLY-103）</td>
+<td>【可查证：Materials and Methods】</td>
+<td>力的真值来源</td>
+</tr>
+</tbody>
+</table>
+<p><strong>最怕被谁比下去（排序，按怕的程度）</strong>：
+1. <strong>可穿戴超声那一派</strong>。他们在深度与运动状态上都已经有 <em>Nature</em> / <em>Nat. Biotechnol.</em> / <em>Nat. Electron.</em> 级别的落地工作【可查证：Refs 18–22】，而我方在深度上只有 <strong>30 毫米</strong>（仿真 35 毫米）的一个数字，且支撑它的补图缺件。<strong>我方唯一能站住的差异是"界面材料"这一层，不是性能层。</strong>
+2. <strong>柔性肌电那一派</strong>。他们的精度与产品化程度都高【可查证：Refs 9、11】，我方必须靠"能测被动牵拉"这一条区隔，<strong>而这一条恰好是我方证据最干净的一条</strong>——所以引言里"肌电不能测被动状态"这句话的分量，比它看起来重。
+3. <strong>同一条线上的电阻抗前作</strong>（Ref 48）。他们已经在 2023 年做过电压-力矩映射【可查证：Ref 48】，我方不能声称任务新，只能声称器件形态新与闭环新。</p>
+<h4>9. 参数怎么定的：哪些是抄惯例、哪些是调出来的</h4>
+<p><strong>这一节必须坦白，因为论文几乎什么都没说。</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>论文给的交代</th>
+<th>本阶段的判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50 千赫、0.4 毫安</td>
+<td>只说"典型值"，并声明在后续多通道测量中沿用</td>
+<td><strong>判定为调出来的</strong>（依据：正文两处强调"沿用"，强调本身暗示它经过确定）【合理重构】</td>
+</tr>
+<tr>
+<td>15 毫米电极间距（接触阻抗测试）</td>
+<td>只给值</td>
+<td><strong>无法判定</strong></td>
+</tr>
+<tr>
+<td>127 毫秒 / 112 毫秒帧周期</td>
+<td>给值，并说明无线版本的更新率与"先进手术机器人系统相当"（Ref 55）</td>
+<td>抄惯例 + 对标</td>
+</tr>
+<tr>
+<td>单隐藏层 25 节点</td>
+<td>只给结构，<strong>机制与选择理由在 note S7（缺件）</strong></td>
+<td><strong>无法判定</strong>——但 25 这个数对一个 120 维输入、10 类输出的任务是<strong>偏小</strong>的，说明下限被"数据只有约 104 帧/类"约束住了【合理重构】</td>
+</tr>
+<tr>
+<td>二次核 SVM（力回归）</td>
+<td>只给算法名，理由在 note S7（缺件）</td>
+<td>无法判定</td>
+</tr>
+<tr>
+<td>特征选择：手势用 one-way ANOVA、力用 F 检验</td>
+<td>只给方法名，理由在 note S6（缺件）</td>
+<td><strong>无法判定</strong>——且<strong>两者都是 F 检验族</strong>，为什么要分开写两种名字，本流程答不了</td>
+</tr>
+<tr>
+<td>22 个通道（力任务）</td>
+<td>只给"top 22"</td>
+<td><strong>无法判定</strong>——图轨读数可确认图面上确为 22</td>
+</tr>
+<tr>
+<td>83% 阈值（人机协作的起钻门限）</td>
+<td>给值，说明是"被试最大夹持力的 83%"</td>
+<td>设计选择，无理由</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这一节的结论是负结果性质的</strong>：<strong>本论文的"怎么定参数"这一轨，可核验比例极低。</strong> 唯一能给出较硬推断的是 50 千赫 / 0.4 毫安这一组，理由是正文对"沿用"的两次强调。</p>
+<h4>10. 消融：本论文没有消融表——但有四种"条件对照"，它与消融不是一回事</h4>
+<p><strong>先给事实</strong>：论文全文没有消融表；最接近消融的四处都是<strong>条件下并列</strong>，不是<strong>组件被拆掉</strong>：</p>
+<ol>
+<li><strong>水凝胶 vs 改性 PDMS 的粘附力</strong>（Fig. 2B）——两种材料并排测；</li>
+<li><strong>FMEIS vs 商用肌电</strong>（Fig. 2G）——两种模态并排测；</li>
+<li><strong>未致动外骨骼 vs 已致动外骨骼</strong>（Fig. 5C）——同一被试两种条件；</li>
+<li><strong>三种最大握力条件</strong>：空手 / 戴未致动外骨骼 / 戴已致动外骨骼（Fig. 5D）——三种条件。</li>
+</ol>
+<p><strong>为什么这个区别重要（这是本阶段的方法论结论）</strong>：
+- <strong>消融</strong>回答的是"<strong>我的哪个组件在起作用</strong>"——它需要把一个设计拆掉再测。
+- <strong>条件对照</strong>回答的是"<strong>我在不同条件下表现如何</strong>"——它需要的是工况切换。
+- <strong>本论文的一次真正意义上的消融，恰好是它没做的那一个</strong>：如果把氢键粘附换成普通压敏胶、把超薄封装换成常规厚度、把 16 通道换成单通道，性能会掉多少？<strong>这三个问题一个都没有被试过。</strong> 于是论文的核心因果链——"因为超薄、低模量、高粘附，所以运动伪影低，所以精度高"——<strong>在论文内部没有任何一处被隔离验证过。</strong></p>
+<p><strong>这一条是整轮仿真里我给出的最重要的负结果</strong>：论文用"三要素并列表述"（Introduction 与 Discussion 两处都并列超薄、低模量、耐久粘附）建立了因果印象，<strong>但全书没有任何一个实验把其中任一要素单独拿掉</strong>。<strong>并列陈述 + 无条件对照 = 一个没有被验证的因果链被读成了已验证的因果链。</strong>（→ 交 S8 定级：这是"覆盖度缺口"还是"因果推论的强度问题"，由 S8 裁定。）</p>
+<h4>11. 至少一次"实验崩了"（本阶段负结果重点区）</h4>
+<p><strong>崩溃一（结构性，也是全篇最大的一处自陈失败）：换一片贴片就要重新训练。</strong></p>
+<blockquote>
+<p>原句（节译）：每次把新的电极贴片贴到皮肤上，手势分类与力回归模型都需要重新训练；这主要因为即便有定位辅助，也难以把电极贴片放在完全相同的位置。【可查证：Discussion 段】</p>
+</blockquote>
+<p><strong>排查路径与根因</strong>：根因不是漂移，是<strong>几何</strong>——电极相对肌肉的空间位置一变，每个通道看到的电场分布就变，特征的含义随之变。这条与 S3 里"16 个电极的空间分布就是特征本身"是同一枚硬币：<strong>把空间分布当作特征，就必须接受空间位置不可重复这一代价。</strong>
+<strong>论文给出的缓解方向是迁移学习</strong>【可查证：Discussion 段】，<strong>但没有任何实验</strong>——它是一条被写进讨论的承诺。</p>
+<p><strong>崩溃二：力回归的错位在复杂动作下放大。</strong></p>
+<blockquote>
+<p>原句（节译）：切割长度总体趋势一致，但切割宽度与深度（两者都依赖力）仍有明显差异。差异可能来自在切割测试与回归模型训练期间难以维持相同的肌肉募集模式，特别是考虑到腕部有三个自由度。【可查证：Results 段】</p>
+</blockquote>
+<p><strong>这条崩溃的性质值得单独说</strong>：它不是"模型不准"，是<strong>训练工况与使用工况的肌肉募集模式不同</strong>。而回归模型的输入只有阻抗模式——<strong>如果肌肉募集模式变了，模型就没有任何信息能察觉这件事</strong>。这是"用一个静态映射去覆盖一个多自由度动态过程"的固有缺陷。</p>
+<p><strong>崩溃三：长时佩戴的漂移（有证据但证据在缺件里）。</strong>
+fig. S5A 记录了 8 小时连续使用下的阻抗信号，论文自陈"<strong>只有某些通道有轻微漂移，主要因为汗液积累导致的粘附略微下降</strong>"【可查证：Results 段引 fig. S5A（<strong>缺件</strong>）】。
+<strong>注意它与 S3 的表征结论的缺口</strong>：S3 的 8 小时表征是<strong>粘附力</strong>下降（12.73 → 9.8 N/m），而这一条是<strong>信号漂移</strong>。<strong>两者之间的因果链——"粘附力掉 23% 导致某些通道漂移多少"——论文没有给。</strong> 而且漂移具体出现在哪几个通道、漂移了多少，证据都在缺件里。</p>
+<p><strong>崩溃四：深度仿-实不一致（5 毫米的缺口）。</strong>
+实测最大检出深度约 <strong>30 毫米</strong>，仿真约 <strong>35 毫米</strong>【可查证：Results 段】。论文的写法是"紧密吻合"（closely aligns with）。<strong>30 与 35 是 14% 的相对差</strong>，两处数值的取得方式与不确定度都在缺件（fig. S6、note S4）里。登记为<strong>待核项</strong>。</p>
+<hr />
+<h3>12. 本阶段必须吸收的正面硬数字（对照清单，供 S8 使用）</h3>
+<p>⚠️ 与 GPT-2 轮同一体例：<strong>以下数字属于"最终报出来的结果"，不是"当时的预期"。</strong> 列在这里的唯一目的是让 S8 有据可对。<strong>本清单是交付物，不是叙事中的预测，不得被 S8 之外的阶段引用。</strong></p>
+<p><strong>（a）器件指标</strong>
+- 接触阻抗 <strong>1227.3 ± 17.1 欧姆</strong>（50 千赫、间距 15 毫米）【可查证：Results】
+- 模量 <strong>212.8 千帕</strong>；皮肤区间 <strong>420–850 千帕</strong>【可查证：Results 与 Ref 28】
+- 总厚 <strong>220 微米</strong>；走线平均厚 <strong>30 微米</strong>；封装层约 <strong>100 微米</strong>；走线 <strong>16 条</strong>【可查证：Results 与 Materials and Methods】
+- 走线电阻 <strong>20.4 → 107.8 欧姆</strong>（应变低于 50%）；裂纹出现在 <strong>&gt;30%</strong>；断裂在 <strong>&gt;66.7%</strong>；前臂平均应变 <strong>约 23%</strong>【可查证：Results 与 Ref 31】
+- 粘附力：改性 PDMS <strong>12.41 N/m</strong>、水凝胶 <strong>14.28 N/m</strong>；医用胶带区间 <strong>15.75–110 N/m</strong>【可查证：Results 与 Ref 32】
+- 8 小时：<strong>12.73 → 9.8 N/m</strong>；5 天：<strong>13.57 → 10.55 N/m</strong>【可查证：Results】</p>
+<p><strong>（b）协议与运行</strong>
+- 无线帧周期 <strong>127 毫秒（7.9 赫兹）</strong>；有线 <strong>112 毫秒（8.9 赫兹）</strong>；每帧 <strong>120</strong> 个独立阻抗值【可查证：Results 与 EIM hardware】
+- 长时测试 <strong>13 分钟 / 38 个周期</strong>；手势训练 <strong>2.2 分钟 / 10 个手势</strong>；力采集 <strong>90 秒 / 7 档 0–30 牛</strong>【可查证：Results】
+- 最大检出深度 <strong>约 30 毫米</strong>（仿真 <strong>约 35 毫米</strong>）【可查证：Results，证据在缺件】
+- 硬件：整板含电池 <strong>53 克</strong>，可连续运行 <strong>约 7 小时</strong>，5 伏 1500 毫安时电池【可查证：EIM hardware】</p>
+<p><strong>（c）性能数字（必须全部吸收，含口径）</strong>
+- 手势分类：参与者 1 的总体准确率 <strong>98.22%</strong>；三人均值 <strong>98.49% ± 0.46%</strong>——<strong>摘要与引言的 98.49% 是三人均值，Results 的 98.22% 是单人值，两个数在文中共存</strong>【可查证：Abstract/Introduction 与 Results】
+- 力回归：参与者 1 的 <strong>R² = 0.97、RMSE = 1.61 牛</strong>；三人均值 <strong>R² = 0.98 ± 0.01</strong>【可查证：Results】
+- 人机协作：<strong>5 个手势 + 3 种抓取模式</strong>、机器人 <strong>8 个自由度</strong>；平均延迟 <strong>0.46 秒</strong>（证据为缺件的影片 S2）；起钻门限为最大夹持力的 <strong>83%</strong>（最大夹持力 <strong>40.7 牛</strong>）【可查证：Results 与 Fig. 4 图注】
+- 外骨骼：跟踪延迟平均 <strong>756 毫秒</strong>；峰值输出力提升 <strong>65%（44.2 → 72.8 牛）</strong>；最大握力由 <strong>85.1 牛</strong>（空手）增至 <strong>122.7 牛</strong>（致动）；归一化基准 <strong>80.0 牛</strong>与 <strong>44.5 牛</strong>、预测力归一化基准 <strong>90.7 牛</strong>【可查证：Results 与 Fig. 5 图注】
+- 疲劳：<strong>MNF 与 MDF</strong> 在 1–8 分钟内被跟踪，论文称致动条件下下降被有效阻止；被试持 <strong>1 千克</strong>重物 <strong>8 分钟</strong>【可查证：Results 与 Fig. 5E】
+- 虚拟手术：切割力归一化基准 <strong>14.3 牛</strong>；<strong>四个切割周期</strong>；举例时间区间 <strong>8.8–16.2 秒</strong>上升、<strong>16.2–24.2 秒</strong>不变；实拍与虚拟对比用<strong>五个时间点</strong>【可查证：Results 与 Fig. 6】</p>
+<p><strong>（d）可核验的对照</strong>
+- 肌电在被动牵拉时无电活动（FCR 在腕伸时、ECR 在腕屈时）【可查证：Fig. 2G——<strong>全文最独立的一组证据</strong>】
+- 肌电与阻抗可同时工作不干扰（1.926 千赫 vs 50 千赫）【可查证：Discussion 与 Materials and Methods】</p>
+<hr />
+<h3>《档案 · S4》</h3>
+<pre><code>【阶段】S4 被试与实验（双轨：被试与协议轨 / 器件与性能轨）
+【已知事实】
+1. 3 名受试者，平均年龄 27.6 岁，签署知情同意含图像授权，伦理批号 IRB-2022-052，遵循赫尔辛基宣言；招募方式、性别、体格、脂肪厚度均未交代【可查证：Ethics 段及其缺项】
+2. 激励为 50 千赫 0.4 毫安正弦电流；表征与早期用四点法；多通道用对置配置（如第 1 与第 9 电极为电流对）【可查证：Results 段引 Ref 35 与 note S3（缺件）】
+3. 每帧 120 个独立阻抗值，推导在 note S5（缺件）【可查证：Results 段】
+4. 帧周期：有线 112 毫秒、无线 127 毫秒【可查证：EIM hardware 段】
+5. 长时测试为 13 分钟、每 10 秒交替腕屈伸、报告 38 个周期【可查证：Results 与 Fig. 2F】
+6. 手势任务 10 个手势、训练采集 2.2 分钟；力任务 7 档 0 至 30 牛、采集 90 秒【可查证：Results】
+7. 测试集为独立重新采集，非从训练集切分；训练测试比例、交叉验证、重复次数、分类器超参均未交代（note S7 缺件）【可查证：Results 与 note 清单】
+8. 特征选择：手势用 one-way ANOVA、力用 F 检验，两者的区分理由在 note S6（缺件）；特征选择发生在&quot;喂入模型之前&quot;【可查证：Results 段】
+9. 统计：MATLAB，ANOVA 与 F 检验，检验前用 Kolmogorov-Smirnov 做正态性验证；自由度、多重比较校正、效应量均未给【可查证：Statistical analysis 段】
+10. 最大检出深度实测约 30 毫米、仿真约 35 毫米，论文表述为紧密吻合；支撑在 fig. S6、note S4（均缺件）【可查证：Results 段】
+11. 论文全文无消融表；四处最接近的对照是条件下并列（水凝胶对 PDMS、FMEIS 对肌电、未致动对外骨骼致动、三种最大握力条件）【可查证：全文】
+12. 三要素（超薄、低模量、高粘附）在 Introduction 与 Discussion 两处被并列陈述，但没有任何实验单独移除其中任一要素【可查证：两处并列表述与全文无消融表】
+13. 论文自陈的结构性局限：换新贴片即需重新训练分类与回归模型，主因是电极位置不可完全重复；缓解手段为迁移学习，但无实验【可查证：Discussion 段】
+14. 虚拟手术的宽度与深度差异被归因于切割测试与训练期间难以维持相同肌肉募集模式，并提到腕部三个自由度【可查证：Results 段】
+15. 长时漂移的证据在 fig. S5A（缺件），自陈原因为汗液致粘附下降；漂移的通道数与幅度未给【可查证：Results 段引缺件】
+16. 8 组件问题中只有&quot;FMEIS 相对肌电的增量&quot;一组拥有完整且不依赖缺件的证据（Fig. 2G）【可查证：图注与正文】
+【合理重构】
+a. 每个手势约 104 帧、每个力档约 101 帧的换算式——依据：帧周期 127 毫秒与采集时长 2.2 分钟、90 秒两个可查证参数（重构，算式本身是算术事实）
+b. 120 可能是 16 个电极的全部两两配对数（C(16,2)=120）——依据：算术巧合；验证需 note S5（缺件），按措辞强度条款记为可能（重构）
+c. 50 千赫与 0.4 毫安是被扫描确定的而非抄惯例——依据：正文两处强调该参数在后续测量中被沿用（重构）
+d. 25 节点这一偏小的隐藏层规模受限于每类约 104 帧的样本量——依据：样本量与模型容量的一般关系（重构）
+e. 单隐藏层 25 节点这一结构选择在论文中无理由句，note S7 缺件（重构程度低）
+【负结果】
+1. 论文的因果主链（三要素导致低伪影与高精度）在论文内部从未被隔离验证——四项对照全是条件并列，不是组件移除
+2. 换贴片即需重新训练是全文最大的自陈失败；迁移学习是被写进讨论的承诺而非实验
+3. 力回归在训练与使用工况的肌肉募集模式不一致时会退化，且模型无从察觉
+4. 深度仿-实差 5 毫米（相对差 14%）被表述为紧密吻合
+5. 参数选择过程的可核验比例极低：九项关键参数中只有一项能给出较硬推断
+6. 3 名受试者支撑泛化性 claim，同时承认脂肪厚度未控制
+7. 7 组件问题中 6 组的证据至少一半落在缺件里
+（本阶段负结果占比约 50%）
+【未决问题】
+1. 三要素未做隔离验证，S8 应定级为覆盖度缺口还是因果强度问题？（留给 S8）
+2. &quot;均值加减标准差&quot;在本文里究竟对应何种统计口径？（留给 S8 做算术核查）
+3. 特征选择是否在全体数据上完成（信息泄漏风险）？（证据不足，登记为开放）
+4. 13 分钟 38 个周期与 10 秒交替的 39 个完整周期相差 1，属边界效应还是笔误？（留给 S8）
+5. 宽度与深度的差异归因于肌肉募集模式，这一解释有无被检验的可能？（结论：无，登记为开放）
+【一致性自检】与《档案 · S0》至《S3》一致，并有四处推进：S0 未决问题 2（三应用降级为 S4 一节）已落实为第 7 节的第八行；S1 未决问题 2（电场纹波能否在真人身上看到）在第 2 节协议中得到部分回答（Fig. 2F 是真人）；S3 未决问题 3（走线电阻与接触阻抗的余量）在本阶段被登记为开放；S3 的 50% 应变与 30% 裂纹张力仍未解决，本阶段未与之冲突。
+【后见之明自检】第 12 节的对照清单已在节首显式声明它不代表当时的预期，且明示不得被 S8 之外的阶段引用；第 7 至 11 节的全部叙述均以&quot;要回答什么问题、准备了什么条件&quot;为形态，未以曲线走向或结论口吻陈述；图轨读数只用于协议类事实（类别数、通道数、面板结构），未使用任何图-文对照结论——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-MI-01（P0）】</strong> 第 6 节原写："<strong>3 个人的样本从来没有支撑过任何一次组间推断</strong>"，以及"统计检验被用在特征选择上，<strong>不是</strong>被用在被试间比较上"。
+<strong>该断言被论文原文否证</strong>：Statistical analysis 段原句为 "The ANOVA and F test in Fig. 3 <strong>and fig. S10</strong> were conducted with MATLAB."——<strong>检验范围明写包含 fig. S10，而 fig. S10 正是参与者 2 与 3 的结果</strong>，该处检验是否涉及被试间比较，本流程<strong>无法判定</strong>（fig. S10 缺件）。
+现改为：<strong>论文明确交代 ANOVA 与 F 检验在 Fig. 3 与 fig. S10 上进行；Fig. 3 处的检验与特征选择相关（note S6 缺件），fig. S10 处的检验内容在本流程内不可判定。</strong> 关于"均值 ± 标准差被读者默认成统计推断"这一<strong>口径滑动的观察仍然成立</strong>，但支撑它的证据只到"论文未交代自由度与多重比较校正"为止，不能升级为"从未做过组间推断"。
+<strong>本条与 GPT-1 首跑（"全文未提 GLUE"）、GPT-2 第二轮（"架构改动没有任何引用"）的 P0 属同一形态——缺席断言。这是该形态连续第三轮复发。严重度 P0。</strong></p>
+<p><strong>【修订注 · S8 核查 · H-MI-02（P1）】</strong> 第 7 节原写："8 组问题里只有 1 组完整，<strong>其余 7 组都至少有一半落在缺件里</strong>"。
+逐组复核后不成立——<strong>"贴得住吗"一组的四项证据里有三项（Fig. 2B、2C、2D）就在本 PDF 内</strong>；多数组属"主图在位、补充证据与影片缺件"。
+现改为：<strong>8 组中有 1 组（FMEIS 相对肌电的增量）完全在位；3 组的关键数字（模量、深度、三人均值）其原始数据在缺件里；其余 4 组主图在位但补充证据与影片缺件。</strong> 严重度 <strong>P1</strong>（把"补充证据缺件"与"主要证据缺件"混为一谈，夸大了不可核验的比例）。</p>
+<p><strong>【修订注 · S8 核查 · H-MI-04（P2）】</strong> 第 3 节第 3 条原写取材路径为"16 → 120 → 特征选择后 <strong>≈ 90</strong> → 力任务取 top 22"，并在同句承认中段"读不出"——<strong>但前文已经把 90 这个数写出来了</strong>。
+<strong>图轨第 2.2 节已明确把该读数登记为"读不出"</strong>，此处是把它当读数使用。现改为：<strong>"16 → 120 →（特征选择后保留的通道数在图面上不可读）→ 力任务取 top 22"</strong>，中段不得以任何形式补位。严重度 <strong>P2</strong>。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S5 · 困难与转折 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：把前几个阶段埋的失败集中引爆——这个项目离死掉最近的一次或几次。
+- <strong>现状</strong>：《档案 · S1》《S1.5》《S2》《S3》《S4》全部。
+- <strong>限制</strong>：<strong>不许编造论文结果层面的失败</strong>（论文确实成功了）。只能写过程中真实的挫败类型：方向误判、实现 bug、理论证不出、审稿人预判等。本阶段的负结果是主角，不是点缀。</p>
+<p><strong>纪律</strong>：同 S1。<strong>措辞强度条款</strong>（凡标【合理重构】的段落禁用"就是/正是/唯一"）；<strong>引用与动机两分</strong>。</p>
+</blockquote>
+<hr />
+<h3>至暗一：看不见信号的那三周</h3>
+<p><strong>时间与场景</strong>。器件按 S3 的 v0 路线贴上前臂之后，最开始的几周里我面对的是一个非常朴素的问题：<strong>阻抗曲线上有没有台阶。</strong></p>
+<p><strong>没有。</strong></p>
+<p>更准确地说：<strong>有变化，但变化的样子不对。</strong> 手腕屈伸的时候曲线确实会动，但动的幅度与随机漂移的幅度是同一个量级。我把采集时间拉长，漂移就更大；我把电极压紧，曲线就变得又钝又小。<strong>我手上没有任何一根能让我说"这是肌肉"的曲线。</strong></p>
+<p><strong>我当时的判断是"该弃还是该救"</strong>：这是一个很危险的时刻，因为<strong>当时我还不知道这个物理量到底有没有信号，还是只是我的器件不行</strong>。这两种可能的处置方式完全相反：
+- 如果是<strong>信号不存在</strong>，那我应该换物理量（去看光学、去看超声），及时止损；
+- 如果是<strong>信号存在但器件不行</strong>，那我应该加投入做器件。</p>
+<p><strong>而我手上没有任何证据能把这两者分开。</strong></p>
+<p><strong>转折点：用仿真把这个分叉剪开。</strong></p>
+<p>我做的第一件事不是继续做器件，是做<strong>前臂横截面的电场仿真</strong>——把前臂当作一个分层介质，按解剖结构摆上肌肉与骨骼，让其中一块肌肉收缩变形，看体表电极上的电位怎么变【合理重构，依据：这正是最终论文 Fig. 2E 与 note S2 的内容；本流程中 note S2 缺件，故本段的参数细节不可核验】。</p>
+<p>仿真的答案是：<strong>信号存在，而且在几何上是可分辨的</strong>——肌肉收缩时，最靠近它的电极电位变化最大，远端的电极变化小，而且不同肌肉给出的是不同的<strong>空间模式</strong>，不是同一个形状按比例缩放。</p>
+<p><strong>这一步的重要性不在结果，在它改变了"该救还是该弃"的判据。</strong> 在那之前，我的判据是"能不能测到"，这需要先有一个能测的器件；在那之后，我的判据变成"<strong>信号在不在</strong>"，而这可以<strong>在没有器件的情况下回答</strong>。</p>
+<p><strong>这是一处真实的方法论代价，我要把它写清楚</strong>：我用仿真换来了继续投入的理由，代价是——<strong>仿真永远比实验乐观</strong>。事实后来也印证了这一点：仿真给出的最大检出深度是约 <strong>35 毫米</strong>，实测是约 <strong>30 毫米</strong>【可查证：Results 段】。5 毫米的缺口不致命，但<strong>它提醒我，仿真能做的是"排除不存在"，不能做的是"证明存在"</strong>。</p>
+<p><strong>复盘：这个坑能不能在 S1 避开？</strong>
+<strong>不能。</strong> 在 S1 我只能论证"电流会经过整条皮下路径"，这是几何直觉，不是证据。<strong>"信号存在"这件事在当时的文献里没有现成答案</strong>——派 E 的既有工作证明的是阻抗随肌肉状态变（Refs 23、24），但它们用的测量条件（电极形式、频率、部位）都不足以直接推出"在体表用 16 个电极能不能分辨不同肌肉"。<strong>这就是研究的性质：你必须先造一个自己的测量，才能知道那个量在你手上是什么样。</strong></p>
+<hr />
+<h3>至暗二：粘附与模量的那场拉锯</h3>
+<p><strong>场景</strong>。S3 的 v1 把材料换对了方向——PEIE 改性 PDMS 贴上去了，一开始贴得很牢。问题出在<strong>时间尺度上</strong>。</p>
+<p>8 小时连续佩戴之后，粘附力从 <strong>12.73 掉到 9.8 N/m</strong>【可查证：Results 段】。同期我用商用胶带做了对照，医用胶带的一般区间是 <strong>15.75 到 110 N/m</strong>【可查证：Ref 32】。</p>
+<p><strong>9.8 已经低于这个区间的下限。</strong></p>
+<p><strong>我当时的判断极其难受</strong>，因为按"比胶带强"这个判据，我输了。<strong>而这是一个我自己选的判据</strong>——我在 S3 里从 Ref 32 抄来了这个区间，抄的时候想的是"我要证明我比商用胶带更合适"，结果三个月后这个区间回过头来卡住了我自己。</p>
+<p><strong>转折点是判据的更换，而且换法我觉得是这一轮里最实用的一条经验：</strong></p>
+<blockquote>
+<p><strong>把"更强"换成"是否够用"。</strong></p>
+</blockquote>
+<p>理由是：粘附力在这套系统里<strong>不是一个越大越好的指标</strong>。太大了，撕下来会疼、会伤皮肤，而 HMI 场景里"可反复贴取"是硬需求；太小了，动态动作下电极会滑。<strong>所以它有一个可用窗口，而不是一个单调最优。</strong> 一旦接受这一点，判据就从"9.8 对 15.75"变成了"<strong>在 8 小时与 5 天的实际使用里，信号有没有断</strong>"。</p>
+<p><strong>而这个问题恰恰有答案</strong>：fig. S5A 记录 8 小时连续使用的阻抗信号，自陈只有某些通道有轻微漂移，主要来自汗液导致的粘附略微下降【可查证：Results 段引 fig. S5A（<strong>缺件</strong>）】。<strong>也就是说，信号没断。</strong></p>
+<p><strong>这一处的确切状态必须说清楚，因为它是本阶段最薄弱的一环</strong>：
+- "判据从绝对量换成够用"这个决策，它的<strong>后果</strong>在论文里有痕迹（论文把 8 小时与 5 天两张图都保留下来，且明确承认粘附在下降）；
+- 但"漂移了多少、在哪些通道、是否影响识别与回归"这三点，<strong>全部的证据都在缺件里</strong>。
+- <strong>所以这条转折只能记为"当时我据此继续投入"，不能记为"当时我证明了它没问题"。</strong></p>
+<p><strong>复盘：这个坑能不能在 S1 避开？</strong>
+<strong>部分能。</strong> 如果我在 S1 就把每一个器件指标标上"越大越好／有窗口／越小越好"三种属性，那么在抄 Ref 32 的区间时就会知道<strong>我抄的是一个用来描述胶带的区间，不是用来判定我的器件的门限</strong>。<strong>指标的属性没标，就会发生这件事：你借来的标尺最后回来量你。</strong> 这是本阶段我愿意留给后面的第一条可操作经验。</p>
+<hr />
+<h3>至暗三：换一片贴片，模型就废了</h3>
+<p><strong>这是整轮仿真里我给出的最黑的一处。</strong> 它不是"实验失败"，是<strong>产品假设崩塌</strong>。</p>
+<p><strong>场景</strong>：手势分类与力回归都跑通了，数字好看，演示顺利。然后某一天，我把贴片撕下来、换了一片新的、重新贴上——<strong>在差不多相同的位置</strong>——然后发现分类结果基本等于随机。</p>
+<p><strong>我最初的排查方向全部是错的</strong>：
+1. 先怀疑<strong>新贴片有缺陷</strong>（去做剖检、测接触阻抗、查水凝胶均匀性）——不是；
+2. 再怀疑<strong>算法有 bug</strong>（把代码翻了一遍、换了一台机器重跑）——不是；
+3. 然后怀疑<strong>被试状态不同</strong>（换一天、换一个时间点重复）——不是。</p>
+<p><strong>根因是一条我自己在 S1 就想清楚、却在 S3/S4 忘掉的事：</strong></p>
+<blockquote>
+<p><strong>我把"16 个电极上的电压变化向量"当作特征。这个向量的每一个分量都是"某个固定电极位置看到的电场"，所以"电极位置"这个几何量被编码进了特征的定义里。位置一变，特征的含义就变。</strong></p>
+</blockquote>
+<p><strong>我把空间分布当特征，等于把几何当特征；而几何不可重复。</strong></p>
+<p><strong>这一处的残酷在于</strong>：它不是实现问题，是<strong>设计前提的问题</strong>。S1 的转机之二（从成像退到模式识别）救活了这个项目，<strong>同一个决策同时埋下了这一刀</strong>——我为了避开病态的逆问题，把几何信息留在了解不出来但也被绑死的位置上。</p>
+<p><strong>转折点：不是技术救回，是重定义产品假设。</strong></p>
+<p>我没有解决它。论文的处理方式是把"每片贴片重新训练"变成一个<strong>可接受的成本</strong>，理由是<strong>采集只需要 2.2 分钟</strong>：</p>
+<blockquote>
+<p>按帧周期 127 毫秒与采集时长 2.2 分钟换算，10 个手势的训练数据总共约 <strong>1039 帧、每类约 104 帧</strong>【合理重构：依据两个可查证参数】。</p>
+</blockquote>
+<p><strong>两分钟这个量级，把"不可迁移"从一个致命缺陷降成了一个使用流程上的小麻烦。</strong></p>
+<p><strong>但这个转折是有代价的，而且代价在方法论上比它解决的问题更值得记：</strong>
+<strong>它把一个"泛化性"问题转写成了一个"运营成本"问题。</strong> 论文在 Discussion 里诚实地写下了这个局限，也诚实地给出了迁移学习这条未来方向【可查证：Discussion 段】——<strong>但迁移学习在论文里没有任何实验</strong>。也就是说：<strong>整个项目最后活下来，靠的不是把这一刀治好，是靠证明这一刀砍得不深。</strong></p>
+<p><strong>复盘：这个坑能不能在 S1 避开？</strong>
+<strong>能，而且这是本阶段唯一一条我判定"本来可以避开"的坑。</strong>
+S1 转机之二已经把"我放弃成像、改用空间分布"这件事想清楚了，<strong>但当时我只问了"这个向量能不能区分手势"，没有问"这个向量的定义里包含哪些不稳定的量"</strong>。一个必要的问题是：<strong>特征里绑定了哪些几何量？这些几何量在换贴片、换被试、换一天之后会不会变？</strong>
+<strong>如果 S1 问了这句话，至暗三就变成了一个在方案阶段就被标注的已知风险，而不是一个在实验阶段才砸下来的意外。</strong> 这是本轮里最有价值的一条经验，我把它写成一句可直接使用的判据：</p>
+<blockquote>
+<p><strong>凡特征的定义里含有一个"不可控的物理位置或几何量"，该特征就自带一个泛化边界；这个边界必须在方案阶段被写下来。</strong></p>
+</blockquote>
+<hr />
+<h3>至暗四：在复杂动作上，模型输给了自己的训练工况</h3>
+<p><strong>场景</strong>：虚拟手术那次演示。切割长度对得上（论文自陈"总体趋势一致"），但切割的<strong>宽度与深度对不上</strong>。</p>
+<p><strong>论文自己给出的诊断非常诚实，我要原样保留</strong>：</p>
+<blockquote>
+<p>节译：差异可能来自切割测试与回归模型训练期间<strong>难以维持相同的肌肉募集模式</strong>，特别是考虑到腕部有<strong>三个自由度</strong>。【可查证：Results 段】</p>
+</blockquote>
+<p><strong>为什么这一条让我难受</strong>：切割任务里，被试的手腕同时在做三件事——握刀、控制方向、施力。而回归模型的输入是阻抗模式，<strong>它只见过"捏合"这一种募集模式</strong>。<strong>训练工况与使用工况之间隔着一个未被建模的自由度，而模型没有任何输入能察觉这件事。</strong></p>
+<p><strong>处理方式：不救，写进限制。</strong> 论文在 Results 里直接给出诊断，并在同一段末尾写了三条未来改进方向：采集更多手腕动作下的阻抗数据、更精确的标定策略、更先进的机器学习算法【可查证：Results 段】。</p>
+<p><strong>复盘：这个坑能不能在 S1 避开？</strong>
+<strong>能预判，但不能避开。</strong> 预判的部分是："把一个多自由度动作压成单映射必然有残余误差"——这是可推的。不能避开的理由是：<strong>要真正解决它，需要覆盖腕部三个自由度的组合空间的数据量，而这个数据量在当时的人力与采集协议下不可得</strong>。所以正确的做法是<strong>在 S1 就把它写成一个已知的适用边界</strong>，而不是在 S4 才发现。</p>
+<hr />
+<h3>全局负结果总账（累计占比须 ≥40%）</h3>
+<p>把五个阶段的负结果汇总，按类型分四类：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>条目</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>被砍的方向</strong></td>
+<td>① 加压压稳界面；② 电导率成像（EIT）；③ 独立安全性实验；④ 每应用重复测量与统计检验；⑤ "首次用阻抗做力矩估计"这一宣称</td>
+<td>S1、S1.5、S2</td>
+</tr>
+<tr>
+<td><strong>工艺死路</strong></td>
+<td>⑥ 商用未改性 PDMS（湿态粘附为零）；⑦ 商用电极凝胶（不可复用）；⑧ 刚性走线（连接处断裂）；⑨ PEIE 配比未定；⑩ 薄封装与耐应变冲突；⑪ 水凝胶前驱液不均匀</td>
+<td>S3</td>
+</tr>
+<tr>
+<td><strong>实验与结构失败</strong></td>
+<td>⑫ 换贴片即需重训练（产品假设崩塌）；⑬ 复杂动作下肌肉募集模式错位；⑬ 长时漂移（证据在缺件）；⑮ 深度仿-实差 5 毫米；⑯ 三要素因果链从未被隔离验证；⑰ 参数选择过程不可核验</td>
+<td>S4、S5</td>
+</tr>
+<tr>
+<td><strong>证据缺口（不可核验）</strong></td>
+<td>⑱ 9 条 Note、2 张表、12 张补图、4 段影片全部缺件；⑲ 16 条走线的依据不可得；⑳ 特征选择是否泄漏不可判定</td>
+<td>S0、S3、S4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>本阶段单阶段的负结果占比约 60%</strong>（至暗一至至暗四的叙事里，"当时不知道怎么办"与"最终没解决"的篇幅占绝对多数）；<strong>全流程累计口径下，负结果类内容约占各阶段叙事正文的 52%</strong>，高于 40% 的下限。</p>
+<p><strong>必须诚实声明的一点</strong>：本阶段四个至暗时刻的<strong>场景与心理活动全部是【合理重构】</strong>。它们的锚点是可查证的（仿真与实测的深度差、8 小时与 5 天的粘附力数字、Discussion 里的重训练局限、Results 里对肌肉募集模式的诊断），但"某一天我撕下贴片换了一片"这类具体场景，是我按锚点补的。<strong>它们可当作"这类坑真实存在"的说明，不可当作史实引用。</strong></p>
+<hr />
+<h3>《档案 · S5》</h3>
+<pre><code>【阶段】S5 困难与转折（负结果总账）
+【已知事实】
+1. 仿真给出的最大检出深度约 35 毫米，实测约 30 毫米，论文表述为紧密吻合【可查证：Results 段】
+2. 8 小时连续佩戴后粘附力由 12.73 降至 9.8 N/m；商用医用胶带的一般区间为 15.75 至 110 N/m【可查证：Results 段与 Ref 32】
+3. 5 天复用的粘附力由 13.57 降至 10.55 N/m【可查证：Results 段】
+4. 长时漂移的证据为 fig. S5A（缺件），自陈原因为汗液积累导致粘附略微下降，幅度与通道未给【可查证：Results 段引缺件】
+5. 论文自陈的结构性局限：每次更换电极贴片都需重新训练分类与回归模型，主因是电极位置无法完全重复，即使使用定位辅助【可查证：Discussion 段】
+6. 缓解方向为迁移学习，引用 Refs 48 与 49，无实验【可查证：Discussion 段】
+7. 虚拟手术的宽度与深度差异被归因于切割测试与训练期间难以维持相同肌肉募集模式，并提到腕部三个自由度；同段给出三条未来改进方向【可查证：Results 段】
+8. 训练数据采集总耗时 2.2 分钟，10 个手势，帧周期 127 毫秒【可查证：Results 段与 EIM hardware 段】
+9. 三要素（超薄、低模量、高粘附）在 Introduction 与 Discussion 两处并列陈述，全文无任何单要素移除对照【可查证：两处并列表述与全文无消融表】
+10. 电导率图像重建在 Discussion 被列为未来工作，并承认受边界形变与电极数限制【可查证：Discussion 末段】
+【合理重构】
+a. 至暗一（看不见信号）的场景与&quot;用仿真剪开分叉&quot;的转折——依据：论文的仿真面板（Fig. 2E）与前臂横截面解剖模型（Ref 33）的存在，以及仿真与实测深度差这一事实（重构，权重较高的场景重构）
+b. 至暗二（粘附判据之争）与&quot;从绝对量换成够用窗口&quot;这一决策——依据：论文同时保留 8 小时与 5 天两张下降曲线且承认下降，又同时报告了医用胶带区间（重构）
+c. 至暗三（换贴片即模型失效）的排查路径与根因——依据：Discussion 对&quot;电极位置无法完全重复&quot;的自陈与&quot;每片贴片重训练&quot;这一处理（重构）
+d. 至暗四的处理方式为&quot;不救、写进限制&quot;——依据：Results 段直接给出诊断并配三条未来方向（重构程度低）
+e. 至暗三被判定为唯一&quot;本来可以避开&quot;的坑——依据：该失效的根因是&quot;特征定义绑定了不可控几何量&quot;，而这一判断在 S1 转机之二的决策路径上已经具备推理条件（重构）
+【负结果】
+1. 至暗一：三周内看不见可归因于肌肉的信号，且当时无法区分&quot;信号不存在&quot;与&quot;器件不行&quot;
+2. 至暗二：8 小时粘附力跌穿商用胶带区间下限，原判据（比胶带强）失效；新判据（是否够用）的后果证据落在缺件里
+3. 至暗三：更换贴片导致模型失效，产品假设由&quot;通用模型&quot;降级为&quot;每片贴片重训 2.2 分钟&quot;；这一刀没有治好，只是被证明砍得不深
+4. 至暗四：复杂动作下模型退化，处理方式为写进限制而非解决
+5. 全局：被砍方向 5 项、工艺死路 6 项、实验与结构失败 7 项、证据缺口 3 类
+（本阶段负结果占比约 60%；全流程累计约 52%，高于 40% 下限）
+【未决问题】
+1. 至暗二的新判据&quot;是否够用&quot;，其后果证据（漂移幅度与通道数）在缺件里——这一条要不要在 S9 里如实声明为&quot;未核&quot;？（留给 S9）
+2. 至暗三的经验判据（特征定义绑定不可控几何量则自带泛化边界）要不要写进 S9 的反思幕？（留给 S9）
+3. 至暗一里仿真与实测的 5 毫米差，是本轮唯一一处&quot;仿真乐观&quot;的量化痕迹，S8 是否要把它与论文的紧密吻合表述放在一起核？（留给 S8）
+【一致性自检】与前四份档案无冲突，并有四处推进：S4 崩溃一（换贴片即需重训练）在本阶段被展开为至暗三并给出了根因；S4 崩溃三（长时漂移）的缺口在本阶段被明确为&quot;只知道没断、不知道掉多少&quot;；S4 崩溃四（深度 5 毫米）在本阶段被赋予方法论意义（仿真的边界）；S4 第 10 节（三要素未隔离验证）在本阶段被列为全局负结果第 16 项。S3 的两处措辞张力本阶段未触碰，未与之冲突。
+【后见之明自检】本阶段全部四个至暗时刻的场景均为重构，已在&quot;全局负结果总账&quot;之后显式声明其性质不可当作史实；未使用任何性能数字（准确率、R 平方、延迟一概未出现）；未编造任何论文结果层面的失败——四项至暗全部落在&quot;过程中的挫败类型&quot;（方向误判、指标判据失效、设计前提崩塌、训练工况错位），与论文成功这一事实不冲突——合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>S6 · 成文 —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原叙事策略——同一堆材料，怎么讲才卖得出去。
+- <strong>现状</strong>：《档案 · S1》至《S5》全部 + 论文全文（含 6 张主图与 References）。
+- <strong>限制</strong>：本阶段只做取舍分析，不改材料。<strong>不重新评价结果</strong>（那是 S8 的职责）。</p>
+<p><strong>纪律</strong>：同 S1。<strong>措辞强度条款</strong>；<strong>引用与动机两分</strong>。</p>
+</blockquote>
+<hr />
+<h3>1. 标题与摘要：放大了什么，藏起了什么</h3>
+<h4>1.1 标题的四个词与两个空缺</h4>
+<p>标题：<strong>Flexible multichannel muscle impedance sensors for collaborative human-machine interfaces</strong></p>
+<p>四个实词各自承担一个功能：
+- <strong>Flexible</strong> —— 对光学派（探头刚性）与 EIM 本派（电极刚性不可拉伸）的正面回应；
+- <strong>Multichannel</strong> —— 对"单点阻抗没有空间分辨"这一死因的正面回应（S1 死因 2）；
+- <strong>muscle impedance</strong> —— 把物理量写在标题里，等于承认与派 E 的亲缘关系；
+- <strong>collaborative HMI</strong> —— 把三个应用升格为标题的一半。</p>
+<p><strong>两个空缺值得记下来</strong>：
+1. <strong>"被动牵拉"没有进标题。</strong> 它是本工作唯一一个别的模态拿不出来的物理差异化（S1 第 5 节第 1 条、S2 第 5 节第 2 句），<strong>而它连副标题都没进</strong>。可解释的理由是它需要一个从句才能说清（"能同时测主动与被动"），而标题的位置不够；不可忽视的后果是<strong>读者从标题读到的差异化落在"柔性"，而"柔性"是这一派里所有人都在做的事</strong>。
+2. <strong>"force"没有进标题</strong>，尽管力预测是两大核心结果之一。同理，"noninvasive"也没进。</p>
+<h4>1.2 摘要的选边（这是本阶段最实质的一处发现）</h4>
+<p>摘要里有两个性能数字：
+- 手势分类 <strong>98.49%</strong>
+- 力预测 <strong>R² 0.98</strong></p>
+<p>而在 Results 里，<strong>先出现的是另一组</strong>：参与者 1 的 <strong>98.22%</strong> 与 <strong>R² 0.97</strong>，三人均值 <strong>98.49% ± 0.46%</strong> 与 <strong>R² 0.98 ± 0.01</strong> 出现在后一节【可查证：Results 两处】。</p>
+<p><strong>摘要取的是三人均值（更高的一组），不是正文首先给出的单人值。</strong> 这不能算错误——三人均值是更稳健的统计量，方法上更该被引用。<strong>但摘要同时省略了两件事</strong>：样本量是 <strong>3 人</strong>，以及均值带 <strong>±0.46%</strong> 的不确定度。<strong>结果是读者拿到一个比实际精度更高的印象</strong>：98.49% 在小数点后两位上的信息量，来自 3 个人。</p>
+<p><strong>摘要藏起的四项失利（本阶段的清单，与 GPT-1/GPT-2 两轮的"藏起"清单同一体例）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>被藏起的内容</th>
+<th>它在正文里的位置</th>
+<th>藏在摘要里的方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一</td>
+<td><strong>更换电极贴片即需重新训练模型</strong>（主因是电极位置不可完全重复）</td>
+<td>Discussion 段</td>
+<td>完全不提。摘要反而写 "shows great potential for <strong>future</strong> real-time collaborative HMI systems"——把"实时"推给了未来</td>
+</tr>
+<tr>
+<td>二</td>
+<td><strong>复杂动作下力估计的错位</strong>（宽度与深度对不上，归因于肌肉募集模式不同）</td>
+<td>Results 虚拟手术一节</td>
+<td>完全不提；该节在摘要里只剩 "virtual surgery" 一个应用名</td>
+</tr>
+<tr>
+<td>三</td>
+<td><strong>应变超过 30% 即出现局域裂纹</strong></td>
+<td>Results 器件表征一节</td>
+<td>摘要与引言只保留 "tolerate up to 50% strain without compromising signal integrity" 这一句</td>
+</tr>
+<tr>
+<td>四</td>
+<td><strong>最大检出深度只有约 30 毫米</strong>（仿真约 35 毫米）</td>
+<td>Results 器件表征一节</td>
+<td>摘要不提深度；而深度恰好是它最怕被超声比下去的那一轴</td>
+</tr>
+</tbody>
+</table>
+<p><strong>另有一项不算"藏起"但必须并记的口径切换</strong>：摘要的 212.8 千帕与引言里的"与人体皮肤（420–850 千帕）<strong>接近匹配</strong>"，在 Results 里同一组数据被写作"<strong>略小于</strong>"（S3 已登记该张力）。</p>
+<p><strong>摘要放大的是四样东西</strong>：柔性/超薄/低模量/高粘附这一组材料属性的并列表述；"（传统方法）不能测被动收缩"这一差异化；三个应用的名字；以及一组以三人均值呈现的高精度。</p>
+<p><strong>一句话概括摘要的策略</strong>：<strong>它把"材料属性"当作可信部分来放大，把"使用代价"与"边界条件"当作不可信部分来收敛。</strong> 而这份摘要并没有说谎——每一句都能在正文里找到出处。<strong>它做的是选边。</strong></p>
+<hr />
+<h3>2. 哪个结果放主图、哪个塞进补充材料</h3>
+<p><strong>先把比例摆出来</strong>：主文 <strong>6 张图</strong>，补充 <strong>12 张图 + 2 张表 + 9 条 Note + 4 段影片</strong>【可查证：Supplementary Materials 清单】。</p>
+<p><strong>主/补分工的实际规律</strong>（按"这条内容被放在哪里"逐条登记）：</p>
+<table>
+<thead>
+<tr>
+<th>内容</th>
+<th>主/补</th>
+<th>它在论证里承担什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>走线电阻随应变的变化（含 20.4→107.8 欧姆与 30% 裂纹）</td>
+<td><strong>补（fig. S1）</strong></td>
+<td>主文只引用正面的一半（50% 内电阻仍远低于接触阻抗）</td>
+</tr>
+<tr>
+<td>改性 PDMS 的拉伸测试（模量 212.8 千帕）</td>
+<td><strong>补（fig. S2 + note S1）</strong></td>
+<td><strong>整个"低模量"卖点的原始数据在补充里</strong></td>
+</tr>
+<tr>
+<td>长期稳定性：8 小时无换、5 天每天换</td>
+<td><strong>补（fig. S5A、S5B）</strong></td>
+<td>"可复用"这一 claim 的证据在补充里</td>
+</tr>
+<tr>
+<td>最大检出深度（30 毫米实测 / 35 毫米仿真）</td>
+<td><strong>补（fig. S6 + note S4）</strong></td>
+<td>深度的唯一证据在补充里</td>
+</tr>
+<tr>
+<td>手势集的可视化（两个腕部动作 + 五指独立屈曲）</td>
+<td><strong>补（fig. S7 + 影片 S1）</strong></td>
+<td>手势集的完整性在补充里</td>
+</tr>
+<tr>
+<td><strong>参与者 2 与 3 的完整结果</strong></td>
+<td><strong>补（fig. S10）</strong></td>
+<td><strong>三人均值的原始数据在补充里</strong></td>
+</tr>
+<tr>
+<td>无线板原理图</td>
+<td><strong>补（fig. S11）</strong></td>
+<td>合理（工程细节）</td>
+</tr>
+<tr>
+<td><strong>六轴雷达图的定量对照</strong></td>
+<td><strong>补（table S2 + note S4）</strong></td>
+<td><strong>"本工作优于肌电/超声/磁传感"这一 claim 的定量支撑在补充里</strong></td>
+</tr>
+<tr>
+<td>特征选择（ANOVA / F 检验）</td>
+<td><strong>补（note S6）</strong></td>
+<td>主文只给方法名</td>
+</tr>
+<tr>
+<td>分类器与回归器的细节</td>
+<td><strong>补（note S7）</strong></td>
+<td>主文只给结构名</td>
+</tr>
+<tr>
+<td>切割长度算法</td>
+<td><strong>补（note S8）</strong></td>
+<td>主文只给"定制算法"</td>
+</tr>
+<tr>
+<td>120 个阻抗值的推导</td>
+<td><strong>补（note S5）</strong></td>
+<td>主文只给结果数</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这条规律的形态是清楚的</strong>：<strong>凡是"概括后的正面结论"留在主文；凡是"原始数据"与"不利的那一半"移出主文。</strong> 这不是不当行为——13 页的版面确实放不下 18 张图——<strong>但它的后果可以被精确度量</strong>：</p>
+<blockquote>
+<p><strong>主文的每一条 claim，平均对应两张读者看不见的补图。</strong></p>
+</blockquote>
+<p><strong>而这一点在本文里有一个特殊后果</strong>：GPT-1 与 GPT-2 两轮的问题是"图不可核验"（表在，图读不到）；<strong>本轮的问题是"表不可见"</strong>——<strong>主文里唯一一张做定量对照的图（Fig. 1G 的六轴雷达图），它的数值判据在缺件的 table S2 里</strong>（S0 新增闸 A 已登记）。<strong>主文没有任何数值表格。</strong> 这意味着本轮的核验物与复核物恰好错位：<strong>能读的（图）没有对照表，有对照表的（补充）读不到。</strong></p>
+<h4>一处值得单独记的版面选择</h4>
+<p>Fig. 6 的两个面板用了<strong>不同的纵轴量程</strong>：<strong>C 为 0–60 毫米，D 为 0–40 毫米</strong>【可核验：<code>_图轨读数.md</code> 第 4.2 节，逐像素读数】。</p>
+<p>这条放在 S6 而不是 S4，是因为它属于<strong>版面决策</strong>。同一组对照用同一量程并排，两条曲线的高低差会直接显形；用不同量程时，两条曲线在版面上占据相近高度。<strong>本阶段不作价值判断，只登记这个决策，并把它作为 S8 的必核项。</strong></p>
+<hr />
+<h3>3. Introduction 里的外交辞令：哪句话是在提前挡审稿人</h3>
+<p>本论文没有独立的 Related Work 节，Introduction 承担了这个功能。逐条登记它的措辞强度：</p>
+<table>
+<thead>
+<tr>
+<th>指向前人</th>
+<th>原句的措辞</th>
+<th>强度</th>
+<th>外交含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>肌电</strong></td>
+<td>"has become a <strong>powerful tool</strong> ... Nevertheless, EMG <strong>still falls short</strong> in capturing the full spectrum of muscle force, as it <strong>cannot adequately reflect</strong> muscle contraction states"</td>
+<td>轻</td>
+<td><strong>先给足赞美再转折</strong>；关键在 <code>adequately</code> 这个副词——它留了余地，说的是"不够充分"而不是"做不到"</td>
+</tr>
+<tr>
+<td><strong>磁</strong></td>
+<td>"require surgical magnet implantation, <strong>posing infection risks</strong>"</td>
+<td>重</td>
+<td>用伦理级风险词，是全文对前人最不客气的一句</td>
+</tr>
+<tr>
+<td><strong>光学</strong></td>
+<td>"the rigidity of the probe and the limited measurement depth present <strong>notable limitations</strong>"</td>
+<td>中</td>
+<td>直接点死穴</td>
+</tr>
+<tr>
+<td><strong>超声</strong></td>
+<td>"<strong>While</strong> these advances ... have <strong>effectively</strong> reduced device thickness and improved flexibility, their application ... <strong>may be further optimized</strong>, <strong>partly due to</strong> the persistent elastic modulus mismatch"</td>
+<td>最轻</td>
+<td><strong>全篇最讲究的一句</strong>：<code>While ... effectively</code> 先全盘承认对方强，<code>may be further optimized</code> 把批评降级为"还有优化空间"，<code>partly due to</code> 把病因限定为<strong>部分因素</strong></td>
+</tr>
+<tr>
+<td><strong>电阻抗本派</strong></td>
+<td>"existing EIM-based sensors <strong>predominantly rely on</strong> rigid, nonstretchable electrodes, which <strong>fail to</strong> accommodate skin deformations, resulting in low wearing comfort and reduced measurement accuracy"</td>
+<td>重</td>
+<td><strong>对自家派系用最重的措辞</strong>——这是划清派内界限的标准写法：<strong>对外留余地，对内下重手</strong>，因为要显示"我在本派里是异类"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一条可以从这张表里抽出的规律</strong>：<strong>措辞强度与"我是否需要与该派共存"成反比。</strong> 超声需要共存（未来的方向是把两者结合，Discussion 明确写了"FMEIS 可潜在与肌电集成"），所以措辞最轻；磁不需要共存（植入路线与可穿戴路线在原理上互斥），所以措辞最重；<strong>本派必须被超越，所以措辞最重且最具体</strong>。</p>
+<h4>主动认领的两条局限——它们的防御功能</h4>
+<p>Discussion 末段有两次"主动认领"：
+1. <strong>换贴片需重训练</strong>，并给出迁移学习作为缓解方向；
+2. <strong>电导率图像重建困难</strong>，并给出"集成皮肤形状感知"作为未来方向。</p>
+<p><strong>这两条认领的形态值得注意</strong>：<strong>每一条认领都配了一个未来方向。</strong> 在审稿博弈里，这个形态的功能是<strong>把"缺陷"改写成"路线图"</strong>——审稿人更倾向于"作者知道问题且有方案"，而不是"作者不知道问题"。<strong>代价是</strong>：这两条局限因此在读者眼里变成了"已被规划的工作"，而不是"当前的能力边界"。</p>
+<p><strong>这正好与 S1.5 的一处记录接上</strong>：电导率成像在 S1.5 被项目决策砍掉（因为边界形变与电极数不足），而在 Discussion 里它以"未来工作"的形态重新出现（S1.5 负结果 1）。<strong>同一件事，在项目里是"我们不做"，在论文里是"我们以后做"。</strong> 这一处转写不是不诚实——它确实是合理方向——<strong>但读者从论文里读到的版本，与项目里发生过的版本不是同一件事。</strong></p>
+<hr />
+<h3>4. 本阶段的独立论点，以及它在 S9 里是否该单列一幕</h3>
+<p>按 GPT-2 轮固化的判据（<strong>"讲法"这一幕单列的判据不是好不好看，而是它有没有独立论点</strong>），本阶段要回答：本论文的"讲法"有没有一句只属于它的论点。</p>
+<p><strong>我的答案是：有，但它与 GPT-2 那一轮不同。</strong></p>
+<ul>
+<li>GPT-2 的讲法论点是："<strong>能改的只有说法，而每一个说法上的决定都是防守。</strong>"——它的依据是<strong>同一堆材料在不同叙述里被反复重排</strong>。</li>
+<li>本轮的讲法论点是：<strong>"主文与补充的分工不是详略，是选边——结论放主文，原始数据与不利的那一半放补充；而摘要再做一次选边，在两组数字里挑一组、在短板轴上选择不提。"</strong>——它的依据是<strong>主/补分工的一条单向规律</strong>与<strong>摘要的四项藏起</strong>。</li>
+</ul>
+<p><strong>判据自检</strong>：这个论点有独立内容（不是"精简"的另一个说法），有可核验依据（主/补清单与摘要藏起清单都是逐条可查的）。<strong>因此本轮倾向于单列一幕。</strong> 具体幕数在 S9 定。</p>
+<hr />
+<h3>《档案 · S6》</h3>
+<pre><code>【阶段】S6 成文
+【已知事实】
+1. 标题含四个实词：柔性、多通道、肌电阻抗、协同人机界面；&quot;被动牵拉&quot;与&quot;力&quot;均未进标题【可查证：论文标题】
+2. 摘要报手势分类 98.49% 与力预测 R 平方 0.98；Results 先报参与者 1 的 98.22% 与 0.97，三人均值出现在后一节【可查证：Abstract 与 Results 两处】
+3. 摘要未提样本量为 3 人，也未提标准差 0.46% 与 0.01【可查证：Abstract】
+4. 摘要未提：换贴片即需重训练、复杂动作下力估计错位、应变 30% 出现裂纹、最大检出深度约 30 毫米【可查证：Abstract 与 Results 对照】
+5. 主文 6 张图；补充含 12 张图、2 张表、9 条 Note、4 段影片【可查证：Supplementary Materials 清单】
+6. 主文无任何数值表格；唯一做定量对照的 Fig. 1G 的数值判据在缺件的 table S2【可查证：Fig. 1 图注与 Results 段】
+7. 模量的原始拉伸数据在 fig. S2 与 note S1（缺件）；长期稳定性在 fig. S5；深度在 fig. S6；参与者 2 与 3 在 fig. S10；特征选择在 note S6；分类器与回归器在 note S7；切割算法在 note S8；120 个阻抗值的推导在 note S5（全部缺件）【可查证：Supplementary 清单】
+8. Fig. 6 的 C 与 D 两个面板使用不同纵轴量程（0 至 60 毫米与 0 至 40 毫米）【可核验：_图轨读数.md 第 4.2 节逐像素读数】
+9. Introduction 对五派前人的措辞强度依次为：超声（最轻，含 While 与 effectively 与 may be further optimized 与 partly due to）轻于肌电（含 powerful tool 与 adequately）轻于光学（notable limitations）轻于磁（infection risks）与电阻抗本派（predominantly rely on 与 fail to）【可查证：Introduction 逐句】
+10. Discussion 末段两条局限（换贴片需重训练、电导率图像重建困难）各自配有一条未来方向（迁移学习、集成皮肤形状感知）【可查证：Discussion 末段】
+11. 电导率图像重建在 S1.5 被项目决策砍掉，在 Discussion 以未来工作形态出现【可查证：S1.5 负结果 1 与本条 10】
+12. 摘要末句把实时（real-time）放在 future 的时间框架里【可查证：Abstract 末句】
+【合理重构】
+a. 标题不收&quot;被动牵拉&quot;的理由是需要一个从句、位置不够；其后果是读者从标题读到的差异化落到柔性与多通道上——依据：标题结构与 Introduction 的差异化分布（重构）
+b. 主补分工的规律是&quot;结论进主文、原始数据与不利的一半进补充&quot;——依据：第 5 至 7 条逐条登记的主补位置（重构）
+c. 措辞强度与&quot;是否需要与该派共存&quot;成反比——依据：第 9 条的强度排序与 Discussion 关于与肌电集成的表述（重构）
+d. 主动认领两条局限的功能是把缺陷改写成路线图——依据：两条认领均配套未来方向这一形态（重构）
+e. 本阶段的独立论点是&quot;主补分工与摘要都是在选边&quot;——依据：主补清单与摘要藏起清单两条可核验清单（重构）
+【负结果】
+1. 四组同源数据的&quot;更漂亮那组进摘要&quot;（98.49 与 0.98 对 98.22 与 0.97），摘要同时省略样本量与不确定度
+2. 四项失利未进摘要：换贴片重训练、复杂动作力错位、30% 应变裂纹、30 毫米深度
+3. 深度的唯一证据（fig. S6）与三人均值的原始数据（fig. S10）都在缺件里，使主文的两个关键数字在本流程内不可核验
+4. 模量这一核心卖点的原始数据（fig. S2）在缺件里
+5. 主文无数值表格，唯一有数值判据的对照图指向缺件表格
+6. 本阶段不解决任何一项内容缺口，只登记它们的版面位置
+（本阶段负结果占比约 45%）
+【未决问题】
+1. 本轮的讲法论点是否足够独立以支撑单列一幕？（本阶段倾向于&quot;是&quot;；幕数由 S9 判定）
+2. 摘要的四人项藏起与一处口径切换，是否全部写进 S9 的附录？（留给 S8 定级后交 S9）
+3. Fig. 6 的差异量程是版面决策还是失误？本阶段只登记，不定性（留给 S8）
+【一致性自检】与前五份档案无冲突，并有四处推进：S0 新增闸 A 提出的&quot;定量支撑在缺件里&quot;在本阶段落到具体条目（table S2 与六轴雷达图）；S3 的模量措辞张力在本阶段被并记为摘要放大清单的一项；S1.5 的&quot;被砍目标以未来工作形态回归&quot;在本阶段被确认为一处可核查的转写形态；S5 未决问题 1（至暗二的后果证据在缺件里）在本阶段被记为第 7 条的一部分。
+【后见之明自检】本阶段只做取舍分析，未重新评价任何结果，也未使用任何未被前序档案登记过的数字；第 1.2 节的数字全部来自 S4 第 12 节的对照清单；第 4 节的论点只涉及版面与措辞，不涉及结论正确性——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-MI-05（P2）】</strong> 第 2 节原写："<strong>主文的每一条 claim，平均对应两张读者看不见的补图。</strong>"
+该推断的算式是"12 张补图 ÷ 6 张主图 = 2"，<strong>比值是图与图之比，不是 claim 与图之比</strong>；claim 数与图数不是同一计量单位。
+现改为：<strong>"主图与补图的比例为 6 比 12；主文没有任何数值表格。"</strong> 严重度 <strong>P2</strong>（把比值类比成了计数关系）。</p>
+<p><strong>【修订注 · S8 核查 · H-MI-07（P2）】</strong> 第 3 节原写："<strong>措辞强度与"我是否需要与该派共存"成反比。</strong>"
+该规律取自单篇论文的 <strong>5 个样本</strong>，虽已标【合理重构】，但正文用的是断言式副词"成反比"。<strong>这正是本轮启用的措辞强度条款要防的病根，而它发生在该条款生效的同一轮</strong>——说明该条款不会自我执行。
+现改为：<strong>"在本篇论文的五个样本里，措辞强度</strong>似乎<strong>与'是否需要与该派共存'负相关（倾向性判断，样本量 5，不足以称为规律）。"</strong> 严重度 <strong>P2</strong>。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S7 · 审稿 + rebuttal —— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- <strong>目标</strong>：还原论文经过的评审博弈，以及作者在两难处的取舍。
+- <strong>现状</strong>：《档案 · S1》至《S6》。
+- <strong>限制</strong>：审稿人必须开全新会话，只喂论文，不喂档案。</p>
+<p><strong>纪律</strong>：同 S1。<strong>措辞强度条款</strong>；<strong>引用与动机两分</strong>。</p>
+</blockquote>
+<hr />
+<h3>0. 隔离实现</h3>
+<p>本阶段由<strong>独立子代理</strong>完成会话 A（审稿人）。提示词里只给了论文纯文本路径与 6 张主图的 PNG 路径，<strong>未粘贴任何《档案》、未给出任何本项目术语</strong>；并明确告知：Supplementary Materials（Notes S1–S9、Tables S1–S2、Figs. S1–S12、Movies S1–S4）不在其手上，须把"看不到补充材料"本身当成事实处理。</p>
+<p><strong>本轮对隔离提示词做了一处改动（依据《档案 · S0》启用的第三条待生效条款）</strong>：S7 的审稿人提示词与 S8 第 0 步的审计提示词<strong>互不引用</strong>，但<strong>共用同一份"图件路径清单"</strong>——因为这一轮的核心核验物是图，若两份提示词对图的处理方式不同，两者的发现集合就无法比较。审稿人的观察框架是<strong>"这篇论文的 claim 我会怎么攻"</strong>；审计员的观察框架是<strong>"逐图逐行重算，正文说的数在图上对不对"</strong>。两份提示词的约束条款不同（审稿人可提改进建议；审计员<strong>禁止</strong>评价方法好坏、禁止提改进建议）。</p>
+<p>审稿人原始输出已归档：<code>_s7_reviewer.txt</code>。</p>
+<hr />
+<h3>1. 审稿意见（会话 A，原样保留）</h3>
+<blockquote>
+<p><strong>总体判断</strong>：该文展示了一种集成度较高的柔性多通道肌肉阻抗传感器，但其核心机理断言、机器学习验证及人机接口应用演示均存在明显不足，需重大修改。</p>
+<p><strong>主要弱点 1：被动肌肉拉伸检测未与主动肌串扰有效分离。</strong>
+该文核心主张是 FMEIS 可像 EMG 一样检测主动收缩，还能检测被动拉伸。依据：图 2E 显示，单块前臂肌肉（BR、FDS 或 FCU）收缩即可在全部 16 个电极上产生电压扰动，显著信号并不限于该肌正上方区域。图 2G 中，腕伸展时 FCR 阻抗通道升高，正文将其解释为 FCR 被动拉伸；但腕伸展同时伴随拮抗肌 ECR 主动收缩。鉴于图 2E 已表明单肌主动收缩即可在较大皮肤区域扰动电场，FCR 在腕伸展时的阻抗变化不能唯一归因于 FCR 被动拉伸，而可能部分反映 ECR 主动收缩的串扰。此模糊性削弱了论文相对于 EMG 的核心优势。
+作者需补充控制实验：在周围肌肉放松状态下被动拉伸目标肌，并量化主动邻近肌串扰的贡献。</p>
+<p><strong>主要弱点 2：机器学习验证样本不足，且力"回归"实质可能是离散分级。</strong>
+跨个体验证仅基于 3 名受试者（第 6 页）。所报告的手势分类平均准确率 98.49% ±0.46% 和力回归 R² = 0.98 ±0.01 因样本量过小，不足以支撑 "robustness and generalizability" 的结论。此外，图 3E 的力回归仅使用 0–30 N 的 7 个离散力级，且 90 s 内即完成采集；预测值明显聚集在离散等级上，说明模型更可能是对力级进行分类，而非真正的连续力回归。R² = 0.97 因此缺乏说服力。特征选择、跨个体结果等关键细节位于 notes S6–S7 和 fig. S10，审稿人无法获取。
+作者需将受试者扩增至至少 10 人，采用留一受试者交叉验证，进行连续力扫频实验，并提供 Bland-Altman 等预测误差分析。</p>
+<p><strong>主要弱点 3：人机接口演示延迟高且控制条件薄弱。</strong>
+人机协作平均延迟 0.46 s（第 7 页），外骨骼响应延迟 756 ms（图 5B），系统更新率仅 7.9 Hz（第 12 页），这些数值对实时协作及手术控制明显偏高。图 5E 疲劳实验缺少无负载/无外骨骼的对照。正文依据图 5Ci 称 "similar muscle activation levels before and after exoskeleton actuation"，但图中激活段（橙色区域）的 EMG 幅度视觉上明显大于未激活段（紫色区域），图文不一致。图 6 虚拟手术仅展示 4 次切割，且缺乏预测力与真实力的直接对比；作者在第 10 页也承认 cut width 与 depth 存在 "noticeable differences"。切割宽度算法仅在 note S8 描述，审稿人无法审阅。
+作者需提供端到端延迟预算及可接受阈值，补充疲劳实验对照，解释图 5Ci 与正文的不一致，并报告虚拟手术任务的定量精度指标。</p>
+</blockquote>
+<hr />
+<h3>2. rebuttal（会话 B，回到主线会话）</h3>
+<h4>2.1 开头与总体回应</h4>
+<p>我们感谢审稿人对器件机理、机器学习验证与人机接口演示三个层面的具体意见。三条意见都指向同一类问题——<strong>"把哪一层当成证据"</strong>。我们的回应总原则是：<strong>凡是我们要用更强的证据支撑的，我们补；凡是我们本来就只用弱证据支撑的，我们改措辞；凡是我们确实无法在本次修回周期内补的，我们如实写成能力边界。</strong></p>
+<h4>2.2 对 MW1（被动拉伸与串扰未分离）</h4>
+<p><strong>部分据理力争，部分认怂。修改承诺：加一段限制说明。</strong></p>
+<p><strong>据理力争的部分——审稿人忽略了一处图内已有的内部对照。</strong> 图 2G 同时画了 <strong>FCR 与 ECR 两条阻抗曲线</strong>，二者在腕屈伸循环中呈现<strong>反相</strong>结构：FCR 主动收缩时（阻抗下降）ECR 处于被动牵拉（阻抗升高），反之亦然。若串扰占主导，两条通道应当同相或至少显著相干——<strong>审稿人自己在 MW1 里引用的图 2E 恰恰给出了原因</strong>：单肌主动收缩在体表产生的是<strong>有符号的空间模式</strong>（BR 收缩时电极 1–8 为正、9–16 为负；FCU 收缩时符号反转），因此<strong>串扰的形式是"改变反相幅度"，不是"制造反相结构"</strong>。反相结构的存在说明局部肌肉的贡献在两条通道上都占据主导。</p>
+<p><strong>认怂的部分——我们确实没有做分离实验。</strong> 审稿人要求的"在周围肌肉放松条件下被动拉伸目标肌并量化串扰贡献"是正确且我们现在做不出来的实验：它需要一块能在保持拮抗肌静息的同时被动牵拉目标肌的装置（我们用的是被试自主动作，无法做到选择性放松）。<strong>我们承诺在 Results 图 2G 之后补一段限制说明</strong>，明确写出：被动牵拉的归因建立在"反相结构"这一内部证据上，尚未通过选择性激活控制实验验证；并把它列入讨论中的未来工作。</p>
+<h4>2.3 对 MW2（样本量与"回归可能是分级"）</h4>
+<p><strong>不接受的：把受试者扩到 10 人并做留一交叉验证。这条我们做不到</strong>——不是不愿意，是<strong>伦理与周期的物理约束</strong>：本研究使用的电极贴片目前是手工制作、每片只能由制作者贴合，10 人到位意味着 10 套贴片、10 次伦理扩展申报与不可估量的排期。<strong>我们请求把这一条改列为"未来工作"，并接受在正文里明示样本量为 3 人。</strong></p>
+<p><strong>接受并会修改的两条：</strong>
+1. <strong>"robustness and generalizability" 这个措辞过强。</strong> 3 名被试支撑的是"<strong>在具有不同皮肤阻抗与脂肪厚度的被试上可复现</strong>"，不是"generalizability"。<strong>我们承诺把该句改为对样本量与变量范围的如实描述</strong>，并明确写出"脂肪组织厚度未做定量表征"。
+2. <strong>离散力档的问题成立，而且比审稿人说的更值得写清楚。</strong> 我们的力回归训练数据确实来自 <strong>7 个离散力档（0–30 牛）</strong>——这一点正文已经写了，但<strong>我们没有讨论它对 R² 的含义</strong>。<strong>我们承诺在 Fig. 3E 的讨论里补一句</strong>：该 R² 衡量的是在已标定力档范围内插值的精度，<strong>连续力扫频下的表现未被评估</strong>；同时补报我们已有的 <strong>RMSE = 1.61 牛</strong>（正文已给）作为绝对误差的量级参考。</p>
+<p><strong>部分接受：Bland-Altman 分析。</strong> 我们会在修回版里补 <strong>RMSE 与预测偏差随力档的分布</strong>（审稿人可从图 3E 的散点直接读出的信息），但<strong>不引入 Bland-Altman 图</strong>——该图用于两种测量方法的一致性评估，而我们这里是"力传感器真值 vs 模型预测"，<strong>相关性与误差的常规呈现已经足够，且它能更直接地暴露审稿人关心的两端偏置</strong>。</p>
+<h4>2.4 对 MW3（延迟、对照、图文不一致、虚拟手术精度）</h4>
+<p><strong>三层回应：延迟接受并解释；对照部分接受；图文不一致这条我们要先自查。</strong></p>
+<p><strong>（a）延迟——接受数值，不接受"不可用"这一判断。</strong>
+0.46 秒与 756 毫秒是<strong>系统级的</strong>延迟，我们已经在正文里拆解了它的三个来源：<strong>移动平均滤波器、通信延迟、机械响应时间</strong>。其中滤波器一项是<strong>我们主动引入</strong>的——它换来的是分类稳定性。<strong>我们承诺补一句端到端延迟预算</strong>（把 0.46 秒分解到三个环节），并明确写出<strong>本系统的更新率 7.9 赫兹与"当前先进手术机器人系统"相当</strong>（这一点正文已有，但没有与延迟的批评直接对话）。对于外骨骼，我们保留正文已有的表述：引入预测算法可以进一步降低该延迟。</p>
+<p><strong>（b）疲劳实验的对照——部分不接受。</strong>
+审稿人写"缺少无负载/无外骨骼的对照"。<strong>图 5E 本身包含两组条件：外骨骼未致动（紫）与已致动（橙）</strong>，即"无外骨骼助力"这一对照是有的。<strong>缺的是"不持重物"这一基线</strong>——这一点审稿人的方向是对的，我们接受，但受试者只有在持 1 千克重物的条件下才有疲劳可测，因此<strong>我们不补该基线，改为在正文里写明测试条件</strong>。</p>
+<p><strong>（c）图 5Ci 的图文不一致——我们先自查，不自辩。</strong>
+审稿人指出激活段 EMG 幅度视觉上大于未激活段，与正文"肌肉激活水平相当"不符。<strong>我们接受这一条为需要修正的措辞</strong>：正文该句的意图是"<strong>决定输出力增长的不是肌电幅度的变化</strong>"，而不是"两段的肌电幅度相等"。<strong>我们承诺把该句改为</strong>："在两段的 EMG 幅度未出现与输出力增长相称的变化的前提下，峰值输出力提升了 65%。"<strong>同时我们不会把幅度差异解释掉</strong>——如果自查确认差异存在，我们会在图注里如实说明。</p>
+<p><strong>（d）虚拟手术——接受，且我们已经在正文里自我诊断过。</strong>
+审稿人指出"缺乏预测力与真实力的直接对比"。正文在这一节的末尾已经写明：切割长度趋势一致，但<strong>宽度与深度存在明显差异</strong>，并归因于切割测试与模型训练期间难以维持相同的肌肉募集模式、腕部有三个自由度。<strong>我们承诺在此基础上补一条量化</strong>：给出<strong>切割长度的实拍值与估计值在同一时间点上的相对偏差</strong>（这是我们数据里现成的量），而不是只给"趋势一致"。</p>
+<p><strong>关于"4 次切割"</strong>：我们复核了图 6 的 B/C/D 三个面板，<strong>末端另有一段高度约为其余平台一半的短平台</strong>，因此实际是 5 段；图 6E、6F 给出的是 5 个时间点，与之一致。<strong>我们承诺在图注里把分段计数写清楚</strong>，避免读者与审稿人发生同样的计数分歧。</p>
+<hr />
+<h3>3. 修回落地对照表（<strong>以最终发表稿为准逐条核</strong>）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>承诺</th>
+<th>最终稿是否落地</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>图 2G 之后补一段限制说明（被动牵拉归因未做选择性激活验证）</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿图 2G 一节无任何此类限制句；Discussion 也未列入未来工作</td>
+</tr>
+<tr>
+<td>2</td>
+<td>把 "robustness and generalizability" 改为如实描述并写明样本量 3 人</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿原句仍为 "demonstrating strong robustness against variations in skin impedance and adipose tissue thickness"；样本量 3 人只出现在 Methods 的 Ethics 段</td>
+</tr>
+<tr>
+<td>3</td>
+<td>明写"脂肪组织厚度未做定量表征"</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿仍把脂肪厚度列为被稳健应对的变量</td>
+</tr>
+<tr>
+<td>4</td>
+<td>在 Fig. 3E 讨论里补一句"R² 衡量离散力档内插值，连续扫频未评估"</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿该节无任何此类限定</td>
+</tr>
+<tr>
+<td>5</td>
+<td>补报 RMSE 作为绝对误差量级</td>
+<td>✅ <strong>已落地</strong></td>
+<td>最终稿写有 RMSE 1.61 牛</td>
+</tr>
+<tr>
+<td>6</td>
+<td>补 RMSE 与预测偏差随力档的分布、不引入 Bland-Altman</td>
+<td>⚠️ <strong>部分落地</strong></td>
+<td>最终稿给出了 Fig. 3F（七个力档的阻抗模式），但<strong>没有</strong>给预测偏差随力档的分布</td>
+</tr>
+<tr>
+<td>7</td>
+<td>补端到端延迟预算（把 0.46 秒分解到三个环节）</td>
+<td>⚠️ <strong>部分落地</strong></td>
+<td>最终稿列出了三个来源（移动平均滤波、通信、机械响应），<strong>但没有给分解后的数值</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>在正文写明测试条件（持 1 千克重物 8 分钟）</td>
+<td>✅ <strong>已落地</strong></td>
+<td>最终稿写明 held a 1-kg weight for 8 min</td>
+</tr>
+<tr>
+<td>9</td>
+<td>把 "similar muscle activation levels" 改为不对 EMG 幅度作等值断言</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿原句仍为 "despite similar muscle activation levels before and after exoskeleton actuation, as indicated by the EMG amplitudes"</td>
+</tr>
+<tr>
+<td>10</td>
+<td>给出切割长度实拍值与估计值的同时间点相对偏差</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿仍只有"总体趋势一致"与"宽度和深度存在明显差异"</td>
+</tr>
+<tr>
+<td>11</td>
+<td>在图注里写清切割分段计数</td>
+<td>❌ <strong>未落地</strong></td>
+<td>最终稿正文仍写 "four cutting periods"，图注亦无分段计数说明</td>
+</tr>
+</tbody>
+</table>
+<p><strong>统计：11 条承诺中，完全落地 2 条、部分落地 2 条、未落地 7 条。</strong></p>
+<p><strong>这个统计必须配一句解释，否则会被误读</strong>：7 条未落地的承诺里，<strong>有 5 条是"加一句限制说明"这种成本极低的改动</strong>（第 1、2、3、4、9 条）。它们的未落地<strong>不能用"改不动"解释</strong>。三种可能的原因都需要保留：① 修回版本把篇幅让给了别处；② 作者判断"加限制说明"会削弱结论而选择不加；③ 期刊的修改流程没有强制逐条回应。<strong>本流程无法区分这三者，所以只登记统计，不给归因。</strong>（→ 交 S8 定级。）</p>
+<hr />
+<h3>4. 审稿人自身的一处失准（对隔离方的审计也须有——沿用 GPT-2 轮的做法）</h3>
+<p>按本项目的惯例，对隔离审稿人的输出也要做一次核查。发现三处：</p>
+<ol>
+<li><strong>MW3 的"图 5E 缺少无外骨骼的对照"不成立。</strong> 图 5E 的两组曲线标注为 <strong>Exo off 与 Exo on</strong>，未致动条件下的一组曲线就是"无外骨骼助力"的对照。审稿人真正想说的"缺少不持重物的基线"是另一个诉求，两者不应混为一句。</li>
+<li><strong>MW3 的"图 6 虚拟手术仅展示 4 次切割"与图面不符。</strong> 图 6B 的升降段在末端另有一段高度约为其余平台一半的短平台；正文图注另给 5 个时间戳。<strong>"4 次"这一计数与图 6D 的四个标签一致，但与图 6B 的段落数不一致</strong>——审稿人的问题（计数不清）成立，但它自己给的那个数字也不准确。<strong>这一处是双向的：论文的分段计数不清，审稿人的计数也随之出错。</strong></li>
+<li><strong>MW3 把 756 毫秒的出处标成"图 5B"</strong>。该数字出自正文（四指抓握测试的描述），图 5B 画的是握力曲线，不含该数字。属引证位置的小偏差。</li>
+</ol>
+<p><strong>严重度：三处均属表述与引证精度问题，不改变 MW1–MW3 的批评方向。</strong></p>
+<hr />
+<h3>《档案 · S7》</h3>
+<pre><code>【阶段】S7 审稿与 rebuttal
+【已知事实】
+1. 审稿人由独立子代理产出，提示词只给论文纯文本与 6 张主图路径，未给任何档案或项目术语；其输出中无本项目内部术语【可核验：_s7_reviewer.txt 与本文件第 0 节】
+2. 三条主要弱点分别为：被动牵拉与主动肌串扰未分离、样本量 3 人与力回归可能实为分级、接口延迟与图文不一致及虚拟手术精度【可查证：_s7_reviewer.txt】
+3. 审稿人明确指出补充材料不在其手上，并把这一限制当成事实陈述，未臆测其内容【可查证：_s7_reviewer.txt】
+4. rebuttal 共作出 11 条承诺，按最终发表稿逐条核：完全落地 2 条、部分落地 2 条、未落地 7 条【可查证：最终稿逐条对照】
+5. 未落地的 7 条中，有 5 条属于&quot;加一句限制说明&quot;这一低成本改动（含第 1、2、3、4、9 条）【可查证：落地对照表】
+6. 最终稿的 robustness 句仍把脂肪组织厚度列为被稳健应对的变量，而脂肪厚度未做定量表征【可查证：Results 段与 Ethics 段】
+7. 最终稿仍写 similar muscle activation levels，未按承诺改为不对 EMG 幅度作等值断言【可查证：Results 段】
+8. 最终稿正文仍写 four cutting periods，而图 6B 的升降段数与图 6E、6F 的五个时间点提示分段计数不清【可查证：Results 段与 Fig. 6 各面板】
+9. 审稿人自身有三处失准：误称图 5E 缺无外骨骼对照（实际有 Exo off 组）、其切割计数与图 6B 不符、把 756 毫秒的出处标为图 5B【可查证：Fig. 5E 图注、Fig. 6B 与正文】
+10. 审稿人未发现的项目：摘要与 Results 的 98.49 对 98.22 口径切换、应变 50% 与 30% 裂纹的张力、图 6C 与 6D 量程不同、图 2D 对照物的消失、疲劳指标的基线偏移【可核验：本轮图轨读数与 S8 的发现集合对照】
+【合理重构】
+a. rebuttal 的据理力争部分（反相结构作为串扰的反证）是当时会用的论证——依据：图 2E 的符号化空间模式与图 2G 的反相结构两处图面事实（重构）
+b. 样本量无法扩至 10 人的理由（贴片手工制作、伦理扩展申报、排期）——依据：Materials and Methods 显示贴片为实验室手工制成，以及伦理批号 IRB-2022-052 的既有范围（重构）
+c. 7 条未落地的原因不予归因，只登记统计——依据：三种可能原因在本流程内无法区分（重构）
+【负结果】
+1. 11 条承诺中 7 条未落地，其中 5 条属低成本改动
+2. 审稿人提出的核心机理质疑（串扰分离）在最终稿里连一句限制说明都没有得到
+3. 图文不一致（图 5Ci 的 EMG 幅度）在最终稿里保留了原措辞
+4. 虚拟手术的精度问题最终稿只给&quot;趋势一致&quot;，未给同时间点偏差
+5. 审稿人自身有三处失准，说明隔离审稿人不是无误差仪器
+（本阶段负结果占比约 50%）
+【未决问题】
+1. 7 条未落地的承诺，是否要在 S9 的附录里逐条列出？（倾向列出&quot;未落地&quot;这一统计与 5 条低成本改动，不逐条展开）
+2. 图 5Ci 的 EMG 幅度差异是否真实存在？本阶段按&quot;先自查&quot;处理，未做量化，须交 S8 用像素级读数裁定【重要】
+3. 审稿人未发现的五类项目，是否要在 S8 里作为&quot;两个隔离视角不重合&quot;的新证据？（倾向是，本轮已有两轮先例）
+【一致性自检】与前六份档案无冲突，并有四处推进：S6 藏起清单的第 2 与第 3 项（复杂动作力错位、30% 应变裂纹）在本阶段得到审稿人独立确认（MW2 与 MW3）；S5 至暗三与至暗四在本阶段被审稿人从外部再指出一次，说明它们不是作者的自谦；S6 第 3 节的&quot;主动认领两条局限&quot;在本阶段与&quot;7 条未落地&quot;形成对照——主动认领的两条（重训练、电导率图像）确实写进了最终稿，而审稿人要求的四条限制说明没有，两者的差别值得记下。S1.5 的&quot;被砍目标以未来工作形态回归&quot;在本阶段再次出现（Bland-Altman 与 10 人验证被请求改为未来工作）。
+【后见之明自检】本阶段未使用任何性能数字进行自我辩护之外的论证；rebuttal 的据理力争部分全部建立在图面事实（符号化空间模式、反相结构）上，未引用任何 S8 才掌握的信息；落地对照表以最终发表稿为准，属&quot;当时记录 + 事后核验&quot;两段结构，未把事后核验伪装成当时判断——合规。
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>【修订注 · S8 核查 · H-MI-03（P1）】</strong> 第 3 节的落地对照表把 11 条承诺<strong>当作作者的答复承诺</strong>来统计落地率（未落地 7 条）。
+<strong>问题</strong>：真实 rebuttal 未公开，<strong>11 条承诺全部由本阶段重构产出</strong>。因此该表实际衡量的是"一条合理的审稿答复会提出什么"与"最终发表稿里有什么"之间的差距，<strong>不是</strong>"作者承诺了什么、兑现了多少"。
+<strong>现补两条读法限制</strong>：① <strong>该统计不能用于评价作者</strong>——它不构成"作者未兑现承诺"的证据；② 它<strong>只能用于说明一个流程现象</strong>：成本极低的改动（加一句限制说明）在发表流程里也容易不落地。
+第 3 节末段"本流程无法区分这三种原因，所以只登记统计、不给归因"这一处理<strong>不受影响</strong>，但须与上述第一条限制并读。严重度 <strong>P1</strong>（把自己写的期望当成了对方的承诺）。</p>
+</blockquote>
+</section>
+<section class="stage">
+<h2>S8 · 对照复盘（幻觉总检查）—— MI-1 科研全仿真</h2>
+<blockquote>
+<p>口径三段式
+- 角色：第三方核查员，不再是作者。本阶段不写第一人称。
+- 目标：把前七个阶段的叙事与论文真实内容逐项对照。<strong>本轮的对照物换成了图</strong>——论文没有数值表格。
+- 输入：全部《档案》+ 论文全文 + <strong>图轨读数 <code>_图轨读数.md</code></strong>。
+- 限制：<strong>第 0 步必须在细读 S1–S7 叙事之前完成</strong>（GPT-1 首跑验证过这一点）。本阶段的实际执行方式见 0.1。</p>
+<p><strong>本轮为"图像密集型湿实验论文"启用了新的第 0 步框架</strong>（依据《档案 · S0》启用的第三条待生效条款）：由"<strong>逐行算差值</strong>"改为"<strong>逐图逐行重算 + 图注-正文-图面三方对齐</strong>"。</p>
+</blockquote>
+<hr />
+<h3>0. 第 0 步：先重算论文自己的数（在读叙事之前）</h3>
+<h4>0.1 隔离实现（两个独立方 + 图轨）</h4>
+<p>本步由<strong>三个互不引用的通道</strong>产出：</p>
+<table>
+<thead>
+<tr>
+<th>通道</th>
+<th>隔离方式</th>
+<th>观察框架</th>
+<th>产物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>图轨</strong>（本项目内建）</td>
+<td>不适用——图轨读图必然发生在一切之后，因此它不做叙事判断，只出读数</td>
+<td>"从图上能直接读出什么"</td>
+<td><code>_图轨读数.md</code>、<code>_digitize_6CD.txt</code>、<code>_calib6.txt</code>、<code>_verify_emg2.txt</code>、<code>_digitize_fig2b.txt</code></td>
+</tr>
+<tr>
+<td><strong>审计子代理</strong></td>
+<td>只给论文纯文本 + 6 张主图 PNG，不给任何《档案》、不给任何项目术语</td>
+<td>"<strong>逐图重算 + 图-文-图注三方对齐</strong>"</td>
+<td><code>_s8_step0_auditor.txt</code></td>
+</tr>
+<tr>
+<td><strong>隔离审稿人</strong>（S7）</td>
+<td>同上</td>
+<td>"<strong>这篇论文的 claim 我会怎么攻</strong>"</td>
+<td><code>_s7_reviewer.txt</code></td>
+</tr>
+</tbody>
+</table>
+<p>三方<strong>互不引用</strong>；审计员与审稿人<strong>共用同一份图件路径清单</strong>（否则对图的处理方式不同，发现集合无法比较），但<strong>约束条款不同</strong>：审稿人可提改进建议，审计员<strong>禁止</strong>评价方法好坏、禁止提改进建议、禁止推测作者意图。</p>
+<p><strong>合规核查</strong>：审计子代理的输出不含任何本项目内部术语（"档案""阶段""S8""负结果占比""可查证"等一律未出现），只含论文行号、算式与图面读数 → <strong>合规</strong>。</p>
+<h4>0.2 图轨重算出的核心对照（不是趋势表，是图-文对照表）</h4>
+<p>论文无数值表格，因此第 0 步的产物是一张<strong>图-文对照表</strong>。逐条列出可核验的读数：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>正文/图注的数字</th>
+<th>出处</th>
+<th>图面读数（本流程实测）</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>手势准确率 <strong>98.22%</strong>（参与者 1）</td>
+<td>Results</td>
+<td>Fig. 3C 混淆矩阵 10 行<strong>逐行求和全部等于 100</strong>；<strong>对角线均值 = 98.22%</strong></td>
+<td>✅ 逐位吻合</td>
+</tr>
+<tr>
+<td>2</td>
+<td>十类手势的混淆结构</td>
+<td>Fig. 3C</td>
+<td>非对角质量集中在 Chinese seven→Wrist dev <strong>7.9</strong>、Thumb up→Fist <strong>5.9</strong>、Fist→Thumb up <strong>2.0</strong>、Chinese seven→Natural <strong>1.0</strong>、Natural→Wrist dev <strong>1.0</strong></td>
+<td>✅ 可完整复现</td>
+</tr>
+<tr>
+<td>3</td>
+<td>走线电阻 <strong>20.4 → 107.8 Ω</strong>（应变 &lt;50%）</td>
+<td>Results（引 fig. S1，缺件）</td>
+<td>缺件</td>
+<td>⛔ 不可核验</td>
+</tr>
+<tr>
+<td>4</td>
+<td>接触阻抗 <strong>1227.3 ± 17.1 Ω</strong></td>
+<td>Results</td>
+<td>无对应图（正文数字）</td>
+<td>⛔ 不可核验（无图无表）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>粘附力 8 小时 <strong>12.73 → 9.8 N/m</strong></td>
+<td>Results</td>
+<td>Fig. 2C 柱高约 12.7 → 9.4（目视 ±0.5）</td>
+<td>✅ 趋势与端点一致</td>
+</tr>
+<tr>
+<td>6</td>
+<td>粘附力 5 天 <strong>13.57 → 10.55 N/m</strong></td>
+<td>Results</td>
+<td>Fig. 2D 改性 PDMS 柱高约 13.5 → 10.6</td>
+<td>✅ 一致</td>
+</tr>
+<tr>
+<td>7</td>
+<td>商用 TPU 胶带作对照，5 天内测</td>
+<td>Fig. 2D 图注</td>
+<td><strong>胶带柱在 day1 约 20.7、day2 约 8.5、day3 约 5.2；day4 与 day5 无柱无散点</strong></td>
+<td>⚠️ <strong>见 R-1</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>剥离力水凝胶 <strong>14.28</strong>、PDMS <strong>12.41 N/m</strong>（取阴影平台均值）</td>
+<td>Results</td>
+<td>数字化后平台区水凝胶高于 PDMS，与排序一致；<strong>峰值（水凝胶约 17–18）明显高于平台</strong></td>
+<td>✅ 排序与「取平台均值」的说明一致；峰值/平台之差正文未提</td>
+</tr>
+<tr>
+<td>9</td>
+<td>13 分钟 / <strong>38 个周期</strong></td>
+<td>Results</td>
+<td>13 min = 780 s，每 10 s 交替 → <strong>39 个完整周期</strong></td>
+<td>⚠️ <strong>见 R-9</strong>（差 1，属边界效应，正文未说明）</td>
+</tr>
+<tr>
+<td>10</td>
+<td>外骨骼峰值力 <strong>44.2 → 72.8 N（+65%）</strong></td>
+<td>Results</td>
+<td>Fig. 5Cii 读数约 42 → 73 N；差值率 (72.8−44.2)/44.2 = <strong>64.7%</strong></td>
+<td>✅ 一致</td>
+</tr>
+<tr>
+<td>11</td>
+<td>疲劳指标被有效阻止下降</td>
+<td>Fig. 5E</td>
+<td>MNF：未致动 <strong>86.5→82.5→79.0</strong>，致动 <strong>97.0→96.5→97.5</strong>；MDF：未致动 <strong>62.5→57.3→55.7</strong>，致动 <strong>58.5→57.3→57.8</strong></td>
+<td>✅ <strong>斜率差成立</strong>；⚠️ <strong>见 R-5</strong>（基线未对齐）</td>
+</tr>
+<tr>
+<td>12</td>
+<td>三种条件的最大握力，<strong>85.1 → 122.7 N</strong></td>
+<td>Results / Fig. 5D 图注</td>
+<td>三柱：空手约 85、<strong>未致动约 90</strong>、已致动约 123</td>
+<td>✅ 数字一致；⚠️ 中间那柱从未被叙事吸收</td>
+</tr>
+<tr>
+<td>13</td>
+<td>切割长度「总体趋势一致」</td>
+<td>Results</td>
+<td>数字化：C（VR）<strong>4.3→54.0 mm</strong>；D（实拍）<strong>3.9→36.0 mm</strong></td>
+<td>❌ <strong>见 R-2 与 R-3</strong></td>
+</tr>
+<tr>
+<td>14</td>
+<td>「8.8 到 16.2 s」上升、「16.2 到 24.2 s」不变</td>
+<td>Results</td>
+<td>用 5 条竖虚线 + 图注 5 个时间戳标定（<strong>18.5 px/s</strong>，最大残差 0.6 s）；首个升降段约 <strong>8.7→17.5 s</strong>，平台至约 <strong>23.4 s</strong></td>
+<td>✅ 在约 1 s 内吻合</td>
+</tr>
+<tr>
+<td>15</td>
+<td>最大检出深度 <strong>约 30 mm</strong>（仿真约 35 mm）</td>
+<td>Results（引 fig. S6、note S4，缺件）</td>
+<td>缺件</td>
+<td>⛔ 不可核验</td>
+</tr>
+<tr>
+<td>16</td>
+<td>三点 0.46 s 延迟（证据为影片 S2）</td>
+<td>Results</td>
+<td>影片缺件</td>
+<td>⛔ 不可核验</td>
+</tr>
+<tr>
+<td>17</td>
+<td>每帧 <strong>120</strong> 个独立阻抗值</td>
+<td>Results（引 note S5，缺件）</td>
+<td>算术事实：<strong>C(16,2) = 120</strong></td>
+<td>⚠️ 数值吻合，但"120 = 全部电极对数"这一步<strong>仍属推断</strong></td>
+</tr>
+<tr>
+<td>18</td>
+<td>25 节点单隐藏层、二次核 SVM、ANNOVA/F 检验</td>
+<td>Results（引 note S6、S7，缺件）</td>
+<td>缺件</td>
+<td>⛔ 不可核验</td>
+</tr>
+</tbody>
+</table>
+<h4>0.3 独立审计子代理的发现（与会话 A 分开记）</h4>
+<p>子代理的五节清单中，与本方（图轨 + 主线）<strong>不重合</strong>的只有两类，且<strong>两类都经本阶段复核后不成立</strong>（见 0.4）：</p>
+<ol>
+<li>认为 Fig. 4B 的分类数与正文的"五个手势 + 三种抓取模式"不符（它读成 4+4）；</li>
+<li>认为 Fig. 2B 的峰值与正文报告的平均值不是同一统计量（该点成立，但子代理自己已注明正文声明取平台均值，故不构成不一致）。</li>
+</ol>
+<p><strong>子代理独立复现了本方的三项推导</strong>：混淆矩阵对角线均值 98.22%、39 对 38 的周期差、C(16,2)=120。<strong>三方各自算出的同一结果，比单方算出的可信。</strong></p>
+<h4>0.4 【假发现撤销清单】（本轮新增节，依据变体 B 的 B-4）</h4>
+<p><strong>这是本轮最有价值的一节。</strong> 图轨与像素级读数<strong>三次驳回了"看起来很明显"的判断</strong>——其中两次驳回的是<strong>审计方自己</strong>提出的指控。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>被撤销的假发现</th>
+<th>提出者</th>
+<th>撤销依据（可核验）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>撤销一</strong></td>
+<td>"Fig. 5C 与 Fig. 6B 的归一化预测力顶到 100% 上限，回归输出被截断"</td>
+<td>主线叙事（读图前的先验猜测）</td>
+<td>颜色分割读数：Fig. 5Ci 的预测力峰值只有 <strong>约 45% / 48%（未致动）与 50% / 52%（致动）</strong>，离上限差一半。<strong>饱和只发生在 Fig. 6B，不发生在 Fig. 5C。</strong> 假发现被缩到"6B 单面板"这一条</td>
+</tr>
+<tr>
+<td><strong>撤销二</strong></td>
+<td>"Fig. 5Ci 激活段的 EMG 幅度明显大于未激活段，与正文'肌肉激活水平相当'不符"</td>
+<td><strong>隔离审稿人（MW3）</strong></td>
+<td>逐列像素测幅：未致动区 <code>mean max|dev| = 20.9 px（p95 52，max 73）</code>，致动区 <code>20.4 px（p95 47，max 70）</code>。<strong>两区幅度实质相同，未致动区甚至略高。审稿人的指控不成立</strong>，正文该句反被证实</td>
+</tr>
+<tr>
+<td><strong>撤销三</strong></td>
+<td>"Fig. 4B 的分类不是五个手势加三种抓取模式"</td>
+<td><strong>审计子代理</strong></td>
+<td>图面逐行核对：左组 4 行 = Wrist pronation / supination / flexion / extension；右组 4 行 = <strong>Three</strong>（一个手势）+ Grasp square / cylinder / stick（三种抓取）。合计 <strong>4 + 1 = 5 个手势、3 种抓取模式</strong>，与正文完全一致</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论（本轮对本流程最有价值的一条）</strong>：
+<strong>一条只会找茬的审计通道，会把"看起来不对劲"升级成指控。只有可量化的读数才能同时否决这些指控。</strong> 因此图轨<strong>必须与叙事和审稿输出同权</strong>，而不是作为它们的附属。三次撤销里有两次否掉的是隔离审计方的结论，<strong>这直接说明"隔离"不等于"正确"——隔离只保证视角独立，不保证结论可靠。</strong></p>
+<h4>0.5 复核通过的（供信心校准）</h4>
+<ul>
+<li>混淆矩阵逐行求和零残差，对角线均值与正文逐位吻合（第 1 条）；</li>
+<li>(72.8 − 44.2)/44.2 = 64.7% ≈ "65%"（第 10 条）；</li>
+<li>127 ms ↔ 7.9 Hz、112 ms ↔ 8.9 Hz 换算无误；</li>
+<li>论文引用的"医用胶带 15.75–110 N/m"（Ref 32）与自研粘附力量级相容；</li>
+<li><strong>Fig. 4B 的 8 行与正文"五个手势 + 三种抓取模式"一致</strong>（撤销三）；</li>
+<li>论文把"每个模型的学习率人工调节"这类超参缺失<strong>如实写出</strong>，属自陈缺口而非隐瞒。</li>
+</ul>
+<hr />
+<h3>1. 【对上了】叙事与论文一致的点（20 组）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>叙事中的判断</th>
+<th>阶段</th>
+<th>论文依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>论文为正式期刊论文（有审稿流程），8 位作者同一单位</td>
+<td>S0</td>
+<td>首页与页脚；投稿/接受/发布日期栏</td>
+</tr>
+<tr>
+<td>2</td>
+<td>核心 claim 的三处同源表述</td>
+<td>S0</td>
+<td>Abstract / Introduction / Discussion</td>
+</tr>
+<tr>
+<td>3</td>
+<td>6 张主图全部在位，Note/Table/Fig/Movie 全部缺件</td>
+<td>S0</td>
+<td>本 PDF 仅 13 页；Supplementary 清单</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fig. 1G 的定量对照指向 table S2，两者俱缺</td>
+<td>S0 / S6</td>
+<td>Fig. 1 图注与 Results 段</td>
+</tr>
+<tr>
+<td>5</td>
+<td>肌电不能测被动牵拉（拮抗肌不产生肌电）</td>
+<td>S1 / S2</td>
+<td>Ref 13 经 Introduction 引用</td>
+</tr>
+<tr>
+<td>6</td>
+<td>运动伪影被归因于压电换能器与软组织的模量失配</td>
+<td>S1 / S2</td>
+<td>Ref 10</td>
+</tr>
+<tr>
+<td>7</td>
+<td>超薄 / 低模量 / 耐久粘附三要素被并列陈述</td>
+<td>S1 / S5 / S6</td>
+<td>Introduction 与 Discussion 两处</td>
+</tr>
+<tr>
+<td>8</td>
+<td>电导率图像重建被列为未来工作，理由是边界形变与电极数</td>
+<td>S1.5 / S2</td>
+<td>Discussion 末段</td>
+</tr>
+<tr>
+<td>9</td>
+<td>三个应用共用同一套算法与训练方法</td>
+<td>S1.5</td>
+<td>Results 段末句</td>
+</tr>
+<tr>
+<td>10</td>
+<td>0.4 mA / 50 kHz 在后续多通道测量中被沿用</td>
+<td>S1.5 / S4</td>
+<td>Results 两处</td>
+</tr>
+<tr>
+<td>11</td>
+<td>安全性由自报与文献论证两部分构成</td>
+<td>S1.5</td>
+<td>Discussion 段</td>
+</tr>
+<tr>
+<td>12</td>
+<td>PEIE 改性与双网络水凝胶两项<strong>有动机句且有引文</strong></td>
+<td>S3</td>
+<td>Results 段与 Materials and Methods</td>
+</tr>
+<tr>
+<td>13</td>
+<td>加 NaCl 的动机句存在，但无引文</td>
+<td>S3</td>
+<td>Results 段</td>
+</tr>
+<tr>
+<td>14</td>
+<td>走线材料、走线条数、总厚、刷涂封装、密封胶五项<strong>无动机句且无引文</strong></td>
+<td>S3</td>
+<td>Materials and Methods 全文检索</td>
+</tr>
+<tr>
+<td>15</td>
+<td>走线层的转移靠"PDMS 与走线结合强、与 Teflon 结合弱"的界面差异</td>
+<td>S3</td>
+<td>Materials and Methods 原句</td>
+</tr>
+<tr>
+<td>16</td>
+<td>受试者 3 人，平均年龄 27.6 岁，伦理批号 IRB-2022-052</td>
+<td>S4</td>
+<td>Ethics 段</td>
+</tr>
+<tr>
+<td>17</td>
+<td>统计先做 Kolmogorov-Smirnov 正态性验证</td>
+<td>S4</td>
+<td>Statistical analysis 段</td>
+</tr>
+<tr>
+<td>18</td>
+<td>长时测试 13 分钟、每 10 秒交替</td>
+<td>S4</td>
+<td>Results 与 Fig. 2F</td>
+</tr>
+<tr>
+<td>19</td>
+<td>模型只在训练工况（捏合）上见过，复杂动作下退化</td>
+<td>S4 / S5</td>
+<td>Results 虚拟手术一节的自陈诊断</td>
+</tr>
+<tr>
+<td>20</td>
+<td>摘要报 98.49% 与 0.98，Results 先报 98.22% 与 0.97</td>
+<td>S6</td>
+<td>Abstract 与 Results 两处</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>2. 【编圆了但论文没这回事】幻觉清单（7 条）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>出自</th>
+<th>叙事断言</th>
+<th>实况</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H-MI-01</strong></td>
+<td>S4 §6</td>
+<td>"<strong>3 个人的样本从来没有支撑过任何一次组间推断</strong>"；"统计检验被用在特征选择上，<strong>不是</strong>被用在被试间比较上"</td>
+<td>论文 Statistical analysis 段明写：<strong>"The ANOVA and F test in Fig. 3 </strong>and fig. S10<strong> were conducted with MATLAB."</strong> 而 <strong>fig. S10 正是参与者 2 与 3 的结果</strong>——该处检验是否涉及被试间比较，本流程<strong>无法判定</strong>（fig. S10 缺件）</td>
+<td><strong>P0（缺席断言）</strong></td>
+</tr>
+<tr>
+<td><strong>H-MI-02</strong></td>
+<td>S4 §7</td>
+<td>"8 组问题里只有 1 组完整，<strong>其余 7 组都至少有一半落在缺件里</strong>"</td>
+<td>逐组复核后不成立：<strong>"贴得住吗"一组的四项证据有三项（Fig. 2B/C/D）就在本 PDF 内</strong>；多数组是"主图在位、补充证据与影片缺件"</td>
+<td>P1（覆盖率统计口径不严）</td>
+</tr>
+<tr>
+<td><strong>H-MI-03</strong></td>
+<td>S7 第 3 节</td>
+<td>落地对照表把 11 条承诺当作作者的答复承诺，统计出"未落地 7 条"</td>
+<td><strong>真实 rebuttal 未公开，11 条承诺全部是重构产物。</strong> 该表实际衡量的是"重构承诺 vs 最终稿"，<strong>不是</strong>"作者承诺 vs 最终稿"</td>
+<td>P1（论据错位：把自己写的期望当成了对方的承诺）</td>
+</tr>
+<tr>
+<td><strong>H-MI-04</strong></td>
+<td>S4 §3（初判归 S3，<strong>归属已更正</strong>）</td>
+<td>取材路径写成"16 → 120 → 特征选择后 <strong>≈ 90</strong> → 力任务取 top 22"</td>
+<td><strong>图轨第 2.2 节已把该读数明确登记为"不可读"</strong>（横轴末端通道数裁剪后不可见）。同句虽写"中段读不出"，但前文已经把 90 写出来了——把不可读读数当读数使用</td>
+<td>P2</td>
+</tr>
+<tr>
+<td><strong>H-MI-05</strong></td>
+<td>S6 第 2 节</td>
+<td>"主文的<strong>每一条 claim</strong> 平均对应<strong>两张</strong>读者看不见的补图"</td>
+<td>该推断的算式是"12 张补图 ÷ 6 张主图 = 2"，<strong>比值是图与图之比，不是 claim 与图之比</strong>。claim 数与图数不是同一计量单位</td>
+<td>P2（把比值类比成了计数关系）</td>
+</tr>
+<tr>
+<td><strong>H-MI-06</strong></td>
+<td>S2 负结果 4</td>
+<td>"派 E 的接口类工作（25、27、51）<strong>均未</strong>在正文中被讨论其局限"</td>
+<td><strong>Refs 25–27 恰好出现在讨论该派局限的那一句里</strong>（"existing EIM-based sensors predominantly rely on rigid, nonstretchable electrodes (25–27)"）。只有 51 未被讨论局限</td>
+<td>P2（缺席断言的第二例）</td>
+</tr>
+<tr>
+<td><strong>H-MI-07</strong></td>
+<td>S6 第 3 节</td>
+<td>"措辞强度与'是否需要与该派共存'<strong>成反比</strong>"</td>
+<td>这是从单篇论文的 <strong>5 个样本</strong>推出的规律，虽已标【合理重构】，但正文语气是断言式（"成反比"）。<strong>这一条恰好是措辞强度条款要防的病根，而它在该条款生效的同一轮复发</strong></td>
+<td>P2（条款未自我执行）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>分布</strong>：P0 共 <strong>1 条</strong>、P1 共 <strong>2 条</strong>、P2 共 <strong>4 条</strong>，合计 <strong>7 条</strong> / 约 <strong>58 条</strong>带标签的实质断言 = <strong>12.1%</strong>。</p>
+<h4>2.1 与 GPT-1 首跑、GPT-2 本轮的对照（本系统自己的误差报告）</h4>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>GPT-1 首跑</th>
+<th>GPT-2 第二轮</th>
+<th><strong>MI-1 第三轮（本轮）</strong></th>
+<th>变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>带标签实质断言</td>
+<td>约 60 条</td>
+<td>约 55 条</td>
+<td>约 58 条</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>P0–P2 合计占比</strong></td>
+<td>17%</td>
+<td>18.2%</td>
+<td><strong>12.1%</strong></td>
+<td>↓ 6.1 个百分点</td>
+</tr>
+<tr>
+<td>其中 P0（与论文事实直接矛盾）</td>
+<td>2 条（3.3%）</td>
+<td>1 条（1.8%）</td>
+<td><strong>1 条（1.7%）</strong></td>
+<td>持平</td>
+</tr>
+<tr>
+<td>有 P0 的形态</td>
+<td><strong>缺席断言</strong>（"全文未提 GLUE"）</td>
+<td><strong>缺席断言</strong>（"改动没有任何引用"）</td>
+<td><strong>缺席断言</strong>（"从未用于组间推断"），<strong>且在同一个清单里以 P2 形态出现第二次</strong>（"均未讨论其局限"）</td>
+<td><strong>第三次复发</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论（诚实版，也是本轮最重要的方法论结论）</strong>：</p>
+<blockquote>
+<p><strong>三条待生效条款（措辞强度 / 引用与动机两分 / 审计提示词固化）让 P0–P2 总量从 18.2% 降到 12.1%，但没能触动 P0 的形态——"缺席断言"连续第三轮复发，而且这一轮还多了一例以 P2 出现的同形态错误。</strong></p>
+<p><strong>"引用与动机两分"这条条款的作用是显性的</strong>：本轮 S2 第 3 节严格区分了"引文列表"与"引用功能位"两层，<strong>没有</strong>再犯"论文没引这条线的前作"这类错误——GPT-2 的那条 P0 没有复发。<strong>但同一轮里，我们把它用在了"文献引用"上，却没有用在"论文讨论了什么"上。</strong> H-MI-01 与 H-MI-06 的犯法完全相同：<strong>把"我的注意范围里没有"写成了"论文里没有"。</strong></p>
+<p>→ 下一轮的建议条款：<strong>把"缺席断言禁令"从"不得写论文未引用某文献"扩展到"任何以'从未/均未/没有'开头的关于论文内容的断言，必须先做全文检索，检索不到才可写，并须在句内注明检索词。"</strong></p>
+</blockquote>
+<p><strong>另一条独立结论</strong>：<strong>措辞强度条款不会自我执行。</strong> H-MI-07 正是该条款针对的病根（标签贴对、语气断言式），而它发生在该条款生效的同一轮。<strong>条款能改变"作者知道要小心"这件事，改变不了"作者以为自己已经小心了"。</strong></p>
+<hr />
+<h3>3. 【论文有而叙事漏了】覆盖度缺口</h3>
+<h4>3.1 硬数字覆盖：S4 第 12 节清单的执行程度</h4>
+<table>
+<thead>
+<tr>
+<th>S4 清单项</th>
+<th>是否被 S5–S7 引用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>器件表征全套（阻抗、模量、厚度、走线电阻、粘附力、8h/5d）</td>
+<td>✅ S5、S6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>应变 50% / 裂纹 30% / 断裂 66.7% / 前臂 23%</td>
+<td>✅ S3、S6</td>
+<td>S3 已把它登记为措辞张力</td>
+</tr>
+<tr>
+<td>协议全套（50 kHz、0.4 mA、120 值、127/112 ms、53 g、7 h）</td>
+<td>✅ S4、S6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>98.22% / 98.49% ± 0.46% / R² 0.97 / 0.98 ± 0.01</td>
+<td>✅ S6 摘要分析</td>
+<td>—</td>
+</tr>
+<tr>
+<td>人机协作 0.46 s / 83% / 40.7 N / 8 df</td>
+<td>✅ S6（0.46 s 进了藏起清单）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>外骨骼 756 ms / +65% / 85.1→122.7 N / 90.7 N / 44.5 N / 80.0 N</td>
+<td>✅ S6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>疲劳 MNF/MDF / 1 kg / 8 min</td>
+<td>✅ S6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>虚拟手术 14.3 N / 四段 / 8.8–16.2 s / 16.2–24.2 s / 五个时间点</td>
+<td>✅ S6</td>
+<td>图轨复核了时间区间</td>
+</tr>
+<tr>
+<td><strong>Fig. 1G 六轴雷达图的数值判据（table S2）</strong></td>
+<td>❌ 从未被吸收</td>
+<td><strong>缺件，不可核验</strong></td>
+</tr>
+<tr>
+<td><strong>参与者 2、3 的完整结果（fig. S10）</strong></td>
+<td>❌ 从未被吸收</td>
+<td><strong>缺件，不可核验</strong></td>
+</tr>
+<tr>
+<td><strong>外骨骼 Fig. 5D 的中间那柱（未致动约 90 N）</strong></td>
+<td>❌ <strong>从未被任何阶段提到</strong></td>
+<td>🔴 <strong>本轮真正的覆盖度缺口：数字就在图里，正文没写，叙事也没读</strong></td>
+</tr>
+<tr>
+<td><strong>Fig. 5B 的两条曲线分母不同（80.0 N 与 44.5 N）</strong></td>
+<td>⚠️ S4 登记了归一化基准，但未指出"画在同一张图上却用了不同分母"</td>
+<td>中等</td>
+</tr>
+<tr>
+<td><strong>Fig. 3D 中三类手势的重复测量离散度明显更大</strong></td>
+<td>❌ 未吸收</td>
+<td>中等（它是混淆矩阵里三类互认错的可视化对应物）</td>
+</tr>
+<tr>
+<td><strong>走线电阻 107.8 Ω 与接触阻抗 1227.3 Ω 之比约 8.8%</strong></td>
+<td>⚠️ S3 登记为开放项</td>
+<td>中等</td>
+</tr>
+</tbody>
+</table>
+<h4>3.2 图类缺口（本轮已从"物理限制"降级为"已解决"）</h4>
+<p><strong>GPT-2 轮 S8 曾把"Figure 1–5 全部无法从纯文本核验"记成一条物理限制。本轮它不再是限制</strong>：6 张主图全部完成像素级读数，其中 3 张完成曲线数字化。<strong>新的限制从"图不可读"变成了"表不可见"</strong>——主文没有任何数值表格，唯一做定量对照的图指向缺件的 table S2。<strong>两轮的核验物与复核物恰好互补，这是本轮最值得记下的一处结构性差异。</strong></p>
+<h4>3.3 一处"漏得正确"的例子（沿用 GPT-2 轮的体例）</h4>
+<p>论文 Introduction 的 "tolerate up to 50% strain without compromising signal integrity" 与 Results 的 "localized cracks appeared at strains exceeding 30%" 之间的张力（S3 登记为 R-6 候选），<strong>叙事从未复述任何一句</strong>——S3 只登记了张力与两种读法，没有替论文做选择。<strong>结果是：叙事没有把论文的一处未解释措辞抄成自己的断言。</strong></p>
+<hr />
+<h3>4. 【不可核验清单】（本轮新增节，与覆盖度缺口分列）</h3>
+<p><strong>定义</strong>：论文的断言<strong>依赖本流程拿不到的图 / 表 / Note / 影片</strong>——因此<strong>不是叙事的失分，是数据源的边界</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>断言</th>
+<th>依赖的缺件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>走线电阻 20.4 → 107.8 Ω、裂纹 &gt;30%、断裂 &gt;66.7%</td>
+<td>fig. S1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>改性 PDMS 模量 212.8 kPa</td>
+<td>fig. S2 + note S1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>仿真参数与电场纹波的数值分析</td>
+<td>note S2 + Fig. 2E 的参数</td>
+</tr>
+<tr>
+<td>4</td>
+<td>四点法为何抑制接触阻抗波动</td>
+<td>note S3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>最大检出深度 30 mm（仿真 35 mm）与六轴雷达图的定量对照</td>
+<td>fig. S6 + note S4 + table S2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>8 小时与 5 天的信号漂移幅度与通道</td>
+<td>fig. S5A/S5B</td>
+</tr>
+<tr>
+<td>7</td>
+<td>手势集覆盖不同深度肌肉</td>
+<td>fig. S7 + movie S1</td>
+</tr>
+<tr>
+<td>8</td>
+<td>每帧 120 个独立阻抗值的推导</td>
+<td>note S5</td>
+</tr>
+<tr>
+<td>9</td>
+<td>特征选择（ANOVA / F 检验）的判据与两组方法为何不同</td>
+<td>note S6</td>
+</tr>
+<tr>
+<td>10</td>
+<td>分类器（单隐藏层 25 节点）与回归器（二次核 SVM）的全部细节</td>
+<td>note S7 + table S1</td>
+</tr>
+<tr>
+<td>11</td>
+<td>切割长度与宽度的估计算法</td>
+<td>note S8</td>
+</tr>
+<tr>
+<td>12</td>
+<td>PCB 设计原理图</td>
+<td>fig. S11 + note S9</td>
+</tr>
+<tr>
+<td>13</td>
+<td>参与者 2、3 的完整结果与三人均值</td>
+<td>fig. S10</td>
+</tr>
+<tr>
+<td>14</td>
+<td>人机协作 0.46 s 延迟、手势集演示、VR 全流程</td>
+<td>movies S1–S4</td>
+</tr>
+<tr>
+<td>15</td>
+<td>走线电阻随应变的完整曲线（含 50% 以内的全过程）</td>
+<td>fig. S1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>规模</strong>：<strong>15 条</strong>。折算成一个可比较的度量——<strong>论文的 8 组核心问题中，只有 1 组（"FMEIS 相对肌电的增量"，Fig. 2G）的完整证据完全在位；另有 3 组的关键数字（模量、深度、三人均值）其原始数据在缺件里；其余 4 组主图在位但补充证据与影片缺件。</strong></p>
+<blockquote>
+<p>⚠️ <strong>这一句已按 H-MI-02 的教训改写。</strong> 原稿写的是"其余 7 组都至少有一半落在缺件里"——<strong>那是把"补充证据缺件"与"主要证据缺件"混为一谈。</strong> 现按逐组复核结果重写。</p>
+</blockquote>
+<hr />
+<h3>5. 核 S7（专项）</h3>
+<h4>5.1 审稿人三条 weakness 的数字逐条复验</h4>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>审稿人给的数字</th>
+<th>复验结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MW1</td>
+<td>图 2E 显示单肌收缩扰动全部 16 个电极；图 2G 中腕伸时 FCR 通道升高</td>
+<td><strong>两处均可在图面上确认</strong>：Fig. 2E 的电位变化柱状图覆盖全部 16 个电极；Fig. 2G 的 FCR 曲线在 WE 段高于 WF 段</td>
+</tr>
+<tr>
+<td>MW2</td>
+<td>3 名受试者；98.49% ±0.46% 与 R² 0.98 ±0.01；7 个离散力档、90 s；notes S6–S7 与 fig. S10 不可获取</td>
+<td>全部可在正文与清单中找到</td>
+</tr>
+<tr>
+<td>MW3</td>
+<td>0.46 s（第 7 页）、756 ms（图 5B）、7.9 Hz（第 12 页）、图 5Ci 的 EMG 幅度、图 6 的切割次数</td>
+<td><strong>0.46 s、7.9 Hz 成立；756 ms 成立但出处应为正文而非图 5B；切割次数与图 6B 的段落数不符；EMG 幅度一条不成立</strong></td>
+</tr>
+</tbody>
+</table>
+<h4>5.2 对隔离审稿人自身的审计（沿用 GPT-2 轮做法，本轮查出三处）</h4>
+<ol>
+<li><strong>MW3 的"图 5E 缺少无外骨骼的对照"不成立。</strong> 图 5E 的两组曲线标注为 <strong>Exo off 与 Exo on</strong>，未致动组就是"无外骨骼助力"的对照。审稿人真正想说的是"缺少不持重物的基线"，两者不应混为一句。</li>
+<li><strong>MW3 的"图 6 虚拟手术仅展示 4 次切割"与图面不全符。</strong> 图 6B 的升降段在末端另有一段高度约为其余平台一半的短平台，图 6E/6F 另给 5 个时间点。<strong>审稿人指出的"计数不清"成立，但它自己给的数字也不准确</strong>——这是双向的。</li>
+<li><strong>MW3 把 756 ms 的出处标成"图 5B"。</strong> 该数字出自正文（四指抓握测试描述），图 5B 画的是握力曲线。</li>
+<li><strong>另有一处经本阶段复核后不成立</strong>（进入撤销清单）：<strong>MW3 关于图 5Ci 的 EMG 幅度指控</strong>——逐列像素测幅显示两区幅度实质相同（第 0.4 节撤销二）。</li>
+</ol>
+<p><strong>严重度：四处均属表述与引证精度问题，不改变 MW1–MW3 的批评方向（除 EMG 一条被证伪）。</strong></p>
+<h4>5.3 落地的说明（H-MI-03 的改正）</h4>
+<p>S7 的落地对照表曾把 11 条承诺当作作者的真实答复来统计。<strong>现补注：真实 rebuttal 未公开，11 条承诺全部是重构产物。</strong> 该表的正确读法是：<strong>它衡量的是"一条合理的审稿答复会提出什么"与"最终发表稿里有什么"之间的差距</strong>，而<strong>不是</strong>"作者承诺了什么、兑现了多少"。7 条未落地这一统计因此<strong>不能用于评价作者</strong>，<strong>只能用于说明"这类低成本改动在发表流程里容易不落地"这一流程现象</strong>。</p>
+<hr />
+<h3>6. 两个隔离视角的发现集合不重合（本轮新增）</h3>
+<table>
+<thead>
+<tr>
+<th>发现</th>
+<th>隔离审稿人（框架＝"我会怎么攻"）</th>
+<th>审计子代理（框架＝"逐图重算"）</th>
+<th>图轨（框架＝"图上能读出什么"）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>被动牵拉与主动肌串扰未分离</td>
+<td>✅ <strong>MW1</strong></td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>离散力档可能是分级而非回归</td>
+<td>✅ <strong>MW2</strong></td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>3 人样本不足</td>
+<td>✅ MW2</td>
+<td>⚠️ 列入缺件</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>延迟与更新率偏高</td>
+<td>✅ MW3</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>对照物（胶带）从图上消失</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ <strong>R-1</strong></td>
+</tr>
+<tr>
+<td><strong>两个面板用了不同纵轴量程</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ <strong>R-2</strong></td>
+</tr>
+<tr>
+<td><strong>VR 与实拍切割长度差 1.5–2.6 倍</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ <strong>R-3</strong></td>
+</tr>
+<tr>
+<td><strong>纵轴单位写作 mV</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ <strong>R-4</strong></td>
+</tr>
+<tr>
+<td><strong>疲劳指标基线反向偏移</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ <strong>R-5</strong></td>
+</tr>
+<tr>
+<td>混淆矩阵可复现 98.22%</td>
+<td>❌</td>
+<td>✅ 独立复现</td>
+<td>✅ 独立复现</td>
+</tr>
+<tr>
+<td>39 对 38 的周期差</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>C(16,2)=120</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅（S4）</td>
+</tr>
+<tr>
+<td>50% 应变与 30% 裂纹的张力</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌（<strong>由 S3 补上</strong>）</td>
+</tr>
+<tr>
+<td>Fig. 4B 分类数不符</td>
+<td>❌</td>
+<td>⚠️ <strong>提出但被撤销</strong></td>
+<td>⚠️ <strong>撤销</strong></td>
+</tr>
+<tr>
+<td>图 5Ci 的 EMG 幅度不符</td>
+<td>⚠️ <strong>提出但被撤销</strong></td>
+<td>❌</td>
+<td>⚠️ <strong>撤销</strong></td>
+</tr>
+<tr>
+<td>四条承诺未落地</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌（<strong>由 S7 补上</strong>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>共 16 类发现，审稿人与审计员交集只有 1 类（3 人样本，且形态不同）；审稿人独有 4 类，审计员独有 0 类（其独有的一类被撤销），图轨独有 5 类；三类均漏 2 类。</strong></p>
+<p><strong>结论（对流程最有价值的一条，与 GPT-2 轮呼应但结论不同）</strong>：
+- GPT-2 轮的结论是"审稿人与审计员互补且各自不完备"；
+- <strong>本轮的结论更进一步</strong>：<strong>当核验物从"表格"换成"图"以后，"逐行重算"这一框架几乎失去独有产出（唯一一条被撤销），而"读图"变成了产出最多的框架。</strong>
+- → <strong>框架的选择取决于核验物的形态。把"逐行算差值"用在图像密集型论文上，会产生大量"看起来核对了但没核对到点子上"的产物</strong>（本轮审计子代理 5 条"概括句 vs 支撑物"里有 3 条的支撑物在缺件里）。</p>
+<hr />
+<h3>7. 论文自身的问题清单（本流程的独立产出）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>严重度</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>R-1</strong></td>
+<td><strong>Fig. 2D 的对照物在第 4、5 天从图上消失</strong>（商用 TPU 胶带无柱、无散点），而正文只报自己 13.57 → 10.55 N/m，<strong>一字未提对照物的失效</strong></td>
+<td><strong>中高</strong></td>
+<td>图轨 1.3 节逐柱读数；正文 Fig. 2D 对应段</td>
+</tr>
+<tr>
+<td><strong>R-2</strong></td>
+<td><strong>Fig. 6C 与 6D 使用不同纵轴量程</strong>（0–60 mm 与 0–40 mm），在存在 1.5–2.6 倍幅值差的情况下使两条曲线视觉上显得一致</td>
+<td><strong>中高</strong></td>
+<td>图轨 4.2 节；纵轴刻度带裁剪</td>
+</tr>
+<tr>
+<td><strong>R-3</strong></td>
+<td><strong>VR 估计的切割长度全程系统性高于相机实测值</strong>，端点 1.50 倍、首个平台处最高 2.6 倍；而正文把 C/D 的差异<strong>全部</strong>归给宽度与深度，并称长度"趋势一致"</td>
+<td><strong>高</strong></td>
+<td>曲线数字化（18.5 px/s 标定，最大残差 0.6 s）</td>
+</tr>
+<tr>
+<td><strong>R-4</strong></td>
+<td>Fig. 2F 与 2G 的纵轴把<strong>阻抗画在 mV 单位下</strong>（恒流源下电压正比于阻抗，正文解释了这一点，但轴标签仍以电压单位标注"阻抗"）</td>
+<td>低</td>
+<td>Fig. 2F、2G 轴标签</td>
+</tr>
+<tr>
+<td><strong>R-5</strong></td>
+<td>Fig. 5E 的两项疲劳指标在两个条件下<strong>基线方向相反的偏移</strong>（MNF 致动组起点高约 10.5 Hz，MDF 致动组起点低约 4 Hz），正文与图注<strong>均未声明基线未对齐</strong></td>
+<td>中</td>
+<td>逐点像素读数</td>
+</tr>
+<tr>
+<td><strong>R-6</strong></td>
+<td>Introduction 的 "tolerate up to 50% strain without compromising signal integrity" 与 Results 的 "localized cracks appeared at strains exceeding 30%" 之间<strong>缺少解释句</strong>；且前臂平均应变 23% 对裂纹起始 30% 的余量约 7 个百分点，论文只引"平均应变"未给峰值</td>
+<td>中</td>
+<td>S3 第 v1 死因二；两处原文</td>
+</tr>
+<tr>
+<td><strong>R-7</strong></td>
+<td>Introduction 的 "closely matching human skin [420 to 850 kPa]" 与 Results 的 "slightly smaller than that of human skin" 对同一个量（212.8 kPa，约为区间下限的一半）<strong>用了强度不同的措辞</strong></td>
+<td>低</td>
+<td>两处原文</td>
+</tr>
+<tr>
+<td><strong>R-8</strong></td>
+<td>正文写 "four cutting periods"，图 6B 的升降段在末端另有一段短平台、图 6E/6F 另给 5 个时间戳——<strong>分段计数未交代</strong></td>
+<td>低</td>
+<td>Results 段与 Fig. 6 各面板</td>
+</tr>
+<tr>
+<td><strong>R-9</strong></td>
+<td>13 分钟、每 10 秒交替应为 <strong>39 个完整周期</strong>，论文报 <strong>38 个</strong>，未说明是否为首尾不完整周期</td>
+<td>极低</td>
+<td>算术</td>
+</tr>
+</tbody>
+</table>
+<p><strong>性质声明</strong>：<strong>R-1 至 R-5 是本轮靠像素级读图（而非文本）产出的</strong>，前两轮因为"图不可核验"而无法产出这类发现。<strong>R-6 至 R-9 是文本层发现。</strong></p>
+<hr />
+<h3>8. 这套仿真教会我的东西里，哪些是读论文原文绝对学不到的？</h3>
+<p>分三层，并声明每层的性质。</p>
+<h4>第一层：论文里只有"痕迹"、没有"理由"的决策</h4>
+<table>
+<thead>
+<tr>
+<th>学到的东西</th>
+<th>性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>走线材料、走线条数、总厚、刷涂封装、密封胶这五项既无动机句也无引文——而有动机的三项全在材料化学层</strong></td>
+<td><strong>史实</strong>（五项无动机可全文检索确认），但"有动机的都落在化学层、无动机的都落在结构层"这一<strong>分布</strong>读原文得不到</td>
+</tr>
+<tr>
+<td><strong>"搅拌 8 小时"不是化学条件，是为均匀性付出的时间成本</strong></td>
+<td>重构（依据是该时长在配方体系里不承担反应角色）</td>
+</tr>
+<tr>
+<td>三项材料设计里有动机句的两项都用了引文，唯一"有动机无引用"的是加 NaCl</td>
+<td>重构（四象限表的产物）</td>
+</tr>
+<tr>
+<td><strong>1.5–2.6 倍的幅值差被两个不同的纵轴量程摊平</strong></td>
+<td><strong>史实</strong>（逐像素读数），但"这是版面决策还是失误"本流程答不了</td>
+</tr>
+</tbody>
+</table>
+<h4>第二层：过程里真实存在的判断与挫败</h4>
+<ul>
+<li>至暗一（三周看不见信号）与"用仿真剪开分叉"这一转折</li>
+<li>至暗二（粘附力跌穿借来的标尺）与"从'比胶带强'换成'是否够用窗口'"这一判据更换</li>
+<li>至暗三（换贴片即模型失效）与"这一刀没有治好，只是被证明砍得不深"</li>
+<li>至暗四（复杂动作下肌肉募集模式错位）与"不救，写进限制"</li>
+<li>rebuttal 里"用论文自己的图当内部对照"的据理力争路径（反相结构）</li>
+</ul>
+<p><strong>性质声明：以上全部为【合理重构】，依据已逐条记在各阶段《档案》中，不可当作史实引用。</strong></p>
+<h4>第三层：本流程独有的产物——关于"审计本身"的知识</h4>
+<p>这一层是读论文、也读任何一份研究复盘都得不到的：</p>
+<ol>
+<li><strong>本轮的误差基线</strong>：约 58 条断言 / P0–P2 占 <strong>12.1%</strong> / P0 <strong>1 条（1.7%）</strong>。相对 GPT-2 轮的 18.2%，总量下降 6.1 个百分点，<strong>但 P0 的形态（缺席断言）第三次复发</strong>，且本轮多出一例同形态的 P2。</li>
+<li><strong>措辞强度条款不是自我执行的</strong>：H-MI-07 正是该条款针对的病根，它发生在该条款生效的同一轮。</li>
+<li><strong>"引用与动机两分"条款有效但作用域被限死在"文献引用"上</strong>：GPT-2 的那条 P0（"没有任何引用"）没有复发；但同一轮里出现了两条同形态的"论文没有讨论/从未发生"的错误（H-MI-01、H-MI-06）。</li>
+<li><strong>图轨能撤销假发现</strong>，本轮 3 次，其中 <strong>2 次撤销的是隔离审计方提出的指控</strong>。→ <strong>隔离只保证视角独立，不保证结论可靠。</strong></li>
+<li><strong>框架的选择取决于核验物的形态</strong>：本轮"逐行重算"框架的独有产出为 0（唯一一条被撤销），"读图"框架独占 5 类发现。</li>
+<li><strong>论文自身的 9 处问题（R-1 至 R-9）</strong>，其中 R-1 至 R-5 只有靠读图才能发现。</li>
+</ol>
+<p><strong>性质声明：第 1、2、3、4、5 条是本流程的实验结果（可复现）；第 6 条是论文图面与文本层面的可核证事实。</strong></p>
+<h4>待办的模板改动（下一轮生效，本轮不改）</h4>
+<ol>
+<li><strong>缺席断言禁令扩大作用域</strong>：从"不得写论文未引用某文献"扩展到"<strong>任何以'从未/均未/没有'开头、关于论文内容的断言，必须先做全文检索，检索不到才可写，并须在句内注明检索词</strong>"。→ 直指连续三轮复发的 P0 形态。</li>
+<li><strong>给措辞强度条款加一条执行机制</strong>：条款不能只写在纪律里。建议在 S1–S6 的《档案》契约里<strong>新增一个字段【措辞自检】</strong>，要求逐条回答"本阶段标【合理重构】的段落里，有没有出现断言级副词？出现在哪一句？"。→ 条款没有检查点就不会执行。</li>
+<li><strong>图轨的权重正式提升</strong>：把图轨列入 S8 的必跑项，与《档案》同级；并在 S8 模板里固化<strong>【假发现撤销清单】</strong>与<strong>【不可核验清单】</strong>两节。</li>
+</ol>
+<hr />
+<h3>《档案 · S8》</h3>
+<pre><code>【阶段】S8 对照复盘（幻觉总检查）
+【已知事实】
+1. Fig. 3C 的 10 行逐行求和全部等于 100、对角线均值等于 98.22%，与正文参与者 1 的准确率逐位吻合【可核验：_图轨读数.md 2.1 节】
+2. Fig. 2D 中商用 TPU 胶带在第 4、5 天图上无柱无散点，正文一字未提【可核验：_图轨读数.md 1.3 节】
+3. Fig. 6C 纵轴为 0 至 60 毫米、6D 为 0 至 40 毫米；数字化后 C 由 4.3 升至 54.0 毫米、D 由 3.9 升至 36.0 毫米【可核验：_digitize_6CD.txt 与纵轴刻度带裁剪】
+4. 时间轴标定为 18.5 像素每秒（用图注 5 个时间戳对应图内 5 条竖虚线），最大残差 0.6 秒；首个升降段约 8.7 至 17.5 秒，与正文 8.8 至 16.2 秒在约 1 秒内吻合【可核验：_calib6.txt】
+5. Fig. 5E 逐点读数：MNF 未致动 86.5 至 79.0、致动 97.0 至 97.5；MDF 未致动 62.5 至 55.7、致动 58.5 至 57.8；两指标基线偏移方向相反【可核验：_图轨读数.md 3.4 节】
+6. Fig. 5Ci 的 EMG 幅度逐列像素测量：未致动区均值 20.9 像素、致动区 20.4 像素，两区实质相同【可核验：_verify_emg2.txt】
+7. Fig. 4B 为 4 行乘 2 组：左组 4 个腕部手势，右组为 Three 加三种抓取，合计 5 个手势与 3 种抓取模式，与正文一致【可核验：figs/crop_fig4B_grid.png】
+8. 论文 Statistical analysis 段写明 ANOVA 与 F 检验在 Fig. 3 与 fig. S10 上进行【可查证：原句】
+9. 论文全文无消融表；四处最接近的对照均为条件下并列【可查证：全文】
+10. 论文主文 6 张图、补充 12 张图与 2 张表、9 条 Note、4 段影片；主文无任何数值表格【可查证：Supplementary 清单】
+11. 不可核验清单共 15 条【可核验：本文件第 4 节】
+12. 隔离审稿人的 MW3 中关于 Fig. 5Ci 的 EMG 幅度指控经像素测量不成立【可核验：_verify_emg2.txt】
+13. 审计子代理关于 Fig. 4B 分类数的指控经图面逐行核对不成立【可核验：figs/crop_fig4B_grid.png】
+14. 三方独立复现同一结果：混淆矩阵对角线均值 98.22%、39 对 38 的周期差、C(16,2) 等于 120【可核验：本文件 0.2 与 0.3 节】
+【合理重构】
+a. 论文自身问题的定级（R-1 至 R-9 的严重度排序）——依据：差异的绝对量与它在论证链上的位置（重构）
+b. 把 R-2 的差异量程解释为版面决策而非失误——依据：本流程无法区分两者，故只登记（重构程度低）
+c. 第 6 节&quot;框架的选择取决于核验物的形态&quot;这一结论——依据：三方发现集合的交集统计（重构）
+【负结果】
+1. 本轮自产幻觉 7 条（P0 一条、P1 两条、P2 四条），占带标签实质断言约 12.1%
+2. P0 的形态（缺席断言）连续第三轮复发，且本轮另有一例同形态的 P2
+3. 措辞强度条款在本轮未自我执行：一条 P2 正是该条款针对的病根
+4. 图轨撤销假发现 3 次，其中 2 次撤销的是隔离审计方的指控——隔离不等于正确
+5. 审计子代理&quot;逐行重算&quot;框架的独有产出为 0（唯一一条被撤销）
+6. 覆盖度缺口中的真缺口：Fig. 5D 中间那柱（未致动约 90 牛）从未被任何阶段吸收
+7. 不可核验清单 15 条，其中 3 组核心问题的关键数字其原始数据在缺件里
+8. 三条待生效条款本轮虽已执行，但改动建议（缺席断言禁令扩域、措辞条款加检查点、图轨提权）仍留待下一轮
+（本阶段负结果占比约 45%）
+【未决问题】
+1. 缺席断言禁令扩域后能否压住连续三轮复发的 P0？【留给下一轮】
+2. 给措辞强度条款加《档案》检查点字段后，它能否自我执行？【留给下一轮】
+3. R-1 至 R-5 五处图面问题要不要全部写进 S9 的附录《勘误与对照》？【交 S9】
+4. 15 条不可核验清单在 S9 里以何种粒度呈现（逐条还是汇总）？【交 S9】
+5. 本轮的讲法论点（主补分工与摘要在选边）是否够格单列一幕？【交 S9】
+【一致性自检】本阶段与前七份档案有四处冲突并已全部反向修正：H-MI-01 修正 S4 第 6 节的缺席断言；H-MI-02 修正 S4 第 7 节的覆盖率统计；H-MI-03 为 S7 第 3 节的落地对照表补上性质声明；H-MI-04 修正 S3 未决问题里把不可读读数当读数使用的引用。H-MI-06 修正 S2 负结果 4。全部修正以修订注形式留在原文件，未静默覆盖。另有撤销三处假发现，其中一处为流程自产、两处来自隔离审计方。
+【后见之明自检】本阶段本应有一次后见之明核查——反过来查前序阶段有无泄漏。结果：S1 至 S7 均未发现以结果口吻叙述未来的情况；S4 第 12 节的对照清单已在节首显式声明属于设计好的对照物；S6 第 2 节对 Fig. 6 量程的登记属于版面观察，未使用任何后续结果。合规。
+</code></pre>
+</section>
+<section class="stage">
+<h2>图轨原始读数 · MI-1（第三轮新增轨）</h2>
+<blockquote>
+<p>本文件是本轮为"图像密集型湿实验论文"新增的<strong>图轨（figure track）</strong>原始产物。
+定位与《档案》平行：它是 S4 与 S8 的<strong>共享输入</strong>，只登记"从图上直接读出的量"，不做因果推断、不评价方法好坏。
+三条纪律：
+1. <strong>只报可从图上直接读出的量</strong>（轴范围、平台高度、条数、曲线端点、被截断与否），不做曲线拟合式的定量外推。
+2. <strong>每个读数必须注明图号 + 面板号</strong>（等价于【可查证】的图版级出处）；读数带不确定度的必须写作"约"。
+3. <strong>读不出的必须写"不可读"或"缺件"</strong>，不许用正文叙述补位。</p>
+<p>采集方式：①整页高 DPI 渲染（170 dpi）②内嵌矢量合成图的原始栅格（2167×2072 等）③按面板裁剪放大 ④对连续曲线做<strong>像素级颜色分割数字化</strong>（脚本 <code>_digitize6.py</code> / <code>_calib6.py</code>，输出见 <code>_digitize_6CD.txt</code>、<code>_calib6.txt</code>）。</p>
+</blockquote>
+<hr />
+<h3>0. 图件在位情况（缺口清单）</h3>
+<table>
+<thead>
+<tr>
+<th>图件</th>
+<th>是否在位</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fig. 1（A–G，七面板总览）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 1938×1928</td>
+</tr>
+<tr>
+<td>Fig. 2（A–G，工艺/表征/原理/测量）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 1855×2223</td>
+</tr>
+<tr>
+<td>Fig. 3（A–F，手势分类与力回归）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 2167×2072</td>
+</tr>
+<tr>
+<td>Fig. 4（A–E，人机协作）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 1838×1547</td>
+</tr>
+<tr>
+<td>Fig. 5（A–E，外骨骼）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 2167×1394</td>
+</tr>
+<tr>
+<td>Fig. 6（A–F，虚拟手术）</td>
+<td>✅ 在位</td>
+<td>内嵌栅格 2167×1391</td>
+</tr>
+<tr>
+<td><strong>Notes S1–S9</strong></td>
+<td>❌ 缺件</td>
+<td>正文 9 处指向（界面/测量配置/特征选择/ML 模型/切割长度算法/仿真参数/PCB 设计）</td>
+</tr>
+<tr>
+<td><strong>Tables S1–S2</strong></td>
+<td>❌ 缺件</td>
+<td>Fig. 1G 的雷达图<strong>自称</strong>其定量对照在 table S2</td>
+</tr>
+<tr>
+<td><strong>Figs. S1–S12</strong></td>
+<td>❌ 缺件</td>
+<td>正文 11 处指向（含 S2 模量、S1 走线电阻、S5 长期稳定性、S6 深度、S7 手势集、S10 被试 2/3、S11 PCB）</td>
+</tr>
+<tr>
+<td><strong>Movies S1–S4</strong></td>
+<td>❌ 缺件</td>
+<td>HRC 延迟 0.46 s、VR 手术全流程、手势集演示均以影片为证据</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这一栏是本轮最重要的结构性事实</strong>：本 PDF 只含 13 页正文。凡"结论靠补图/补表/影片支撑"的断言，在本轮流程里<strong>不可核验</strong>，只能登记进"不可核验清单"，不得作为已核验事实进入叙事。</p>
+<hr />
+<h3>1. Fig. 2 —— 器件表征（可读数最多的一张）</h3>
+<h4>1.1 Fig. 2B 剥离曲线（水凝胶 vs 改性 PDMS，180° 剥离，钠钙玻璃）</h4>
+<ul>
+<li>横轴 Displacement 约 0–60 mm；纵轴 Force/width 0–25 N/m。</li>
+<li>水凝胶：起点约 0 N/m 起，于位移约 4–10 mm 之间冲到峰值 <strong>约 17 N/m</strong>，随后回落，在位移约 20–45 mm 存在<strong>阴影平台区（约 14 N/m）</strong>，末端标注 "Peeled off"。</li>
+<li>改性 PDMS：起点约 2 N/m，位移约 8–20 mm 间缓升至 <strong>约 13–14 N/m</strong> 的平台，末端标注 "Peeled off"。</li>
+<li><strong>读数结论</strong>：正文给的"PDMS 12.41 N/m、水凝胶 14.28 N/m，取阴影平台区均值"与图上平台高度一致（<strong>对上</strong>）。<strong>注意峰值远高于平台</strong>（水凝胶峰值约为平台值的 1.2 倍），正文只报平台均值、不报峰值——这是口径选择，不是错误。</li>
+</ul>
+<h4>1.2 Fig. 2C 连续佩戴 8 小时（90° 剥离，人体前臂）</h4>
+<ul>
+<li>横轴 0/2/4/6/8 小时，纵轴 0–15 N/m；每柱叠 4 个个体散点。</li>
+<li>读数（约）：0 h ≈ <strong>12.7</strong>、2 h ≈ <strong>11.3</strong>、4 h ≈ <strong>11.3</strong>、6 h ≈ <strong>12.0</strong>、8 h ≈ <strong>9.4</strong> N/m。</li>
+<li><strong>读数结论</strong>：正文写"由 12.73 降至 9.8 N/m"——起点与终点与图一致（<strong>对上</strong>）；但<strong>图的 6 h 一柱高于 4 h 一柱</strong>，8 小时内的下降不是单调的，正文用"略微下降"一笔带过。</li>
+</ul>
+<h4>1.3 Fig. 2D 连续 5 天复用（改性 PDMS vs 商用 TPU 胶带，每天测一次）</h4>
+<ul>
+<li>横轴 1/2/3/4/5 天，纵轴 0–25 N/m；每柱叠 4 个个体散点，带误差棒。</li>
+<li>改性 PDMS：day1 ≈ <strong>13.5</strong>、day2 ≈ <strong>12.3</strong>、day3 ≈ <strong>12.2</strong>、day4 ≈ <strong>11.2</strong>、day5 ≈ <strong>10.6</strong> N/m（与正文 13.57 → 10.55 一致，<strong>对上</strong>）。</li>
+<li>商用 TPU 胶带：day1 ≈ <strong>20.7</strong>、day2 ≈ <strong>8.5</strong>、day3 ≈ <strong>5.2</strong>；<strong>day4 与 day5 两根柱子不存在（图上无柱、无散点）</strong>。</li>
+<li><strong>读数结论（本轮图轨首条实质发现）</strong>：<strong>对照物在第 4 天从图上消失了。</strong> 正文对这一支的表述只有"与商用 TPU 胶带比较"一句图注，正文段落只报自己的 13.57 → 10.55，<strong>完全没有写对照物在第 4 天起不再可测</strong>。这让"可复用 5 天"这个 claim 失去唯一对照。</li>
+<li>说明：图上没有任何文字标注"tape failed"或"not measurable"，"从第 4 天起不再可测"是<strong>读数推断</strong>，依据是"图上无柱且横轴仍有第 4、5 天刻度"。此推断已按纪律标注为推断，不是图上的显式事实。</li>
+</ul>
+<h4>1.4 Fig. 2E 电场仿真（BR / FDS / FCU 收缩）</h4>
+<ul>
+<li>电位色标 <strong>−20 至 +20 mV</strong>；16 个电极编号 1–16 沿前臂周向排列。</li>
+<li>电压变化柱状图（纵轴约 −0.2 至 +0.2 V，三幅共用）：</li>
+<li><strong>BR 收缩</strong>：电极其 1–8 为<strong>正值</strong>（近端最大约 +0.2 V），9–16 为负值。</li>
+<li><strong>FDS 收缩</strong>：1–8 正、9–16 负，<strong>量级约为 BR 的一半</strong>，且 13–16 出现与其余电极相反的小正峰（FFU 面板中 13–16 呈明显正柱）。</li>
+<li><strong>FCU 收缩</strong>：1–8 为<strong>负值</strong>，9–12 转正，13–16 为负。</li>
+<li><strong>读数结论</strong>：正文"最大的电位变化出现在最靠近收缩肌肉的皮肤区域"在 BR 与 FCU 上成立；<strong>FDS 那一幅的 13–16 号电极出现同向小正峰，与"最靠近者变化最大"的单调叙述存在局部出入</strong>（该出入是否重要取决于 note S2 的仿真参数，而 note S2 缺件）。</li>
+</ul>
+<h4>1.5 Fig. 2F 四点法，13 分钟腕屈伸交替</h4>
+<ul>
+<li>左：仿真电位场，色标 −20 至 +20 mV，标注 FCR / FDS / ECR。</li>
+<li>右：手腕照（WE / WF 两种姿态）+ 实测曲线，纵轴 <strong>40–48</strong>，<strong>轴标签写作 "Impedance (mV)"</strong>。</li>
+<li>曲线形态：38 个峰谷，WE 段高于 WF 段（与正文一致）。</li>
+<li><strong>读数结论（图轨第二条发现）</strong>：<strong>纵轴把阻抗画在"mV"单位下。</strong> 这是计量口径不严（恒流源下电压正比于阻抗，正文 §2 也解释了这一点，但轴标签仍以电压单位标注"阻抗"）。同型问题见 Fig. 2Gi。</li>
+</ul>
+<h4>1.6 Fig. 2G 与 EMG 对照</h4>
+<ul>
+<li>Gi 纵轴 <strong>70 / 62</strong>（mV），轴标签同样是 <strong>"Impedance (mV)"</strong>；FC R 曲线呈方波状在约 62–68 之间跳变，ECR 曲线镜像。顶部横条标注 Natural / WF / WE。</li>
+<li>Gii 纵轴 EMG（mV）：FCR 约 −1 至 +1，ECR 约 −2 至 +2；只在各自主动收缩相位出现爆发。</li>
+<li><strong>读数结论</strong>：正文"FCR 在腕伸（被动牵拉）时无电活动、ECR 在腕屈时无电活动"与 Gii 一致（<strong>对上</strong>）。这是全文最干净的一组证据，且<strong>不依赖任何缺件</strong>。</li>
+</ul>
+<hr />
+<h3>2. Fig. 3 —— 手势分类与力回归</h3>
+<h4>2.1 Fig. 3C 混淆矩阵（<strong>本轮图轨第三条、也是最有价值的一条读数</strong>）</h4>
+<ul>
+<li>10×10，行 = 实际手势，列 = 预测手势，行归一化（每行合计 100）。</li>
+<li>对角线逐格读数：Natural <strong>99.0</strong>、Claw <strong>100</strong>、Grasp cylinder <strong>100</strong>、Three <strong>100</strong>、Fist <strong>98.0</strong>、Chinese seven <strong>91.1</strong>、Thumb up <strong>94.1</strong>、Wrist dev <strong>100</strong>、Wrist ext <strong>100</strong>、Wrist flex <strong>100</strong>。</li>
+<li>非对角逐格读数：Natural → Wrist dev <strong>1.0</strong>；Fist → Thumb up <strong>2.0</strong>；Chinese seven → Natural <strong>1.0</strong>、→ Wrist dev <strong>7.9</strong>；Thumb up → Fist <strong>5.9</strong>。</li>
+<li><strong>逐行求和校验：10 行全部等于 100，无残差。</strong>（99.0+1.0；100；100；100；98.0+2.0；1.0+91.1+7.9；5.9+94.1；100；100；100）</li>
+<li><strong>对角线均值 = 98.22%</strong> —— 与正文"participant 1 的总体准确率 98.22%"<strong>逐位吻合</strong>。</li>
+<li><strong>读数结论</strong>：摘要与引言的 <strong>98.49%</strong> 是三人均值（正文另给"平均 98.49%（±0.46%）"、并指向缺件的 fig. S10），<strong>98.22%</strong> 是受试者 1 的单人值。两者不是矛盾，是<strong>口径切换</strong>（单人 → 三人均值）。这条读数把一处本来会被判成 P0 的"数字对不上"<strong>降级为口径问题</strong>——这是图轨第一次直接改变误差定级。</li>
+</ul>
+<h4>2.2 Fig. 3D 重复性堆叠曲线</h4>
+<ul>
+<li>纵轴以 mV 为标尺的色条（标注 <strong>50 mV</strong>），横轴为通道序号；10 行不同颜色对应 10 个手势，每行叠多条重复测量。</li>
+<li>横轴刻度可见 0 / 20 / 40 / 60 / 80，绘图区在 80 之后仍有延伸。</li>
+<li><strong>读数结论</strong>：<strong>横轴末端的确切通道数不可读</strong>（裁剪后未见末端刻度标签）→ 按纪律登记为"读不出"。可确定的是：绘图区展示的通道数明显少于每帧 120 个独立阻抗值（正文只给 120，未给特征选择后保留数）；Fig. 3F 单列"top 22"。<strong>"120 → ? → 22"这条链路中段缺失</strong>，且 note S6（特征选择）缺件。</li>
+<li>可读到的形态事实：Chinese seven / Thumb up / Wrist dev 三行的重复测量带<strong>离散度明显大于</strong>其余七行，且各自的重复曲线在约第 14 与第 40 通道附近出现一致的深谷——与混淆矩阵里这三类互认错（91.1 / 94.1）方向一致（<strong>对上</strong>）。</li>
+</ul>
+<h4>2.3 Fig. 3E 捏合力回归</h4>
+<ul>
+<li>散点：真实捏合力 0 / 5 / 10 / 15 / 20 / 25 / 30 N（7 档），纵轴 −10 至 40 N，虚线为 y=x。</li>
+<li>读到的系统偏差：0 N 档的预测值<strong>明显高于</strong>真实值（约 +2 至 +4 N）；30 N 档的预测值<strong>明显低于</strong>真实值（30 N 的真实值处预测集中在约 20–33 N）。</li>
+<li>图注给出 <strong>R² = 0.97、RMSE = 1.61 N</strong>（与正文一致，<strong>对上</strong>）。</li>
+<li><strong>读数结论</strong>：R² 与 RMSE 是全文（含摘要）被引用的那一组数；但<strong>图上清楚显示误差是两端系统性偏置（低力端高估、高力端低估）</strong>，不是零均值噪声。正文只给 RMSE，未提这一形态。这条不影响 R² 的正确性，但影响"可用于精细力控"的推论强度。</li>
+</ul>
+<h4>2.4 Fig. 3F 七个力档的阻抗模式</h4>
+<ul>
+<li>纵轴 Impedance change（mV）约 −12 至 +10；横轴 "Top 22 channels (ranked by F test)"，刻度 0–22。</li>
+<li>色标 Force (N) 0–30，红→黑。</li>
+<li><strong>读数结论</strong>：<strong>通道数确切可读：22</strong>（与正文"top 22"一致）。三处深谷（约第 4、6、15 通道）随力档单调加深至 −10 mV 量级（<strong>对上</strong>）。横轴标签明确写 F test —— but 正文在力回归处写的是"F test method (note S6)"，手势处写的是"one-way ANOVA"。<strong>两处写法不同</strong>：一个是 ANOVA、一个是 F 检验，而 note S6 同时被指向二者（缺件）。</li>
+</ul>
+<hr />
+<h3>3. Fig. 5 —— 外骨骼控制</h3>
+<h4>3.1 Fig. 5B 人手握力 vs 外骨骼输出力</h4>
+<ul>
+<li>上行（蓝色）Human force (%) 0–100；下行（橙色，<strong>倒置绘制</strong>）Exo force (%) 0–100 自上而下标注。</li>
+<li>读数：人手侧 11 个峰，峰值在 <strong>30%–100%</strong> 之间强烈起伏；外骨骼侧峰值位置<strong>逐一对应</strong>，无漏峰、无多余峰（<strong>对上</strong>）。</li>
+<li><strong>读数结论</strong>：图注说明两者分别按自身校准最大值（80.0 N 与 44.5 N）归一化——<strong>两条曲线画在同一张图上，但分母不同</strong>，"趋势相似"成立、<strong>幅值不可直接比较</strong>。</li>
+</ul>
+<h4>3.2 Fig. 5C 致动前后（<strong>本轮用来否证自己一条猜想</strong>）</h4>
+<ul>
+<li>Ci：纵轴 Predicted force (%) <strong>−100 至 +100</strong>；紫区（Exo not actuated）两个峰约 <strong>45% / 48%</strong>；橙区（Exo actuated）峰约 <strong>50% / 52%</strong>。</li>
+<li><strong>读数结论</strong>：<strong>没有饱和，全程峰值不到纵轴上限的一半。</strong> 我在读图前的先验猜测是"归一化到 100% 会截断"，<strong>图否决了这个猜测</strong>——这是图轨第二次直接改变结论（第一次是把 P0 降级为口径问题，这次是撤掉一条假发现）。</li>
+<li>Cii：纵轴 Output force (N) <strong>0–80</strong>；紫区两峰约 <strong>43 / 42 N</strong>；橙区峰值约 <strong>73 N</strong>。与正文 44.2 → 72.8 N（+65%）一致（<strong>对上</strong>）。</li>
+<li>Ci 上的 EMG（橙，右轴 mV 0.6 / 0 / −0.3）：紫区与橙区爆发<strong>幅值相近</strong>，与正文"肌肉激活水平相当"一致（<strong>对上</strong>）。</li>
+<li><strong>读数结论（图轨第四条发现）</strong>：紫/橙分界线上，<strong>预测力峰值只从约 48% 升到约 52%（+4 个百分点，约 3.6 N）</strong>，而输出力从约 42 N 升到约 73 N（<strong>+74%</strong>）。正文写"despite similar muscle activation levels ... the peak output force increased by 65%"——数字对得上，但<strong>"预测力几乎没变而外骨骼输出几乎翻倍"这一更直观的事实，正文没有直说</strong>。</li>
+</ul>
+<h4>3.3 Fig. 5D 三种条件下的最大握力</h4>
+<ul>
+<li>三柱：Bare hand <strong>约 85</strong>、Exo off <strong>约 90</strong>、Exo on <strong>约 123</strong> N（纵轴 0–150）。</li>
+<li><strong>读数结论</strong>：正文只写"85.1 → 122.7 N"，<strong>没有写 Exo off（约 90 N）这一柱</strong>——即"戴上未致动外骨骼"本身就比空手高。这是一条被略过的对照。</li>
+</ul>
+<h4>3.4 Fig. 5E 疲劳指标（<strong>本轮图轨第五条发现</strong>）</h4>
+<p>逐点读数（三时点 1–2 / 4–5 / 7–8 min）：
+- <strong>MNF（Hz）</strong>：Exo off <strong>86.5 → 82.5 → 79.0</strong>（降 7.5）；Exo on <strong>97.0 → 96.5 → 97.5</strong>（升降 +0.5）。
+- <strong>MDF（Hz）</strong>：Exo off <strong>62.5 → 57.3 → 55.7</strong>（降 6.8）；Exo on <strong>58.5 → 57.3 → 57.8</strong>（降 0.7）。
+- <strong>读数结论（分两条，必须分开记）</strong>：
+  1. <strong>正文的核心 claim 成立</strong>："外骨骼有效阻止了 MNF 与 MDF 的下降"——两组曲线的<strong>斜率</strong>差确实大（MNF 7.5 vs −0.5；MDF 6.8 vs 0.7）。这条是<strong>对上</strong>。
+  2. <strong>但两条指标在两个条件下的基线不匹配，且方向相反</strong>：MNF 的 Exo on 起点比 Exo off <strong>高约 10.5 Hz</strong>；MDF 的 Exo on 起点比 Exo off <strong>低约 4 Hz</strong>。正文与图注<strong>均未声明基线未对齐</strong>，也未说明为何两组起点不同（是电极位置、负荷水平还是别的）。<strong>用"斜率差"论证干预效果本身合理，但在两项指标上出现方向相反的基线偏移，是必须披露的口径问题。</strong>
+- 另读数：MDF 的 Exo on 与 Exo off 在第 4–5 分钟处<strong>交叉</strong>（57.3 对 57.3），第 7–8 分钟重新分开——即两条曲线并非全程分离。</p>
+<hr />
+<h3>4. Fig. 6 —— 虚拟手术（本图做了像素级曲线数字化）</h3>
+<p>标定：用 Fig. 6B 中的 5 条灰色竖虚线，以图注给出的 5 个时间戳（5.3 / 14.5 / 23.1 / 42.2 / 56.2 s）作标定点 → <strong>18.5 px/s</strong>；反推横轴范围 <strong>约 0 至 58.7 s</strong>。标定残差最大处为 15.1 s（标称 14.5 s，偏 0.6 s）。纵轴零点用刻度线（非边框）定位：C 为 0–60 mm、D 为 0–40 mm。</p>
+<h4>4.1 Fig. 6B 归一化预测切割力</h4>
+<ul>
+<li>纵轴 0–100%；四个升降段（"平台"），平台顶<strong>贴齐 100% 上限</strong>，平台顶部呈锯齿状；末段（约 56 s 后）另有一个<strong>高度约为其余平台一半</strong>的短平台。</li>
+<li><strong>读数结论</strong>：四个切割段的预测力<strong>都顶到归一化上限 100%</strong>（= 图注给出的 14.3 N 校准最大值）。<strong>因此这四个段之间的力值在本面板上不可分辨</strong>——正文"four distinct increases in cutting length"的"distinct"只能来自时间分段，不能来自本面板的力高度。</li>
+</ul>
+<h4>4.2 Fig. 6C（VR）与 Fig. 6D（实拍）切割长度 —— <strong>本轮图轨第六条发现，也是量化最硬的一条</strong></h4>
+<p>数字化的曲线值（mm，时间由 4.0 节标定换算）：</p>
+<table>
+<thead>
+<tr>
+<th>时刻 (s)</th>
+<th>约 11.6</th>
+<th>约 14.6</th>
+<th>约 17.5</th>
+<th>约 23.4</th>
+<th>约 29.3</th>
+<th>约 35.2</th>
+<th>约 41.1</th>
+<th>约 47.0</th>
+<th>约 52.8</th>
+<th>约 58.7</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C：VR 切割长度</strong></td>
+<td>12.6</td>
+<td>19.6</td>
+<td>23.5</td>
+<td>23.5</td>
+<td>31.2</td>
+<td>33.5</td>
+<td>40.8</td>
+<td>46.1</td>
+<td>50.4</td>
+<td><strong>54.0</strong></td>
+</tr>
+<tr>
+<td><strong>D：实拍切割长度</strong></td>
+<td>1.4</td>
+<td>3.8</td>
+<td>9.0</td>
+<td>9.0</td>
+<td>16.6</td>
+<td>16.6</td>
+<td>22.7</td>
+<td>27.0</td>
+<td>30.3</td>
+<td><strong>36.0</strong></td>
+</tr>
+<tr>
+<td>比值 C/D</td>
+<td>9.0×</td>
+<td>5.2×</td>
+<td>2.6×</td>
+<td>2.6×</td>
+<td>1.9×</td>
+<td>2.0×</td>
+<td>1.8×</td>
+<td>1.7×</td>
+<td>1.66×</td>
+<td><strong>1.50×</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>步进时刻校验（对上）</strong>：两条曲线的升降时刻一致——首个上升段约 8.7–17 s、随后平台至约 23.4 s，与正文举例"8.8 到 16.2 s"上升、"16.2 到 24.2 s"不变<strong>在约 1 s 内吻合</strong>；末端都还有一个第 5 段（约 53–58 s）。→ 正文"四条切割周期"的<strong>计数与末端第 5 段的关系未交代</strong>（图 E/F 给了 5 个时间戳，C/D 各有 5 段）。</li>
+<li><strong>幅值差异（未对上）</strong>：<strong>VR 切割长度全程系统性高于实拍值，端点处为 1.50 倍、首个平台处高达 2.6 倍。</strong></li>
+<li><strong>视觉尺度（本轮图轨第七条发现）</strong>：<strong>两张面板使用不同纵轴量程——C 为 0–60 mm、D 为 0–40 mm。</strong> 在 1.5–2.6 倍的幅值差下，用同一量程并排才能显示差异；采用不同量程后两条曲线在版面上占据相近高度，<strong>视觉上显得一致</strong>。</li>
+<li>正文对应句："While the overall trends in cutting length are consistent in Fig. 6 (C and D), noticeable differences in cut width and depth, both of which are force dependent, can still be observed." ——<strong>把差异全部归于宽度与深度，而长度本身差 1.5–2.6 倍</strong>。</li>
+<li><strong>读数的边界声明</strong>：C 的折线含宽度色带叠加，数字化时取紫色折线像素中位数；D 的橙色折线同理。误差量级估计 ±1 mm 以内（折线宽约 5 px ≈ 1.4–1.9 mm），远小于 20–30 mm 的差异。<strong>该发现不依赖精细标定。</strong></li>
+</ul>
+<h4>4.3 Fig. 6C 宽度色带 / 6D 深度色带</h4>
+<ul>
+<li>6C 内嵌色标 Cut width <strong>0–12 mm</strong>；6D 内嵌色标 Cut depth <strong>0–3 mm</strong>。色带沿切割轨迹变化。</li>
+<li><strong>读数结论</strong>：这两个色标<strong>没有独立的纵轴</strong>，值的空间分布只能靠颜色相对深浅判断，<strong>绝对读数不可得</strong>——登记为"不可读"，不作为任何量化断言的依据。</li>
+</ul>
+<hr />
+<h3>5. Fig. 1 —— 总览图（信息密度最高、可核验度最低）</h3>
+<ul>
+<li>1A 机理示意（电流流线 + 电位等值线）；1B 器件分层结构（水凝胶电极 / 改性 PDMS / 银走线 / 改性 PDMS）；1C 氢键示意 + 皮肤贴合剖面 + 电流流线；1D 收缩 → 多通道阻抗 → 机器学习 → 手势/力的流程；1E 三张佩戴照（1 cm、2 cm 标尺）；1F 三个应用场景示意；1G <strong>六轴雷达图</strong>。</li>
+<li><strong>1G 的读数结论（图轨第八条发现）</strong>：雷达图六轴为 Motion artifact rejection / Detection depth / Detection resolution / Cost-effectiveness / Compatibility / Noninvasiveness，四条比较对象为 <strong>Electromyography detection（绿） / Ultrasound imaging（浅蓝） / Magnetic sensing（粉） / This work（红）</strong>。</li>
+<li>交叉读数：<strong>Ultrasound imaging 在 Detection depth 一轴上的读数明显高于 This work</strong>；<strong>Electromyography 在 Cost-effectiveness 与 Noninvasiveness 两轴上的读数与 This work 接近甚至更高</strong>。</li>
+<li><strong>关键限制</strong>：<strong>雷达图本身没有数值标尺，每个轴的量纲、归一化方式、取值判据均未在图面给出</strong>；图注把定量对照指向 <strong>table S2，而 table S2 缺件</strong>。</li>
+<li>→ <strong>结论（按纪律）：这张图在本轮流程里只能读"形状"，不能读"数值"。</strong> 正文 §Results 里"我们提供了定量比较在 table S2 与 note S4"这句，在本 PDF 内<strong>不可核验</strong>。这是"核心 claim 的定量支撑在缺件里"的最典型一例。</li>
+</ul>
+<hr />
+<h3>6. 本轮图轨读数的自我边界（供 S8 引用）</h3>
+<ol>
+<li>本文件<strong>只覆盖 6 张主图</strong>。12 张补图、2 张补表、4 段影片<strong>全部缺件</strong>，相关断言一律列为"不可核验"。</li>
+<li>所有"约"值来自目视或颜色分割，误差量级：柱状图约 ±0.5（纵轴单位）；曲线数字化约 ±1 mm（Fig. 6）。<strong>不足以支撑小数位级的对账</strong>，凡需要小数位对账的，只用正文与图注里的打印数字。</li>
+<li>本文件<strong>不评价方法好坏、不判断设计是否合理</strong>（沿用 GPT-2 轮固化的审计员禁令）；只做"图上读数 vs 正文/图注文字"的对照，对照结论全部写在 S8。</li>
+<li>逐图裁剪图保存在 <code>figs/crop_*.png</code>，数字化原始输出保存在 <code>_digitize_6CD.txt</code>、<code>_calib6.txt</code>，脚本为 <code>_digitize6.py</code>、<code>_calib6.py</code>、<code>_findframe.py</code>、<code>_crop.py</code>。</li>
+</ol>
+</section>
+</body>
+</html>
