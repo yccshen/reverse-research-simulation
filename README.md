@@ -137,6 +137,7 @@ S0 选材闸（防御性检查：综述/大系统/无主实验的论文直接拒
 - 隔离审稿人 **5 条发现全部准确、零撤销**——与 MI-1 轮"需撤销 2 条"形成反向确认：**隔离审稿人的误差率取决于被审对象的形态，不取决于隔离本身**
 - 论文自身七处问题，其中 **R-2（"base surpasses all ensembles" 在 EN-FR 上不成立）两个视角都漏了**，是 S8 第 0 步的独有产出
 - 合订版：[PDF](examples/transformer/Transformer_科研全仿真_完整版.pdf)（26 页）/ [HTML](examples/transformer/Transformer_科研全仿真_完整版.html)
+- S9 成稿（六幕）：[S9.md](examples/transformer/S9.md) ｜ [PDF](examples/transformer/Transformer_S9成稿.pdf)（6 页）/ [HTML](examples/transformer/Transformer_S9成稿.html)
 
 ## 实例：配药机器人 全流程（第五轮 / 设计报告型）
 
